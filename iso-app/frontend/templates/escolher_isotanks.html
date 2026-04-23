@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Escolher Isotanks para Pedido</h1>
+    <p class="text-muted">Abaixo estão as linhas de pedido solicitadas que aguardam alocação de um isotank.</p>
+</div>
+
+<div class="card table-container">
+    <table id="tabela-linhas-pedido" class="table">
+        <thead>
+            <tr>
+                <th>Pedido ID</th>
+                <th>Linha Reserva ID</th>
+                <th>Cliente</th>
+                <th>Produto Solicitado</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Preenchido via JS -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Escolha Isotank -->
+<div id="modal-escolha" class="modal" style="display:none;">
+    <div class="modal-content card">
+        <div class="flex-between">
+            <h2>Isotanks Compatíveis</h2>
+            <button class="btn btn-outline btn-sm" onclick="fecharModal()">X</button>
+        </div>
+        <div id="lista-isotanks-compativeis" class="mt-4">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/pedidos.js') }}"></script>
+{% endblock %}

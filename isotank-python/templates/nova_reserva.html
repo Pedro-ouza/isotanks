@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <header class="page-header text-center">
+        <h1 class="page-title">Nova Reserva</h1>
+        <p class="text-muted">Preencha os dados abaixo. Eles serão processados e salvos diretamente no banco de dados SQLite.</p>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if errors %}
+        <div class="alert alert-error">
+            <strong>Por favor, corrija os seguintes erros:</strong>
+            <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('nova_reserva') }}" class="card form-card">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="razao_social">Razão Social <span class="required">*</span></label>
+                <input type="text" id="razao_social" name="razao_social" value="{{ form.get('razao_social', '') if form else '' }}" required minlength="3" placeholder="Empresa LTDA">
+            </div>
+
+            <div class="form-group">
+                <label for="cnpj">CNPJ (Somente Números) <span class="required">*</span></label>
+                <input type="text" id="cnpj" name="cnpj" value="{{ form.get('cnpj', '') if form else '' }}" required pattern="\d{14}" title="Digite exatamente 14 números" placeholder="00000000000000">
+            </div>
+
+            <div class="form-group">
+                <label for="inscricao_estadual">Inscrição Estadual <span class="required">*</span></label>
+                <input type="text" id="inscricao_estadual" name="inscricao_estadual" value="{{ form.get('inscricao_estadual', '') if form else '' }}" required placeholder="123456789">
+            </div>
+
+            <div class="form-group">
+                <label for="cep">CEP (Somente Números) <span class="required">*</span></label>
+                <input type="text" id="cep" name="cep" value="{{ form.get('cep', '') if form else '' }}" required pattern="\d{8}" title="Digite exatamente 8 números" placeholder="00000000">
+            </div>
+
+            <div class="form-group">
+                <label for="produto">Produto / Carga <span class="required">*</span></label>
+                <input type="text" id="produto" name="produto" value="{{ form.get('produto', '') if form else '' }}" required minlength="2" placeholder="Ex: Ácido Sulfúrico">
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">WhatsApp (com DDD) <span class="required">*</span></label>
+                <input type="tel" id="telefone" name="telefone" value="{{ form.get('telefone', '') if form else '' }}" required minlength="10" placeholder="11999999999">
+            </div>
+        </div>
+
+        <div class="form-actions mt-4">
+            <button type="submit" class="btn btn-primary btn-large">Enviar Solicitação</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-large">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

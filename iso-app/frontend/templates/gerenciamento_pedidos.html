@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header flex-between">
+    <div>
+        <h1>Gerenciamento de Pedidos</h1>
+        <p class="text-muted">Acompanhe o status e a evolução das linhas de reserva.</p>
+    </div>
+    <button class="btn btn-outline" onclick="carregarGerenciamentoPedidos()">Atualizar</button>
+</div>
+
+<div class="card table-container">
+    <table id="tabela-gerenciamento-pedidos" class="table">
+        <thead>
+            <tr>
+                <th>Pedido ID</th>
+                <th>Linha Reserva ID</th>
+                <th>Cliente</th>
+                <th>Status</th>
+                <th>Isotank Reservado</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Preenchido via JS -->
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/pedidos.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="page-header">
+    <h1 class="page-title">Isotank Manager</h1>
+    <p class="text-muted">Painel de Controle e Gestão de Reservas em Python (Zero JS)</p>
+</header>
+
+<div class="grid cards-grid">
+    <a href="{{ url_for('nova_reserva') }}" class="card hover-card">
+        <h2 class="card-title">Nova Reserva</h2>
+        <p class="card-text">Inicie o fluxo de locação de um isotank com aprovação em etapas usando formulários HTML clássicos.</p>
+    </a>
+    
+    <a href="{{ url_for('status') }}" class="card hover-card">
+        <h2 class="card-title">Status do Sistema</h2>
+        <p class="card-text">Acompanhe a disponibilidade e SLAs dos serviços renderizados via SSR.</p>
+    </a>
+</div>
+{% endblock %}

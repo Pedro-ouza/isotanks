@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="status-container">
+    <header class="page-header text-center">
+        <h1 class="page-title">Status do Sistema</h1>
+        <p class="text-muted">Acompanhe em tempo real a disponibilidade dos serviços renderizados pelo Flask.</p>
+    </header>
+
+    <div class="status-summary card">
+        <div class="summary-info">
+            <h2>Todos os sistemas operacionais</h2>
+            <p>Última atualização (Server-side): {{ range(1, 60) | random }} segundos atrás</p>
+        </div>
+        <div class="status-icon bg-success">✓</div>
+    </div>
+
+    <div class="services-list">
+        {% for service in services %}
+        <div class="service-item card">
+            <div class="service-name">
+                <span class="status-dot {{ 'dot-success' if service.status == 'operational' else 'dot-warning' }}"></span>
+                <strong>{{ service.name }}</strong>
+            </div>
+            <div class="service-details">
+                <span class="status-text">{{ 'Operacional' if service.status == 'operational' else 'Degradado' }}</span>
+                <span class="uptime">Uptime: {{ service.uptime }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar ao Menu</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header flex-between">
+    <div>
+        <h1>Gestão de Aprovação de Isotanks</h1>
+        <p class="text-muted">Analise os isotanks em Staging e aprove-os para o Cadastro Final.</p>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <!-- Lista de Staging -->
+    <div class="card">
+        <div class="flex-between mb-4">
+            <h2>Fila de Staging</h2>
+            <button class="btn btn-outline btn-sm" onclick="carregarStaging()">Recarregar</button>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="table" id="tabela-staging">
+                <thead>
+                    <tr>
+                        <th>ID (Staging)</th>
+                        <th>IsotankID</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Carregado via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Formulário de Cadastro Final -->
+    <div class="card">
+        <h2>Aprovação (Cadastro Final)</h2>
+        <form id="form-aprovar-isotank" class="mt-4">
+            <div class="form-group">
+                <label>ID Final *</label>
+                <input type="text" id="iso-id" required>
+            </div>
+            <div class="form-group">
+                <label>Fornecedor</label>
+                <input type="text" id="iso-fornecedor">
+            </div>
+            <div class="form-group">
+                <label>Container</label>
+                <input type="text" id="iso-container">
+            </div>
+            <div class="form-group">
+                <label>Local Atual</label>
+                <input type="text" id="iso-local">
+            </div>
+            <div class="form-group">
+                <label>Produto Canônico 1</label>
+                <input type="text" id="iso-produto">
+            </div>
+            <div class="form-group">
+                <label>Escopo de Aprovação</label>
+                <input type="text" id="iso-escopo" placeholder="Ex: Produto X; Qualquer Produto">
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Status Técnico</label>
+                    <select id="iso-status-tecnico" required>
+                        <option value="Processado">Processado</option>
+                        <option value="Rejeitado">Rejeitado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Disponibilidade</label>
+                    <select id="iso-status-disp" required>
+                        <option value="Disponivel">Disponível</option>
+                        <option value="Indisponivel">Indisponível</option>
+                    </select>
+                </div>
+            </div>
+            <div id="form-message" class="mt-4"></div>
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary">Salvar no Cadastro Final</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/isotanks.js') }}"></script>
+{% endblock %}
