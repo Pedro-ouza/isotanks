@@ -30,22 +30,49 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="table-container">
-        <table id="tabela-gerenciamento-pedidos" class="table">
-            <thead>
-                <tr>
-                    <th>Pedido ID</th>
-                    <th>Linha Reserva ID</th>
-                    <th>Cliente</th>
-                    <th>Status</th>
-                    <th>Isotank Reservado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Preenchido via JS -->
-            </tbody>
-        </table>
+<div class="pipeline-board">
+    <!-- Coluna Solicitado -->
+    <div class="pipeline-column">
+        <div class="pipeline-header">
+            <span>Solicitado</span>
+            <span class="badge" id="count-solicitado">0</span>
+        </div>
+        <div class="pipeline-content" id="col-solicitado">
+            <!-- Cards preenchidos via JS -->
+        </div>
+    </div>
+
+    <!-- Coluna Pré-Reservado -->
+    <div class="pipeline-column">
+        <div class="pipeline-header">
+            <span>Pré-Reservado</span>
+            <span class="badge" id="count-pre-reservado">0</span>
+        </div>
+        <div class="pipeline-content" id="col-pre-reservado">
+            <!-- Cards preenchidos via JS -->
+        </div>
+    </div>
+
+    <!-- Coluna Confirmado -->
+    <div class="pipeline-column">
+        <div class="pipeline-header">
+            <span>Confirmado</span>
+            <span class="badge" id="count-confirmado">0</span>
+        </div>
+        <div class="pipeline-content" id="col-confirmado">
+            <!-- Cards preenchidos via JS -->
+        </div>
+    </div>
+
+    <!-- Coluna Cancelado -->
+    <div class="pipeline-column">
+        <div class="pipeline-header">
+            <span>Cancelado</span>
+            <span class="badge" id="count-cancelado">0</span>
+        </div>
+        <div class="pipeline-content" id="col-cancelado">
+            <!-- Cards preenchidos via JS -->
+        </div>
     </div>
 </div>
 <!-- Modal Detalhes do Pedido -->

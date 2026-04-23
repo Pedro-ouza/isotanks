@@ -152,10 +152,17 @@ async function reservarIsotank(linhaId, isotankId) {
 }
 
 async function carregarGerenciamentoPedidos() {
-    const tbody = document.querySelector('#tabela-gerenciamento-pedidos tbody');
     // Coleta filtros
     const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
     const statusFiltro = document.getElementById('filtro-status')?.value || '';
+
+    // Colunas do Kanban
+    const colSolicitado = document.getElementById('col-solicitado');
+    const colPreReservado = document.getElementById('col-pre-reservado');
+    const colConfirmado = document.getElementById('col-confirmado');
+    const colCancelado = document.getElementById('col-cancelado');
+
+    if (!colSolicitado) return; // Segurança caso não esteja na página
 
     try {
         const res = await fetch('/api/pedidos');
@@ -163,24 +170,48 @@ async function carregarGerenciamentoPedidos() {
         
         window.pedidosAtuais = pedidos;
         
-        tbody.innerHTML = '';
+        colSolicitado.innerHTML = '';
+        colPreReservado.innerHTML = '';
+        colConfirmado.innerHTML = '';
+        colCancelado.innerHTML = '';
+
+        let counts = { 'Solicitado': 0, 'Pré-Reservado': 0, 'Confirmado': 0, 'Cancelado': 0 };
+        
         pedidos.forEach(p => {
-            // Aplicar filtros no frontend
             if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
             if (statusFiltro && p.statusReserva !== statusFiltro) return;
 
-            const tr = document.createElement('tr');
-            tr.style.cursor = 'pointer';
-            tr.onclick = () => abrirModalDetalhes(p.linhaReservaId);
-            tr.innerHTML = `
-                <td>${p.pedidoId}</td>
-                <td>${p.linhaReservaId}</td>
-                <td>${p.cliente}</td>
-                <td>${obterBadgeReserva(p.statusReserva)}</td>
-                <td>${p.isotankIdReservado || '-'}</td>
+            counts[p.statusReserva] = (counts[p.statusReserva] || 0) + 1;
+
+            const card = document.createElement('div');
+            let statusClass = p.statusReserva.toLowerCase().replace('é', 'e'); // solicitado, pre-reservado, confirmado, cancelado
+            card.className = `pipeline-card status-${statusClass}`;
+            card.onclick = () => abrirModalDetalhes(p.linhaReservaId);
+
+            card.innerHTML = `
+                <div class="pipeline-card-info">
+                    <span class="pipeline-card-id">${p.pedidoId}</span>
+                </div>
+                <div class="pipeline-card-title">${p.cliente}</div>
+                <div class="pipeline-card-info" style="margin-top: 0.5rem;">
+                    <span>Prod: <strong>${p.produtoSolicitado}</strong></span>
+                </div>
+                <div class="pipeline-card-info">
+                    <span>Iso: <strong>${p.isotankIdReservado || 'N/A'}</strong></span>
+                </div>
             `;
-            tbody.appendChild(tr);
+            
+            if (p.statusReserva === 'Solicitado') colSolicitado.appendChild(card);
+            else if (p.statusReserva === 'Pré-Reservado') colPreReservado.appendChild(card);
+            else if (p.statusReserva === 'Confirmado') colConfirmado.appendChild(card);
+            else if (p.statusReserva === 'Cancelado') colCancelado.appendChild(card);
         });
+
+        document.getElementById('count-solicitado').innerText = counts['Solicitado'];
+        document.getElementById('count-pre-reservado').innerText = counts['Pré-Reservado'];
+        document.getElementById('count-confirmado').innerText = counts['Confirmado'];
+        document.getElementById('count-cancelado').innerText = counts['Cancelado'];
+
     } catch (err) {
         console.error(err);
     }
