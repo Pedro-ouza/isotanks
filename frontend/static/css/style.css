@@ -164,8 +164,14 @@ body {
 /* Adicione esta classe para alinhar os itens da direita */
 .topbar-right {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 1.5rem;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
 }
 
 .topbar-chip {
