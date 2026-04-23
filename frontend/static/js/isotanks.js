@@ -60,6 +60,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica para upload_isotanks.html ---
     const formUpload = document.getElementById('form-upload-staging');
     if (formUpload) {
+        const fileInput = document.getElementById('fileCsv');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) {
+                    document.getElementById('csv-preview-container').style.display = 'none';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    // Divide por quebra de linha considerando diferentes S.O.s e remove linhas vazias
+                    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+                    if (lines.length > 0) {
+                        const headers = lines[0].split(',');
+                        
+                        const trHead = document.getElementById('csv-preview-header');
+                        trHead.innerHTML = '';
+                        headers.forEach(h => {
+                            const th = document.createElement('th');
+                            th.textContent = h.trim();
+                            trHead.appendChild(th);
+                        });
+                        
+                        const tbody = document.getElementById('csv-preview-body');
+                        tbody.innerHTML = '';
+                        
+                        // Mostra apenas as 5 primeiras linhas
+                        const previewLines = lines.slice(1, 6);
+                        previewLines.forEach(line => {
+                            const cols = line.split(',');
+                            const tr = document.createElement('tr');
+                            cols.forEach(col => {
+                                const td = document.createElement('td');
+                                td.textContent = col.trim();
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        });
+                        
+                        document.getElementById('csv-preview-container').style.display = 'block';
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
         formUpload.addEventListener('submit', async (e) => {
             e.preventDefault();
             
