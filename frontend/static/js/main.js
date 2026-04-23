@@ -25,6 +25,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('kpi-isotanks-disponiveis')) {
         carregarMetricas();
     }
+
+    // Lógica para toggle de tema dark/light
+    const themeToggleBtn = document.getElementById('btn-theme-toggle');
+    if (themeToggleBtn) {
+        const body = document.body;
+
+        // Verifica a preferência salva anteriormente
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            body.classList.add('dark');
+            themeToggleBtn.textContent = 'Light Mode';
+        }
+
+        // Lógica de toggle
+        themeToggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.textContent = 'Light Mode';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.textContent = 'Dark Mode';
+            }
+        });
+    }
 });
 
 function obterBadgeReserva(status) {

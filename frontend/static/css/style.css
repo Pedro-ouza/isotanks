@@ -157,8 +157,15 @@ body {
   height: 64px;
   padding: 0 1.5rem;
   display: flex;
-  align-items: columns;
+  align-items: center; /* Corrigido de 'columns' para 'center' */
   justify-content: space-between;
+}
+
+/* Adicione esta classe para alinhar os itens da direita */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .topbar-chip {
@@ -307,6 +314,32 @@ body {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(0,161,136,0.16);
+}
+
+/* Adicione logo abaixo das regras gerais de .form-group input */
+.form-group input[type="file"] {
+  padding: 0.5rem; /* Reduz o padding para não cortar o texto/botão nativo */
+  border-radius: 8px; /* Cantos menos arredondados funcionam melhor aqui */
+  background: transparent;
+  cursor: pointer;
+  line-height: normal;
+}
+
+/* Opcional: Estilizar o botão nativo de "Escolher arquivo" (suportado na maioria dos navegadores modernos) */
+.form-group input[type="file"]::file-selector-button {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 1rem;
+  transition: 0.2s;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+  background: #d4f3eb;
 }
 
 /* Tables */
