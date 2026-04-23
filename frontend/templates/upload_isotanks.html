@@ -3,8 +3,8 @@
 {% block content %}
 <div class="page-header">
     <div>
-      <h1 class="page-title">Importar isotanks</h1>
-      <p class="text-muted">Faça upload do CSV de staging para atualizar o estoque.</p>
+        <h1 class="page-title">Isotank import</h1>
+        <p class="text-muted">Faça upload do CSV de staging para atualizar o estoque.</p>
     </div>
 </div>
 
@@ -19,8 +19,9 @@
             <input type="file" name="file" id="fileCsv" accept=".csv" required style="padding: 1rem 0;">
         </div>
         
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Enviar arquivo</button>
+        <div class="mt-4 flex-between">
+            <button type="submit" class="btn btn-primary">Upload CSV</button>
+            <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
         </div>
     </form>
 </div>

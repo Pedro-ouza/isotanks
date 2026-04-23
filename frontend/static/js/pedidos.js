@@ -176,7 +176,7 @@ async function carregarGerenciamentoPedidos() {
                 <td>${p.isotankIdReservado || '-'}</td>
                 <td>
                     ${(p.statusReserva === 'Solicitado' || p.statusReserva === 'Pré-Reservado') 
-                        ? `<button class="btn btn-outline btn-sm" onclick="cancelarReserva('${p.linhaReservaId}')">Cancelar</button>` 
+                        ? `<button class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);" onclick="cancelarReserva('${p.linhaReservaId}')">Cancelar</button>` 
                         : ''}
                 </td>
             `;
@@ -197,7 +197,11 @@ async function cancelarReserva(linhaId) {
             body: JSON.stringify({ motivo: 'Cancelado pelo usuário', usuario: 'planejador_demo' })
         });
         if(res.ok) {
+            if(window.showAlert) window.showAlert('Reserva cancelada com sucesso!', 'success');
             carregarGerenciamentoPedidos();
+        } else {
+            const err = await res.json();
+            if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível cancelar'), 'error');
         }
     } catch (e) {
         console.error(e);

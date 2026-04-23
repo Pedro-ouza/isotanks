@@ -5,9 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabelaStaging) {
         carregarStaging();
         
+        const btnAprovar = document.getElementById('btn-aprovar');
+        const btnRejeitar = document.getElementById('btn-rejeitar');
         const formAprovar = document.getElementById('form-aprovar-isotank');
-        formAprovar.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        
+        async function submitAprovacao(statusFinal) {
+            if (!document.getElementById('iso-id').value) {
+                if (window.showAlert) window.showAlert('Selecione um isotank primeiro.', 'error');
+                return;
+            }
             
             const payload = {
                 id: document.getElementById('iso-id').value,
@@ -16,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 localAtual: document.getElementById('iso-local').value,
                 produto1Canonico: document.getElementById('iso-produto').value,
                 escopoAprovacao: document.getElementById('iso-escopo').value,
-                statusTecnicoFinal: document.getElementById('iso-status-tecnico').value,
-                statusDisponibilidade: document.getElementById('iso-status-disp').value
+                statusTecnicoFinal: statusFinal,
+                statusDisponibilidade: statusFinal === 'Processado' ? 'Disponivel' : 'Indisponivel'
             };
             
             try {
@@ -29,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 
                 if (res.ok) {
-                    if (window.showAlert) window.showAlert(`Sucesso! Isotank aprovado.`, 'success');
-                    formAprovar.reset();
+                    if (window.showAlert) window.showAlert(`Sucesso! Isotank ${statusFinal.toLowerCase()}.`, 'success');
+                    if (formAprovar) formAprovar.reset();
                     // Limpar seleção
                     document.querySelectorAll('#tabela-staging tbody tr').forEach(row => row.classList.remove('selected'));
                     carregarStaging();
@@ -38,10 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
-                if (window.showAlert) window.showAlert(`Erro de rede ao aprovar isotank.`, 'error');
+                if (window.showAlert) window.showAlert(`Erro de rede ao processar isotank.`, 'error');
                 console.error(err);
             }
-        });
+        }
+        
+        if (btnAprovar) {
+            btnAprovar.addEventListener('click', () => submitAprovacao('Processado'));
+        }
+        if (btnRejeitar) {
+            btnRejeitar.addEventListener('click', () => submitAprovacao('Rejeitado'));
+        }
     }
 
     // --- Lógica para upload_isotanks.html ---

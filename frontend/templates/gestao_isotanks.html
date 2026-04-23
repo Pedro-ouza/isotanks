@@ -1,21 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header flex-between">
+<div class="page-header">
     <div>
-        <h1 class="page-title">Gestão de Isotanks</h1>
-        <p class="text-muted">Analise os isotanks em staging e aprove-os para o Cadastro Final.</p>
+        <h1 class="page-title">Isotank approval workspace</h1>
+        <p class="text-muted">Analise isotanks em staging, defina escopo e libere para pedidos.</p>
     </div>
-    <button class="btn btn-outline" onclick="carregarStaging()">Recarregar Staging</button>
+    <button id="btn-recarregar-staging" class="btn btn-outline" onclick="carregarStaging()">Recarregar staging</button>
 </div>
 
 <div class="form-layout-2col">
     <!-- Lista de Staging -->
     <div class="card">
-        <div class="flex-between mb-4">
-            <h3>Fila de Staging</h3>
-        </div>
-        <div style="max-height: 400px; overflow-y: auto;">
+        <h3 class="mb-4">Staging queue</h3>
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
             <table class="table" id="tabela-staging">
                 <thead>
                     <tr>
@@ -35,11 +33,12 @@
     <div class="card">
         <div class="flex-between mb-4">
             <div>
-              <h3>Aprovação (Cadastro Final)</h3>
-              <p class="text-muted">Selecione um item no staging para revisar.</p>
+              <h3>Approval details</h3>
+              <p class="text-muted">Revise o isotank selecionado e confirme o escopo.</p>
             </div>
             <div>
-              <button type="submit" form="form-aprovar-isotank" class="btn btn-success btn-sm">Aprovar / Salvar</button>
+              <button id="btn-aprovar" class="btn btn-success btn-sm">Aprovar</button>
+              <button id="btn-rejeitar" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">Rejeitar</button>
             </div>
         </div>
 

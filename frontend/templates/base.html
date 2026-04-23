@@ -9,53 +9,56 @@
 <body>
     <div class="app-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-circle">E</div>
                 <span>Evera Isotank Hub</span>
             </div>
             
             <nav class="sidebar-nav">
-                <div class="nav-section">Dashboard</div>
-                <a href="/" class="{{ 'active' if active_page == 'dashboard' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-                    Visão Geral
+                <div class="nav-section">Dashboards</div>
+                <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                    <span>Home</span>
+                    <small>Executive overview</small>
                 </a>
 
-                <div class="nav-section">Operação</div>
-                <a href="/realizar-pedido" class="{{ 'active' if active_page == 'pedido' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                    Novo Pedido
+                <div class="nav-section">Inventory</div>
+                <a href="/gestao-isotanks" class="nav-link {% if active_page == 'aprovar' %}active{% endif %}">
+                    <span>Isotanks</span>
+                    <small>Technical approval</small>
                 </a>
-                <a href="/escolher-isotanks" class="{{ 'active' if active_page == 'alocar' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    Alocar Isotanks
-                </a>
-                <a href="/gerenciamento-pedidos" class="{{ 'active' if active_page == 'gerenciar' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                    Gerenciar Pedidos
+                <a href="/gerenciamento-pedidos" class="nav-link {% if active_page == 'gerenciar' %}active{% endif %}">
+                    <span>Orders & reservations</span>
+                    <small>Execution status</small>
                 </a>
 
-                <div class="nav-section">Aprovação Técnica</div>
-                <a href="/upload-isotanks" class="{{ 'active' if active_page == 'upload' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Upload Staging
+                <div class="nav-section">Tools</div>
+                <a href="/realizar-pedido" class="nav-link {% if active_page == 'pedido' %}active{% endif %}">
+                    <span>New order</span>
+                    <small>Create reservation lines</small>
                 </a>
-                <a href="/gestao-isotanks" class="{{ 'active' if active_page == 'aprovar' else '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    Aprovar Isotanks
+                <a href="/escolher-isotanks" class="nav-link {% if active_page == 'alocar' %}active{% endif %}">
+                    <span>Allocate</span>
+                    <small>Match order to tank</small>
+                </a>
+                <a href="/upload-isotanks" class="nav-link {% if active_page == 'upload' %}active{% endif %}">
+                    <span>Isotank import</span>
+                    <small>CSV staging upload</small>
                 </a>
             </nav>
-        </aside>
+        </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <header class="topbar">
-                <div class="user-profile">
-                    <div class="avatar">US</div>
-                    <span>Usuário Operador</span>
+            <div class="topbar">
+                <div class="topbar-left">
+                    <span class="topbar-chip">Evera supply toolkit</span>
                 </div>
-            </header>
+                <div class="topbar-right">
+                    <button id="btn-theme-toggle" class="btn btn-outline btn-sm" style="margin-right: 1rem;">Dark Mode</button>
+                    <div class="avatar">TE</div>
+                </div>
+            </div>
 
             <main class="container">
                 {% block content %}{% endblock %}

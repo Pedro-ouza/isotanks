@@ -3,11 +3,12 @@
 {% block content %}
 <div class="page-header">
     <div>
-      <h1 class="page-title">Visão geral</h1>
-      <p class="text-muted">Acompanhe os principais indicadores operacionais do dia.</p>
+      <h1 class="page-title">Operations and Supply Workspace</h1>
+      <p class="text-muted">Ambiente unificado para pedidos, isotanks e reservas Evera.</p>
     </div>
 </div>
 
+<!-- KPIs -->
 <div class="grid kpi-grid">
     <div class="kpi-card">
         <div class="kpi-icon green">D</div>
@@ -34,21 +35,30 @@
     </div>
 </div>
 
-<div class="card">
-    <h3 class="mb-4">Últimos pedidos (Abertos)</h3>
-    <div class="table-container">
-        <table class="table" id="tabela-ultimos-pedidos">
-            <thead>
-                <tr>
-                    <th>Pedido</th>
-                    <th>Cliente</th>
-                    <th>Produto</th>
-                    <th>Status</th>
-                    <th>Isotank</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+<!-- Módulos -->
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+    <div class="module-card">
+        <h3>Orders</h3>
+        <p>Crie novos pedidos e linhas de reserva para clientes.</p>
+        <div class="module-card-footer">
+            <a href="/realizar-pedido" class="module-open">Open →</a>
+        </div>
+    </div>
+    
+    <div class="module-card">
+        <h3>Allocate</h3>
+        <p>Faça o match manual de isotanks para pedidos abertos.</p>
+        <div class="module-card-footer">
+            <a href="/escolher-isotanks" class="module-open">Open →</a>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <h3>Isotanks Staging</h3>
+        <p>Aprove e libere isotanks para o pool de disponibilidade.</p>
+        <div class="module-card-footer">
+            <a href="/gestao-isotanks" class="module-open">Open →</a>
+        </div>
     </div>
 </div>
 
