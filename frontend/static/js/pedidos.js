@@ -170,15 +170,14 @@ async function carregarGerenciamentoPedidos() {
             if (statusFiltro && p.statusReserva !== statusFiltro) return;
 
             const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
+            tr.onclick = () => abrirModalDetalhes(p.linhaReservaId);
             tr.innerHTML = `
                 <td>${p.pedidoId}</td>
                 <td>${p.linhaReservaId}</td>
                 <td>${p.cliente}</td>
                 <td>${obterBadgeReserva(p.statusReserva)}</td>
                 <td>${p.isotankIdReservado || '-'}</td>
-                <td>
-                    <button class="btn btn-outline btn-sm" onclick="abrirModalDetalhes('${p.linhaReservaId}')">Detalhes</button>
-                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -234,10 +233,23 @@ function abrirModalDetalhes(linhaId) {
 
     const btnAprovar = document.getElementById('btn-aprovar-modal');
     const btnCancelar = document.getElementById('btn-cancelar-modal');
+    const btnTrocar = document.getElementById('btn-trocar-isotank-modal');
 
     // Reset callbacks
     btnAprovar.onclick = null;
     btnCancelar.onclick = null;
+    btnTrocar.onclick = null;
+
+    if (pedido.statusReserva === 'Pré-Reservado' || pedido.statusReserva === 'Confirmado') {
+        if (pedido.isotankIdReservado) {
+            btnTrocar.style.display = 'inline-block';
+            btnTrocar.onclick = () => abrirModalTroca(linhaId, pedido.produtoSolicitado);
+        } else {
+            btnTrocar.style.display = 'none';
+        }
+    } else {
+        btnTrocar.style.display = 'none';
+    }
 
     if (pedido.statusReserva === 'Pré-Reservado') {
         btnAprovar.style.display = 'inline-block';
@@ -277,6 +289,61 @@ async function aprovarReserva(linhaId) {
             if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível aprovar'), 'error');
         }
     } catch (e) {
+        console.error(e);
+    }
+}
+
+async function abrirModalTroca(linhaId, produtoSolicitado) {
+    fecharModalDetalhes();
+    try {
+        const res = await fetch(`/api/isotanks?statusTecnicoFinal=Processado&statusDisponibilidade=Disponivel&produto=${encodeURIComponent(produtoSolicitado)}`);
+        const isotanks = await res.json();
+        
+        const tbody = document.querySelector('#tabela-candidatos tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (isotanks.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
+        } else {
+            isotanks.forEach(iso => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${iso.id}</strong></td>
+                    <td>${iso.fornecedor}</td>
+                    <td>${iso.localAtual}</td>
+                    <td><small>${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}</small></td>
+                    <td><button class="btn btn-success btn-sm" onclick="trocarIsotank('${linhaId}', '${iso.id}')">Selecionar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        document.getElementById('modal-isotanks').style.display = 'flex';
+    } catch (e) {
+        if(window.showAlert) window.showAlert("Erro ao buscar isotanks compatíveis.", 'error');
+    }
+}
+
+async function trocarIsotank(linhaId, novoIsotankId) {
+    try {
+        const res = await fetch(`/api/pedidos/${linhaId}/trocar-isotank`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isotankId: novoIsotankId, usuario: 'planejador_demo' })
+        });
+        if(res.ok) {
+            if(window.showAlert) window.showAlert('Isotank trocado com sucesso!', 'success');
+            fecharModal();
+            carregarGerenciamentoPedidos();
+        } else {
+            const err = await res.json();
+            if(window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}    } catch (e) {
         console.error(e);
     }
 }

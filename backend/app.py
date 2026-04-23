@@ -161,6 +161,42 @@ def reservar_pedido(linha_id):
 
     return jsonify({"message": "Isotank reservado com sucesso", "linha": linha, "isotank": isotank})
 
+@app.route('/api/pedidos/<linha_id>/trocar-isotank', methods=['POST'])
+def trocar_isotank(linha_id):
+    data = request.json
+    novo_isotank_id = data.get('isotankId')
+    usuario = data.get('usuario', 'sistema')
+
+    linha = next((p for p in data_store.pedidos if p.get('linhaReservaId') == linha_id), None)
+    if not linha:
+        return jsonify({"error": "Linha de reserva não encontrada"}), 404
+
+    novo_isotank = next((i for i in data_store.isotanks if i.get('id') == novo_isotank_id), None)
+    if not novo_isotank:
+        return jsonify({"error": "Novo isotank não encontrado"}), 404
+
+    if novo_isotank.get('statusTecnicoFinal') != 'Processado':
+        return jsonify({"error": "Isotank não está processado"}), 400
+    if novo_isotank.get('statusDisponibilidade') != 'Disponivel':
+        return jsonify({"error": "Isotank não está disponível"}), 400
+
+    isotank_antigo_id = linha.get('isotankIdReservado')
+    if isotank_antigo_id:
+        isotank_antigo = next((i for i in data_store.isotanks if i.get('id') == isotank_antigo_id), None)
+        if isotank_antigo:
+            isotank_antigo['reservadoParaPedidoId'] = None
+            isotank_antigo['reservadoPor'] = None
+            isotank_antigo['statusDisponibilidade'] = "Disponivel"
+
+    linha['isotankIdReservado'] = novo_isotank_id
+    linha['statusReserva'] = "Pré-Reservado"
+
+    novo_isotank['reservadoParaPedidoId'] = linha['pedidoId']
+    novo_isotank['reservadoPor'] = usuario
+    novo_isotank['statusDisponibilidade'] = "Reservado"
+
+    return jsonify({"message": "Isotank trocado com sucesso", "linha": linha, "isotank": novo_isotank})
+
 @app.route('/api/pedidos/<linha_id>/aprovar', methods=['POST'])
 def aprovar_pedido(linha_id):
     data = request.json or {}
