@@ -161,6 +161,8 @@ async function carregarGerenciamentoPedidos() {
         const res = await fetch('/api/pedidos');
         const pedidos = await res.json();
         
+        window.pedidosAtuais = pedidos;
+        
         tbody.innerHTML = '';
         pedidos.forEach(p => {
             // Aplicar filtros no frontend
@@ -175,9 +177,7 @@ async function carregarGerenciamentoPedidos() {
                 <td>${obterBadgeReserva(p.statusReserva)}</td>
                 <td>${p.isotankIdReservado || '-'}</td>
                 <td>
-                    ${(p.statusReserva === 'Solicitado' || p.statusReserva === 'Pré-Reservado') 
-                        ? `<button class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);" onclick="cancelarReserva('${p.linhaReservaId}')">Cancelar</button>` 
-                        : ''}
+                    <button class="btn btn-outline btn-sm" onclick="abrirModalDetalhes('${p.linhaReservaId}')">Detalhes</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -202,6 +202,79 @@ async function cancelarReserva(linhaId) {
         } else {
             const err = await res.json();
             if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível cancelar'), 'error');
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function fecharModalDetalhes() {
+    const modal = document.getElementById('modal-detalhes-pedido');
+    if (modal) modal.style.display = 'none';
+}
+
+function abrirModalDetalhes(linhaId) {
+    const pedido = window.pedidosAtuais?.find(p => p.linhaReservaId === linhaId);
+    if (!pedido) return;
+
+    const conteudo = document.getElementById('modal-detalhes-conteudo');
+    conteudo.innerHTML = `
+        <ul style="list-style:none; padding:0; line-height: 1.6;">
+            <li><strong>Pedido ID:</strong> ${pedido.pedidoId}</li>
+            <li><strong>Linha Reserva ID:</strong> ${pedido.linhaReservaId}</li>
+            <li><strong>Cliente:</strong> ${pedido.cliente}</li>
+            <li><strong>Produto Solicitado:</strong> ${pedido.produtoSolicitado}</li>
+            <li><strong>Quantidade:</strong> ${pedido.quantidadeSolicitada}</li>
+            <li><strong>Data Necessidade:</strong> ${pedido.dataNecessidade}</li>
+            <li><strong>Status Reserva:</strong> ${obterBadgeReserva(pedido.statusReserva)}</li>
+            <li><strong>Isotank Reservado:</strong> ${pedido.isotankIdReservado || 'Nenhum'}</li>
+            ${pedido.motivoRejeicaoOuCancelamento ? `<li><strong>Motivo Cancelamento:</strong> ${pedido.motivoRejeicaoOuCancelamento}</li>` : ''}
+        </ul>
+    `;
+
+    const btnAprovar = document.getElementById('btn-aprovar-modal');
+    const btnCancelar = document.getElementById('btn-cancelar-modal');
+
+    // Reset callbacks
+    btnAprovar.onclick = null;
+    btnCancelar.onclick = null;
+
+    if (pedido.statusReserva === 'Pré-Reservado') {
+        btnAprovar.style.display = 'inline-block';
+        btnAprovar.onclick = () => aprovarReserva(linhaId);
+    } else {
+        btnAprovar.style.display = 'none';
+    }
+
+    if (pedido.statusReserva === 'Solicitado' || pedido.statusReserva === 'Pré-Reservado') {
+        btnCancelar.style.display = 'inline-block';
+        btnCancelar.onclick = () => {
+            cancelarReserva(linhaId).then(() => fecharModalDetalhes());
+        };
+    } else {
+        btnCancelar.style.display = 'none';
+    }
+
+    const modal = document.getElementById('modal-detalhes-pedido');
+    if (modal) modal.style.display = 'flex';
+}
+
+async function aprovarReserva(linhaId) {
+    if(!confirm("Tem certeza que deseja aprovar esta reserva?")) return;
+    
+    try {
+        const res = await fetch(`/api/pedidos/${linhaId}/aprovar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario: 'planejador_demo' })
+        });
+        if(res.ok) {
+            if(window.showAlert) window.showAlert('Reserva aprovada com sucesso!', 'success');
+            fecharModalDetalhes();
+            carregarGerenciamentoPedidos();
+        } else {
+            const err = await res.json();
+            if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível aprovar'), 'error');
         }
     } catch (e) {
         console.error(e);

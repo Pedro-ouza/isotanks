@@ -161,6 +161,32 @@ def reservar_pedido(linha_id):
 
     return jsonify({"message": "Isotank reservado com sucesso", "linha": linha, "isotank": isotank})
 
+@app.route('/api/pedidos/<linha_id>/aprovar', methods=['POST'])
+def aprovar_pedido(linha_id):
+    data = request.json or {}
+    usuario = data.get('usuario', 'sistema')
+
+    linha = next((p for p in data_store.pedidos if p.get('linhaReservaId') == linha_id), None)
+    if not linha:
+        return jsonify({"error": "Linha de reserva não encontrada"}), 404
+
+    if linha.get('statusReserva') != 'Pré-Reservado':
+        return jsonify({"error": "Apenas pedidos Pré-Reservados podem ser aprovados"}), 400
+
+    isotank_id = linha.get('isotankIdReservado')
+    if not isotank_id:
+        return jsonify({"error": "Nenhum isotank reservado para este pedido"}), 400
+
+    linha['statusReserva'] = "Confirmado"
+    linha['aprovadoPor'] = usuario
+
+    # Atualiza status do isotank se necessário (pode continuar como 'Reservado', ou mudar para algo como 'Em trânsito')
+    isotank = next((i for i in data_store.isotanks if i.get('id') == isotank_id), None)
+    if isotank:
+        isotank['statusDisponibilidade'] = "Reservado" # ou "Embarcado", etc. Mantendo Reservado por enquanto
+
+    return jsonify({"message": "Reserva confirmada com sucesso", "linha": linha})
+
 @app.route('/api/pedidos/<linha_id>/cancelar', methods=['POST'])
 def cancelar_pedido(linha_id):
     data = request.json or {}

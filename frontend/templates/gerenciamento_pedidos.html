@@ -49,6 +49,25 @@
         </table>
     </div>
 </div>
+<!-- Modal Detalhes do Pedido -->
+<div id="modal-detalhes-pedido" class="modal" style="display:none;">
+  <div class="modal-content card">
+    <div class="flex-between mb-4">
+      <h3>Detalhes do Pedido</h3>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalDetalhes()">Fechar</button>
+    </div>
+
+    <div id="modal-detalhes-conteudo" style="margin-bottom: 2rem;">
+      <!-- Preenchido via JS -->
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: flex-end;">
+      <button id="btn-aprovar-modal" class="btn btn-success btn-sm">Aprovar</button>
+      <button id="btn-cancelar-modal" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
