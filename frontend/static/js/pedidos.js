@@ -30,13 +30,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 
                 if (res.ok) {
-                    messageDiv.innerHTML = `<div class="alert alert-success">Sucesso! Pedido gerado: <strong>${data.pedidoId}</strong></div>`;
+                    if (window.showAlert) window.showAlert(`Sucesso! Pedido gerado: ${data.pedidoId}`, 'success');
+                    
+                    const resumoDiv = document.getElementById('pedido-resumo');
+                    resumoDiv.innerHTML = `
+                      <ul style="list-style:none; padding:0;">
+                        <li style="margin-bottom:0.5rem;"><strong>ID:</strong> ${data.pedidoId}</li>
+                        <li style="margin-bottom:0.5rem;"><strong>Cliente:</strong> ${linhas[0].cliente}</li>
+                        <li style="margin-bottom:0.5rem;"><strong>Produto:</strong> ${linhas[0].produtoSolicitado}</li>
+                        <li style="margin-bottom:0.5rem;"><strong>Quantidade:</strong> ${linhas[0].quantidadeSolicitada} Isotank(s)</li>
+                      </ul>
+                    `;
                     formRealizarPedido.reset();
                 } else {
-                    messageDiv.innerHTML = `<div class="alert alert-error">Erro: ${data.error}</div>`;
+                    if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
-                messageDiv.innerHTML = `<div class="alert alert-error">Erro de conexão com a API.</div>`;
+                if (window.showAlert) window.showAlert('Erro de conexão com a API.', 'error');
             }
         });
     }
@@ -89,35 +99,36 @@ async function abrirModalEscolha(linhaId, produtoSolicitado) {
         const res = await fetch(`/api/isotanks?statusTecnicoFinal=Processado&statusDisponibilidade=Disponivel&produto=${encodeURIComponent(produtoSolicitado)}`);
         const isotanks = await res.json();
         
-        const listaDiv = document.getElementById('lista-isotanks-compativeis');
-        listaDiv.innerHTML = '';
+        const tbody = document.querySelector('#tabela-candidatos tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
         
         if (isotanks.length === 0) {
-            listaDiv.innerHTML = '<p class="text-muted">Nenhum isotank processado e disponível encontrado para este produto.</p>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
         } else {
             isotanks.forEach(iso => {
-                const card = document.createElement('div');
-                card.className = 'card mt-2 flex-between';
-                card.innerHTML = `
-                    <div>
-                        <strong>${iso.id}</strong> - ${iso.fornecedor} <br>
-                        <small>Local: ${iso.localAtual} | Produto: ${iso.produto1Canonico}</small>
-                    </div>
-                    <button class="btn btn-success btn-sm" onclick="reservarIsotank('${linhaId}', '${iso.id}')">Reservar Este</button>
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${iso.id}</strong></td>
+                    <td>${iso.fornecedor}</td>
+                    <td>${iso.localAtual}</td>
+                    <td><small>${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}</small></td>
+                    <td><button class="btn btn-success btn-sm" onclick="reservarIsotank('${linhaId}', '${iso.id}')">Reservar</button></td>
                 `;
-                listaDiv.appendChild(card);
+                tbody.appendChild(tr);
             });
         }
         
-        // Mostra o modal (simples display block via CSS ou classe)
-        document.getElementById('modal-escolha').style.display = 'block';
+        // Mostra o modal
+        document.getElementById('modal-isotanks').style.display = 'flex';
     } catch (e) {
-        alert("Erro ao buscar isotanks.");
+        if(window.showAlert) window.showAlert("Erro ao buscar isotanks compatíveis.", 'error');
     }
 }
 
 function fecharModal() {
-    document.getElementById('modal-escolha').style.display = 'none';
+    const modal = document.getElementById('modal-isotanks');
+    if (modal) modal.style.display = 'none';
 }
 
 async function reservarIsotank(linhaId, isotankId) {
@@ -128,12 +139,12 @@ async function reservarIsotank(linhaId, isotankId) {
             body: JSON.stringify({ isotankId: isotankId, usuario: 'planejador_demo' })
         });
         if(res.ok) {
-            alert('Reserva efetuada com sucesso!');
+            if(window.showAlert) window.showAlert('Reserva efetuada com sucesso!', 'success');
             fecharModal();
             carregarLinhasPedido(); // recarrega a tabela
         } else {
             const err = await res.json();
-            alert('Erro: ' + err.error);
+            if(window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
         }
     } catch (e) {
         console.error(e);
@@ -142,19 +153,27 @@ async function reservarIsotank(linhaId, isotankId) {
 
 async function carregarGerenciamentoPedidos() {
     const tbody = document.querySelector('#tabela-gerenciamento-pedidos tbody');
+    // Coleta filtros
+    const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
+    const statusFiltro = document.getElementById('filtro-status')?.value || '';
+
     try {
         const res = await fetch('/api/pedidos');
         const pedidos = await res.json();
         
         tbody.innerHTML = '';
         pedidos.forEach(p => {
+            // Aplicar filtros no frontend
+            if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
+            if (statusFiltro && p.statusReserva !== statusFiltro) return;
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${p.pedidoId}</td>
                 <td>${p.linhaReservaId}</td>
                 <td>${p.cliente}</td>
-                <td><span class="badge ${p.statusReserva === 'Cancelado' ? 'bg-danger' : 'bg-primary'}">${p.statusReserva}</span></td>
-                <td>${p.isotankIdReservado || 'N/A'}</td>
+                <td>${obterBadgeReserva(p.statusReserva)}</td>
+                <td>${p.isotankIdReservado || '-'}</td>
                 <td>
                     ${(p.statusReserva === 'Solicitado' || p.statusReserva === 'Pré-Reservado') 
                         ? `<button class="btn btn-outline btn-sm" onclick="cancelarReserva('${p.linhaReservaId}')">Cancelar</button>` 

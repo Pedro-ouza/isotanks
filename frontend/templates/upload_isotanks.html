@@ -2,24 +2,29 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Upload de Isotanks (Staging)</h1>
-    <p class="text-muted">Faça o upload do arquivo CSV recebido do fornecedor contendo os novos isotanks.</p>
+    <div>
+      <h1 class="page-title">Importar isotanks</h1>
+      <p class="text-muted">Faça upload do CSV de staging para atualizar o estoque.</p>
+    </div>
 </div>
 
-<div class="card form-container">
-    <form id="form-upload-staging">
+<div class="card" style="max-width: 600px;">
+    <p class="text-muted mb-4">
+      Use o template oficial de isotanks. Arquivos devem estar no formato CSV com cabeçalho.
+    </p>
+
+    <form id="form-upload-staging" enctype="multipart/form-data">
         <div class="form-group">
             <label for="fileCsv">Arquivo CSV</label>
-            <input type="file" id="fileCsv" accept=".csv" required>
+            <input type="file" name="file" id="fileCsv" accept=".csv" required style="padding: 1rem 0;">
         </div>
         
-        <div id="upload-message" class="mt-4"></div>
-
-        <div class="form-actions mt-4">
-            <button type="submit" class="btn btn-primary">Enviar e Processar</button>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Enviar arquivo</button>
         </div>
     </form>
 </div>
+
 {% endblock %}
 
 {% block scripts %}

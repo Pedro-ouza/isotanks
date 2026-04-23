@@ -3,53 +3,53 @@
 {% block content %}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Visão Geral</h1>
-        <p class="text-muted">Acompanhe os principais indicadores operacionais do dia.</p>
+      <h1 class="page-title">Visão geral</h1>
+      <p class="text-muted">Acompanhe os principais indicadores operacionais do dia.</p>
     </div>
-    <button class="btn btn-outline" onclick="carregarMetricas()">Atualizar Dados</button>
 </div>
 
 <div class="grid kpi-grid">
     <div class="kpi-card">
-        <div class="kpi-icon blue">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        </div>
-        <div class="kpi-details">
-            <h3>Pedidos Pendentes</h3>
-            <div class="value" id="metric-pedidos-pendentes">--</div>
-        </div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-icon green">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        </div>
+        <div class="kpi-icon green">D</div>
         <div class="kpi-details">
             <h3>Isotanks Disponíveis</h3>
-            <div class="value" id="metric-iso-disponiveis">--</div>
+            <div class="value" id="kpi-isotanks-disponiveis">--</div>
         </div>
     </div>
 
     <div class="kpi-card">
-        <div class="kpi-icon yellow">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
+        <div class="kpi-icon blue">R</div>
         <div class="kpi-details">
-            <h3>Fila de Staging (Aguardando)</h3>
-            <div class="value" id="metric-staging">--</div>
+            <h3>Reservas (Total)</h3>
+            <div class="value" id="kpi-reservas-hoje">--</div>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon yellow">P</div>
+        <div class="kpi-details">
+            <h3>Pedidos Abertos</h3>
+            <div class="value" id="kpi-pedidos-abertos">--</div>
         </div>
     </div>
 </div>
 
-<div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
-    <div class="card">
-        <h2>Ações Rápidas</h2>
-        <div class="mt-4 form-grid">
-            <a href="/realizar-pedido" class="btn btn-primary text-center">Novo Pedido</a>
-            <a href="/escolher-isotanks" class="btn btn-outline text-center">Alocar Isotanks</a>
-            <a href="/upload-isotanks" class="btn btn-outline text-center">Importar Staging</a>
-            <a href="/gestao-isotanks" class="btn btn-outline text-center">Aprovar Técnicamente</a>
-        </div>
+<div class="card">
+    <h3 class="mb-4">Últimos pedidos (Abertos)</h3>
+    <div class="table-container">
+        <table class="table" id="tabela-ultimos-pedidos">
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Produto</th>
+                    <th>Status</th>
+                    <th>Isotank</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
+
 {% endblock %}

@@ -28,14 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await res.json();
                 
-                const msgDiv = document.getElementById('form-message');
                 if (res.ok) {
-                    msgDiv.innerHTML = `<div class="alert alert-success">Sucesso! Isotank aprovado.</div>`;
+                    if (window.showAlert) window.showAlert(`Sucesso! Isotank aprovado.`, 'success');
                     formAprovar.reset();
+                    // Limpar seleção
+                    document.querySelectorAll('#tabela-staging tbody tr').forEach(row => row.classList.remove('selected'));
+                    carregarStaging();
                 } else {
-                    msgDiv.innerHTML = `<div class="alert alert-error">Erro: ${data.error}</div>`;
+                    if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
+                if (window.showAlert) window.showAlert(`Erro de rede ao aprovar isotank.`, 'error');
                 console.error(err);
             }
         });
@@ -64,13 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 
                 if (res.ok) {
-                    msgDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    if (window.showAlert) window.showAlert(data.message, 'success');
                     formUpload.reset();
                 } else {
-                    msgDiv.innerHTML = `<div class="alert alert-error">Erro: ${data.error}</div>`;
+                    if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
-                msgDiv.innerHTML = `<div class="alert alert-error">Falha na comunicação com o servidor.</div>`;
+                if (window.showAlert) window.showAlert(`Falha na comunicação com o servidor.`, 'error');
             }
         });
     }
@@ -84,18 +87,25 @@ async function carregarStaging() {
         const dados = await res.json();
         
         tbody.innerHTML = '';
-        dados.forEach(stg => {
+        dados.forEach((stg, idx) => {
             const tr = document.createElement('tr');
+            tr.dataset.index = idx;
             tr.innerHTML = `
                 <td>${stg.id}</td>
                 <td>${stg.isotankId}</td>
                 <td>
-                    <button class="btn btn-outline btn-sm" onclick='preencherFormulario(${JSON.stringify(stg).replace(/'/g, "\\'")})'>Analisar</button>
+                    <button type="button" class="btn btn-outline btn-sm">Analisar</button>
                 </td>
             `;
+            tr.addEventListener('click', () => {
+                document.querySelectorAll('#tabela-staging tbody tr').forEach(row => row.classList.remove('selected'));
+                tr.classList.add('selected');
+                preencherFormulario(stg);
+            });
             tbody.appendChild(tr);
         });
     } catch (e) {
+        if (window.showAlert) window.showAlert(`Erro ao carregar staging.`, 'error');
         console.error(e);
     }
 }

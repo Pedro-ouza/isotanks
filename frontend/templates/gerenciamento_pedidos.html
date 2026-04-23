@@ -1,30 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header flex-between">
+<div class="page-header">
     <div>
-        <h1>Gerenciamento de Pedidos</h1>
-        <p class="text-muted">Acompanhe o status e a evolução das linhas de reserva.</p>
+      <h1 class="page-title">Gerenciamento de pedidos</h1>
+      <p class="text-muted">Acompanhe e ajuste o status das reservas.</p>
     </div>
-    <button class="btn btn-outline" onclick="carregarGerenciamentoPedidos()">Atualizar</button>
 </div>
 
-<div class="card table-container">
-    <table id="tabela-gerenciamento-pedidos" class="table">
-        <thead>
-            <tr>
-                <th>Pedido ID</th>
-                <th>Linha Reserva ID</th>
-                <th>Cliente</th>
-                <th>Status</th>
-                <th>Isotank Reservado</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Preenchido via JS -->
-        </tbody>
-    </table>
+<div class="card mb-4">
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" id="filtro-cliente">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="filtro-status">
+                <option value="">Todos</option>
+                <option value="Solicitado">Solicitado</option>
+                <option value="Pré-Reservado">Pré-Reservado</option>
+                <option value="Confirmado">Confirmado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+        </div>
+        <div class="form-group" style="justify-content: flex-end;">
+            <button id="btn-aplicar-filtros" class="btn btn-primary" onclick="carregarGerenciamentoPedidos()">Aplicar filtros</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table id="tabela-gerenciamento-pedidos" class="table">
+            <thead>
+                <tr>
+                    <th>Pedido ID</th>
+                    <th>Linha Reserva ID</th>
+                    <th>Cliente</th>
+                    <th>Status</th>
+                    <th>Isotank Reservado</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Preenchido via JS -->
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
 

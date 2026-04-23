@@ -18,27 +18,27 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', active_page='dashboard')
 
 @app.route('/realizar-pedido')
 def realizar_pedido():
-    return render_template('realizar_pedido.html')
+    return render_template('realizar_pedido.html', active_page='pedido')
 
 @app.route('/gestao-isotanks')
 def gestao_isotanks():
-    return render_template('gestao_isotanks.html')
+    return render_template('gestao_isotanks.html', active_page='aprovar')
 
 @app.route('/escolher-isotanks')
 def escolher_isotanks():
-    return render_template('escolher_isotanks.html')
+    return render_template('escolher_isotanks.html', active_page='alocar')
 
 @app.route('/gerenciamento-pedidos')
 def gerenciamento_pedidos():
-    return render_template('gerenciamento_pedidos.html')
+    return render_template('gerenciamento_pedidos.html', active_page='gerenciar')
 
 @app.route('/upload-isotanks')
 def upload_isotanks():
-    return render_template('upload_isotanks.html')
+    return render_template('upload_isotanks.html', active_page='upload')
 
 
 # ==========================================
