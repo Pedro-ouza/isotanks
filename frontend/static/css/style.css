@@ -66,7 +66,7 @@ body {
 }
 
 .container {
-  padding: 2rem;
+  padding: 3rem;
 }
 
 /* Sidebar */
@@ -157,7 +157,7 @@ body {
   height: 64px;
   padding: 0 1.5rem;
   display: flex;
-  align-items: center;
+  align-items: columns;
   justify-content: space-between;
 }
 
@@ -275,7 +275,7 @@ body {
 .btn-sm { padding: 0.25rem 0.8rem; font-size: 0.8rem; }
 
 /* Forms */
-.form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 2rem; margin-bottom: 3rem; }
 
 .form-group label {
   font-weight: 600;
@@ -283,6 +283,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--muted-color);
+  margin-bottom: 1rem;
 }
 
 .form-group input,
