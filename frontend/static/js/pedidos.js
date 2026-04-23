@@ -343,7 +343,4 @@ async function trocarIsotank(linhaId, novoIsotankId) {
     } catch (e) {
         console.error(e);
     }
-}    } catch (e) {
-        console.error(e);
-    }
 }
