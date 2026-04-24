@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 localAtual: document.getElementById('iso-local').value,
                 produto1Canonico: document.getElementById('iso-produto').value,
                 escopoAprovacao: document.getElementById('iso-escopo').value,
+                produto2Canonico: document.getElementById('iso-produto2').value,
+                escopoAprovacao2: document.getElementById('iso-escopo2').value,
+                produto3Canonico: document.getElementById('iso-produto3').value,
+                escopoAprovacao3: document.getElementById('iso-escopo3').value,
                 statusTecnicoFinal: statusFinal,
                 statusDisponibilidade: statusFinal === 'Processado' ? 'Disponivel' : 'Indisponivel'
             };
@@ -178,6 +182,11 @@ function preencherFormulario(stg) {
     document.getElementById('iso-container').value = stg.numeroContainer || '';
     document.getElementById('iso-local').value = stg.localAtual || '';
     document.getElementById('iso-produto').value = stg.ultimoProduto || '';
+    document.getElementById('iso-escopo').value = '';
+    document.getElementById('iso-produto2').value = '';
+    document.getElementById('iso-escopo2').value = '';
+    document.getElementById('iso-produto3').value = '';
+    document.getElementById('iso-escopo3').value = '';
     // Rolagem automática pro form
     document.getElementById('form-aprovar-isotank').scrollIntoView({ behavior: 'smooth' });
 }

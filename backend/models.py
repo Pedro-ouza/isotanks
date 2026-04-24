@@ -29,8 +29,12 @@ class Isotank(db.Model):
     numeroContainer = db.Column(db.String(50))
     localAtual = db.Column(db.String(100))
     produto1Canonico = db.Column(db.String(100))
-    statusTecnicoFinal = db.Column(db.String(50))
     escopoAprovacao = db.Column(db.String(255))
+    produto2Canonico = db.Column(db.String(100), nullable=True)
+    escopoAprovacao2 = db.Column(db.String(255), nullable=True)
+    produto3Canonico = db.Column(db.String(100), nullable=True)
+    escopoAprovacao3 = db.Column(db.String(255), nullable=True)
+    statusTecnicoFinal = db.Column(db.String(50))
     statusDisponibilidade = db.Column(db.String(50))
     reservadoParaPedidoId = db.Column(db.String(50), nullable=True)
     reservadoPor = db.Column(db.String(100), nullable=True)
@@ -42,8 +46,12 @@ class Isotank(db.Model):
             "numeroContainer": self.numeroContainer,
             "localAtual": self.localAtual,
             "produto1Canonico": self.produto1Canonico,
-            "statusTecnicoFinal": self.statusTecnicoFinal,
             "escopoAprovacao": self.escopoAprovacao,
+            "produto2Canonico": self.produto2Canonico,
+            "escopoAprovacao2": self.escopoAprovacao2,
+            "produto3Canonico": self.produto3Canonico,
+            "escopoAprovacao3": self.escopoAprovacao3,
+            "statusTecnicoFinal": self.statusTecnicoFinal,
             "statusDisponibilidade": self.statusDisponibilidade,
             "reservadoParaPedidoId": self.reservadoParaPedidoId,
             "reservadoPor": self.reservadoPor

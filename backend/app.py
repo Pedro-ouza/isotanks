@@ -102,6 +102,10 @@ def get_isotanks():
             i for i in filtered 
             if prod_lower in str(i.get('escopoAprovacao', '')).lower() 
             or prod_lower in str(i.get('produto1Canonico', '')).lower()
+            or prod_lower in str(i.get('produto2Canonico', '')).lower()
+            or prod_lower in str(i.get('escopoAprovacao2', '')).lower()
+            or prod_lower in str(i.get('produto3Canonico', '')).lower()
+            or prod_lower in str(i.get('escopoAprovacao3', '')).lower()
         ]
     
     return jsonify(filtered)
@@ -124,8 +128,12 @@ def create_isotank():
         numeroContainer=data.get('numeroContainer'),
         localAtual=data.get('localAtual'),
         produto1Canonico=data.get('produto1Canonico'),
-        statusTecnicoFinal=data.get('statusTecnicoFinal'),
         escopoAprovacao=data.get('escopoAprovacao'),
+        produto2Canonico=data.get('produto2Canonico'),
+        escopoAprovacao2=data.get('escopoAprovacao2'),
+        produto3Canonico=data.get('produto3Canonico'),
+        escopoAprovacao3=data.get('escopoAprovacao3'),
+        statusTecnicoFinal=data.get('statusTecnicoFinal'),
         statusDisponibilidade=data.get('statusDisponibilidade'),
         reservadoParaPedidoId=None,
         reservadoPor=None

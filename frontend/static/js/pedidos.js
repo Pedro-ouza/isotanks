@@ -623,7 +623,11 @@ async function carregarEstoqueIsotanks() {
                 <td>${iso.numeroContainer || '-'}</td>
                 <td>${iso.fornecedor || '-'}</td>
                 <td>${iso.localAtual || '-'}</td>
-                <td>${iso.produto1Canonico || '-'}<br><small class="text-muted">${iso.escopoAprovacao || ''}</small></td>
+                <td>
+                    ${iso.produto1Canonico || '-'}<br><small class="text-muted">${iso.escopoAprovacao || ''}</small>
+                    ${iso.produto2Canonico ? `<br>${iso.produto2Canonico}<br><small class="text-muted">${iso.escopoAprovacao2 || ''}</small>` : ''}
+                    ${iso.produto3Canonico ? `<br>${iso.produto3Canonico}<br><small class="text-muted">${iso.escopoAprovacao3 || ''}</small>` : ''}
+                </td>
                 <td><span class="badge ${iso.statusTecnicoFinal === 'Processado' ? 'bg-success' : 'bg-warning'}">${iso.statusTecnicoFinal}</span></td>
                 <td><span class="badge ${iso.statusDisponibilidade === 'Disponivel' ? 'bg-primary' : 'bg-danger'}">${iso.statusDisponibilidade}</span></td>
             `;
