@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaLinhas = document.getElementById('tabela-linhas-pedido');
     if (tabelaLinhas) {
         carregarLinhasPedido();
+        carregarEstoqueIsotanks();
     }
 
     // --- Lógica para gerenciamento_pedidos.html ---
@@ -598,4 +599,38 @@ function exportarCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// Helper para tabela de Estoque de Isotanks
+async function carregarEstoqueIsotanks() {
+    const tbody = document.querySelector('#tabela-estoque-isotanks tbody');
+    if (!tbody) return;
+    try {
+        const res = await fetch('/api/isotanks');
+        if (!res.ok) throw new Error('Erro na resposta');
+        const isotanks = await res.json();
+        
+        tbody.innerHTML = '';
+        if (isotanks.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum isotank cadastrado.</td></tr>';
+            return;
+        }
+
+        isotanks.forEach(iso => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${iso.id}</td>
+                <td>${iso.numeroContainer || '-'}</td>
+                <td>${iso.fornecedor || '-'}</td>
+                <td>${iso.localAtual || '-'}</td>
+                <td>${iso.produto1Canonico || '-'}<br><small class="text-muted">${iso.escopoAprovacao || ''}</small></td>
+                <td><span class="badge ${iso.statusTecnicoFinal === 'Processado' ? 'bg-success' : 'bg-warning'}">${iso.statusTecnicoFinal}</span></td>
+                <td><span class="badge ${iso.statusDisponibilidade === 'Disponivel' ? 'bg-primary' : 'bg-danger'}">${iso.statusDisponibilidade}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (e) {
+        if (window.showAlert) window.showAlert('Erro ao carregar estoque de isotanks.', 'error');
+        console.error(e);
+    }
 }

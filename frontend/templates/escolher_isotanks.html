@@ -3,7 +3,7 @@
 {% block content %}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Allocate Isotanks</h1>
+        <h1 class="page-title">Alocar Isotanks</h1>
         <p class="text-muted">Abaixo estão as linhas de pedido solicitadas que aguardam alocação de um isotank.</p>
     </div>
 </div>
@@ -17,6 +17,26 @@
                 <th>Cliente</th>
                 <th>Produto Solicitado</th>
                 <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Preenchido via JS -->
+        </tbody>
+    </table>
+</div>
+
+<h2 class="page-title mt-4 mb-4" style="font-size: 1.4rem;">Estoque de Isotanks</h2>
+<div class="card table-container mb-4">
+    <table id="tabela-estoque-isotanks" class="table">
+        <thead>
+            <tr>
+                <th>Isotank ID</th>
+                <th>Container</th>
+                <th>Fornecedor</th>
+                <th>Local</th>
+                <th>Escopo / Produto</th>
+                <th>Status Técnico</th>
+                <th>Disponibilidade</th>
             </tr>
         </thead>
         <tbody>

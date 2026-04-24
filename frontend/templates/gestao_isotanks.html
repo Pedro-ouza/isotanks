@@ -3,7 +3,7 @@
 {% block content %}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Isotank approval workspace</h1>
+        <h1 class="page-title">Área de aprovação de isotanks</h1>
         <p class="text-muted">Analise isotanks em staging, defina escopo e libere para pedidos.</p>
     </div>
     <button id="btn-recarregar-staging" class="btn btn-outline" onclick="carregarStaging()">Recarregar staging</button>
@@ -12,7 +12,7 @@
 <div class="form-layout-2col">
     <!-- Lista de Staging -->
     <div class="card">
-        <h3 class="mb-4">Staging queue</h3>
+        <h3 class="mb-4">Fila de staging</h3>
         <div class="table-container" style="max-height: 400px; overflow-y: auto;">
             <table class="table" id="tabela-staging">
                 <thead>
@@ -33,7 +33,7 @@
     <div class="card">
         <div class="flex-between mb-4">
             <div>
-              <h3>Approval details</h3>
+              <h3>Detalhes de aprovação</h3>
               <p class="text-muted">Revise o isotank selecionado e confirme o escopo.</p>
             </div>
             <div style="display: flex; gap: 0.75rem; align-items: center;">
@@ -64,24 +64,9 @@
                 <input type="text" id="iso-produto">
             </div>
             <div class="form-group">
+            <div class="form-group">
                 <label>Escopo de Aprovação</label>
                 <input type="text" id="iso-escopo" placeholder="Ex: Produto X; Qualquer Produto">
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Status Técnico</label>
-                    <select id="iso-status-tecnico" required>
-                        <option value="Processado">Processado</option>
-                        <option value="Rejeitado">Rejeitado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Disponibilidade</label>
-                    <select id="iso-status-disp" required>
-                        <option value="Disponivel">Disponível</option>
-                        <option value="Indisponivel">Indisponível</option>
-                    </select>
-                </div>
             </div>
         </form>
     </div>
