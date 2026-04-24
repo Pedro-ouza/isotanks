@@ -1,10 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header flex-between">
     <div>
       <h1 class="page-title">Gerenciamento de pedidos</h1>
       <p class="text-muted">Acompanhe e ajuste o status das reservas.</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+      <button class="btn btn-outline" onclick="exportarCSV()">Exportar CSV</button>
+      <button class="btn btn-primary" onclick="abrirModalNovoPedido()">Novo Pedido</button>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+    <div class="card text-center" style="padding: 1rem;">
+        <h3 class="text-muted mb-2" style="font-size: 0.9rem;">Total de Pedidos</h3>
+        <div id="kpi-total" style="font-size: 1.5rem; font-weight: bold; color: var(--text-color);">0</div>
+    </div>
+    <div class="card text-center" style="padding: 1rem;">
+        <h3 class="text-muted mb-2" style="font-size: 0.9rem;">Solicitados</h3>
+        <div id="kpi-solicitado" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">0</div>
+    </div>
+    <div class="card text-center" style="padding: 1rem;">
+        <h3 class="text-muted mb-2" style="font-size: 0.9rem;">Pré-Reservados</h3>
+        <div id="kpi-pre-reservado" style="font-size: 1.5rem; font-weight: bold; color: var(--warning-color);">0</div>
+    </div>
+    <div class="card text-center" style="padding: 1rem;">
+        <h3 class="text-muted mb-2" style="font-size: 0.9rem;">Confirmados</h3>
+        <div id="kpi-confirmado" style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">0</div>
     </div>
 </div>
 
@@ -88,6 +112,7 @@
     </div>
 
     <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: flex-end;">
+      <button id="btn-editar-modal" class="btn btn-outline btn-sm">Editar</button>
       <button id="btn-trocar-isotank-modal" class="btn btn-outline btn-sm">Trocar Isotank</button>
       <button id="btn-aprovar-modal" class="btn btn-success btn-sm">Aprovar</button>
       <button id="btn-cancelar-modal" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">Cancelar</button>
@@ -118,6 +143,81 @@
         </tbody>
       </table>
     </div>
+  </div>
+</div>
+
+<!-- Modal Novo Pedido -->
+<div id="modal-novo-pedido" class="modal" style="display:none;">
+  <div class="modal-content card" style="max-width: 600px;">
+    <div class="flex-between mb-4">
+      <h3>Novo Pedido</h3>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalNovoPedido()">Fechar</button>
+    </div>
+    <form id="form-novo-pedido-modal">
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="modal-cliente">Cliente *</label>
+                <input type="text" id="modal-cliente" required>
+            </div>
+            <div class="form-group">
+                <label for="modal-produto">Produto Solicitado *</label>
+                <input type="text" id="modal-produto" required>
+            </div>
+            <div class="form-group">
+                <label for="modal-quantidade">Quantidade (Isotanks) *</label>
+                <input type="number" id="modal-quantidade" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+                <label for="modal-data">Data de Necessidade *</label>
+                <input type="date" id="modal-data" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="modal-observacoes">Observações</label>
+                <input type="text" id="modal-observacoes">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary">Salvar Pedido</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Editar Pedido -->
+<div id="modal-editar-pedido" class="modal" style="display:none;">
+  <div class="modal-content card" style="max-width: 600px;">
+    <div class="flex-between mb-4">
+      <h3>Editar Pedido</h3>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalEditarPedido()">Fechar</button>
+    </div>
+    <form id="form-editar-pedido-modal">
+        <input type="hidden" id="edit-linha-id">
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="edit-cliente">Cliente *</label>
+                <input type="text" id="edit-cliente" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-produto">Produto Solicitado *</label>
+                <input type="text" id="edit-produto" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-quantidade">Quantidade *</label>
+                <input type="number" id="edit-quantidade" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-data">Data de Necessidade *</label>
+                <input type="date" id="edit-data" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="edit-observacoes">Observações</label>
+                <input type="text" id="edit-observacoes">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+    </form>
   </div>
 </div>
 

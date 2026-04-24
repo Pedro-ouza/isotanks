@@ -251,6 +251,31 @@ def cancelar_pedido(linha_id):
 
     return jsonify({"message": "Reserva cancelada com sucesso", "linha": linha})
 
+@app.route('/api/pedidos/<linha_id>', methods=['PUT'])
+def edit_pedido(linha_id):
+    data = request.json or {}
+    
+    linha = next((p for p in data_store.pedidos if p.get('linhaReservaId') == linha_id), None)
+    if not linha:
+        return jsonify({"error": "Linha de reserva não encontrada"}), 404
+        
+    # Somente permitir edição se estiver Solicitado ou, no máximo, Pré-Reservado
+    if linha.get('statusReserva') not in ['Solicitado', 'Pré-Reservado']:
+        return jsonify({"error": "Não é possível editar um pedido que não está Solicitado ou Pré-Reservado."}), 400
+
+    if 'cliente' in data:
+        linha['cliente'] = data['cliente']
+    if 'produtoSolicitado' in data:
+        linha['produtoSolicitado'] = data['produtoSolicitado']
+    if 'quantidadeSolicitada' in data:
+        linha['quantidadeSolicitada'] = int(data['quantidadeSolicitada'])
+    if 'dataNecessidade' in data:
+        linha['dataNecessidade'] = data['dataNecessidade']
+    if 'observacoesPedido' in data:
+        linha['observacoesPedido'] = data.get('observacoesPedido', '')
+        
+    return jsonify({"message": "Pedido atualizado com sucesso", "linha": linha})
+
 # --- Staging ---
 @app.route('/api/staging', methods=['GET'])
 def get_staging():

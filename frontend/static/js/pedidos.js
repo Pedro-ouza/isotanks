@@ -58,9 +58,76 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Lógica para gerenciamento_pedidos.html ---
-    const tabelaGerenciamento = document.getElementById('tabela-gerenciamento-pedidos');
-    if (tabelaGerenciamento) {
+    const colSolicitado = document.getElementById('col-solicitado');
+    if (colSolicitado) {
         carregarGerenciamentoPedidos();
+    }
+
+    // Modal Novo Pedido Inline
+    const formNovoPedidoModal = document.getElementById('form-novo-pedido-modal');
+    if (formNovoPedidoModal) {
+        formNovoPedidoModal.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const linhas = [{
+                cliente: document.getElementById('modal-cliente').value,
+                produtoSolicitado: document.getElementById('modal-produto').value,
+                quantidadeSolicitada: parseInt(document.getElementById('modal-quantidade').value, 10),
+                dataNecessidade: document.getElementById('modal-data').value,
+                solicitante: 'usuario_gerenciamento@citrosuco.com',
+                observacoesPedido: document.getElementById('modal-observacoes').value
+            }];
+            try {
+                const res = await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(linhas)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (window.showAlert) window.showAlert(`Sucesso! Pedido gerado: ${data.pedidoId}`, 'success');
+                    fecharModalNovoPedido();
+                    formNovoPedidoModal.reset();
+                    carregarGerenciamentoPedidos();
+                } else {
+                    if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                if (window.showAlert) window.showAlert('Erro de conexão com a API.', 'error');
+            }
+        });
+    }
+
+    // Modal Editar Pedido
+    const formEditarPedidoModal = document.getElementById('form-editar-pedido-modal');
+    if (formEditarPedidoModal) {
+        formEditarPedidoModal.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const linhaId = document.getElementById('edit-linha-id').value;
+            const payload = {
+                cliente: document.getElementById('edit-cliente').value,
+                produtoSolicitado: document.getElementById('edit-produto').value,
+                quantidadeSolicitada: parseInt(document.getElementById('edit-quantidade').value, 10),
+                dataNecessidade: document.getElementById('edit-data').value,
+                observacoesPedido: document.getElementById('edit-observacoes').value
+            };
+            try {
+                const res = await fetch(`/api/pedidos/${linhaId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (window.showAlert) window.showAlert('Pedido atualizado com sucesso!', 'success');
+                    fecharModalEditarPedido();
+                    carregarGerenciamentoPedidos();
+                } else {
+                    if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
+                }
+            } catch (err) {
+                if (window.showAlert) window.showAlert('Erro de conexão com a API.', 'error');
+            }
+        });
     }
 });
 
@@ -212,6 +279,13 @@ async function carregarGerenciamentoPedidos() {
         document.getElementById('count-confirmado').innerText = counts['Confirmado'];
         document.getElementById('count-cancelado').innerText = counts['Cancelado'];
 
+        // Atualizar KPIs globais
+        const totalPedidos = counts['Solicitado'] + counts['Pré-Reservado'] + counts['Confirmado'] + counts['Cancelado'];
+        if(document.getElementById('kpi-total')) document.getElementById('kpi-total').innerText = totalPedidos;
+        if(document.getElementById('kpi-solicitado')) document.getElementById('kpi-solicitado').innerText = counts['Solicitado'];
+        if(document.getElementById('kpi-pre-reservado')) document.getElementById('kpi-pre-reservado').innerText = counts['Pré-Reservado'];
+        if(document.getElementById('kpi-confirmado')) document.getElementById('kpi-confirmado').innerText = counts['Confirmado'];
+
     } catch (err) {
         console.error(err);
     }
@@ -265,11 +339,22 @@ function abrirModalDetalhes(linhaId) {
     const btnAprovar = document.getElementById('btn-aprovar-modal');
     const btnCancelar = document.getElementById('btn-cancelar-modal');
     const btnTrocar = document.getElementById('btn-trocar-isotank-modal');
+    const btnEditar = document.getElementById('btn-editar-modal');
 
     // Reset callbacks
     btnAprovar.onclick = null;
     btnCancelar.onclick = null;
     btnTrocar.onclick = null;
+    if(btnEditar) btnEditar.onclick = null;
+
+    if (btnEditar) {
+        if (pedido.statusReserva === 'Solicitado' || pedido.statusReserva === 'Pré-Reservado') {
+            btnEditar.style.display = 'inline-block';
+            btnEditar.onclick = () => abrirModalEditarPedido(linhaId);
+        } else {
+            btnEditar.style.display = 'none';
+        }
+    }
 
     if (pedido.statusReserva === 'Pré-Reservado' || pedido.statusReserva === 'Confirmado') {
         if (pedido.isotankIdReservado) {
@@ -374,4 +459,70 @@ async function trocarIsotank(linhaId, novoIsotankId) {
     } catch (e) {
         console.error(e);
     }
+}
+
+function fecharModalNovoPedido() {
+    const modal = document.getElementById('modal-novo-pedido');
+    if (modal) modal.style.display = 'none';
+}
+
+function abrirModalNovoPedido() {
+    const modal = document.getElementById('modal-novo-pedido');
+    if (modal) modal.style.display = 'flex';
+}
+
+function fecharModalEditarPedido() {
+    const modal = document.getElementById('modal-editar-pedido');
+    if (modal) modal.style.display = 'none';
+}
+
+function abrirModalEditarPedido(linhaId) {
+    const pedido = window.pedidosAtuais?.find(p => p.linhaReservaId === linhaId);
+    if (!pedido) return;
+    
+    document.getElementById('edit-linha-id').value = pedido.linhaReservaId;
+    document.getElementById('edit-cliente').value = pedido.cliente || '';
+    document.getElementById('edit-produto').value = pedido.produtoSolicitado || '';
+    document.getElementById('edit-quantidade').value = pedido.quantidadeSolicitada || 1;
+    document.getElementById('edit-data').value = pedido.dataNecessidade || '';
+    document.getElementById('edit-observacoes').value = pedido.observacoesPedido || '';
+
+    fecharModalDetalhes();
+    const modal = document.getElementById('modal-editar-pedido');
+    if (modal) modal.style.display = 'flex';
+}
+
+function exportarCSV() {
+    if (!window.pedidosAtuais || window.pedidosAtuais.length === 0) {
+        if (window.showAlert) window.showAlert('Nenhum dado para exportar.', 'warning');
+        return;
+    }
+    
+    const headers = ['Pedido ID', 'Linha Reserva ID', 'Cliente', 'Produto Solicitado', 'Quantidade', 'Data Necessidade', 'Status Reserva', 'Isotank Reservado', 'Motivo Rejeicao'];
+    const rows = window.pedidosAtuais.map(p => [
+        p.pedidoId,
+        p.linhaReservaId,
+        p.cliente,
+        p.produtoSolicitado,
+        p.quantidadeSolicitada,
+        p.dataNecessidade,
+        p.statusReserva,
+        p.isotankIdReservado || '',
+        p.motivoRejeicaoOuCancelamento || ''
+    ]);
+    
+    const csvContent = [
+        headers.join(';'),
+        ...rows.map(e => e.map(field => `"${String(field).replace(/"/g, '""')}"`).join(';'))
+    ].join('\n');
+    
+    const blob = new Blob(["\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'pedidos_export.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
