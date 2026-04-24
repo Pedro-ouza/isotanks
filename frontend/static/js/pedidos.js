@@ -243,17 +243,26 @@ async function carregarGerenciamentoPedidos() {
         colCancelado.innerHTML = '';
 
         let counts = { 'Solicitado': 0, 'Pré-Reservado': 0, 'Confirmado': 0, 'Cancelado': 0 };
+        window.pedidosFiltrados = [];
         
         pedidos.forEach(p => {
             if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
             if (statusFiltro && p.statusReserva !== statusFiltro) return;
 
+            window.pedidosFiltrados.push(p);
             counts[p.statusReserva] = (counts[p.statusReserva] || 0) + 1;
 
             const card = document.createElement('div');
             let statusClass = p.statusReserva.toLowerCase().replace('é', 'e'); // solicitado, pre-reservado, confirmado, cancelado
             card.className = `pipeline-card status-${statusClass}`;
             card.onclick = () => abrirModalDetalhes(p.linhaReservaId);
+
+            // Drag and drop
+            card.draggable = true;
+            card.ondragstart = (e) => {
+                e.dataTransfer.setData('linhaId', p.linhaReservaId);
+                e.dataTransfer.setData('currentStatus', p.statusReserva);
+            };
 
             card.innerHTML = `
                 <div class="pipeline-card-info">
@@ -285,6 +294,50 @@ async function carregarGerenciamentoPedidos() {
         if(document.getElementById('kpi-solicitado')) document.getElementById('kpi-solicitado').innerText = counts['Solicitado'];
         if(document.getElementById('kpi-pre-reservado')) document.getElementById('kpi-pre-reservado').innerText = counts['Pré-Reservado'];
         if(document.getElementById('kpi-confirmado')) document.getElementById('kpi-confirmado').innerText = counts['Confirmado'];
+
+        // Configurar Drop Zones
+        const colunas = [
+            { el: colSolicitado, status: 'Solicitado' },
+            { el: colPreReservado, status: 'Pré-Reservado' },
+            { el: colConfirmado, status: 'Confirmado' },
+            { el: colCancelado, status: 'Cancelado' }
+        ];
+
+        colunas.forEach(col => {
+            if(!col.el) return;
+            col.el.ondragover = (e) => {
+                e.preventDefault();
+                col.el.style.backgroundColor = 'var(--bg-color-hover, #f8f9fa)';
+            };
+            col.el.ondragleave = (e) => {
+                col.el.style.backgroundColor = '';
+            };
+            col.el.ondrop = (e) => {
+                e.preventDefault();
+                col.el.style.backgroundColor = '';
+                const linhaId = e.dataTransfer.getData('linhaId');
+                const currentStatus = e.dataTransfer.getData('currentStatus');
+                const targetStatus = col.status;
+
+                if (currentStatus === targetStatus) return;
+
+                const pedido = window.pedidosAtuais?.find(p => p.linhaReservaId === linhaId);
+
+                if (targetStatus === 'Pré-Reservado') {
+                    if (pedido) abrirModalEscolha(linhaId, pedido.produtoSolicitado);
+                } else if (targetStatus === 'Confirmado') {
+                    if (currentStatus === 'Pré-Reservado') {
+                        aprovarReserva(linhaId);
+                    } else {
+                        if (window.showAlert) window.showAlert('Apenas pedidos Pré-Reservados podem ser Confirmados.', 'warning');
+                    }
+                } else if (targetStatus === 'Cancelado') {
+                    cancelarReserva(linhaId);
+                } else if (targetStatus === 'Solicitado') {
+                    if (window.showAlert) window.showAlert('Não é possível reverter para Solicitado por drag-and-drop.', 'warning');
+                }
+            };
+        });
 
     } catch (err) {
         console.error(err);
@@ -493,13 +546,13 @@ function abrirModalEditarPedido(linhaId) {
 }
 
 function exportarCSV() {
-    if (!window.pedidosAtuais || window.pedidosAtuais.length === 0) {
+    if (!window.pedidosFiltrados || window.pedidosFiltrados.length === 0) {
         if (window.showAlert) window.showAlert('Nenhum dado para exportar.', 'warning');
         return;
     }
     
     const headers = ['Pedido ID', 'Linha Reserva ID', 'Cliente', 'Produto Solicitado', 'Quantidade', 'Data Necessidade', 'Status Reserva', 'Isotank Reservado', 'Motivo Rejeicao'];
-    const rows = window.pedidosAtuais.map(p => [
+    const rows = window.pedidosFiltrados.map(p => [
         p.pedidoId,
         p.linhaReservaId,
         p.cliente,
