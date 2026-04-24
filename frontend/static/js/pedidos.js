@@ -243,13 +243,11 @@ async function carregarGerenciamentoPedidos() {
         colCancelado.innerHTML = '';
 
         let counts = { 'Solicitado': 0, 'Pré-Reservado': 0, 'Confirmado': 0, 'Cancelado': 0 };
-        window.pedidosFiltrados = [];
         
         pedidos.forEach(p => {
             if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
             if (statusFiltro && p.statusReserva !== statusFiltro) return;
 
-            window.pedidosFiltrados.push(p);
             counts[p.statusReserva] = (counts[p.statusReserva] || 0) + 1;
 
             const card = document.createElement('div');
@@ -295,26 +293,32 @@ async function carregarGerenciamentoPedidos() {
         if(document.getElementById('kpi-pre-reservado')) document.getElementById('kpi-pre-reservado').innerText = counts['Pré-Reservado'];
         if(document.getElementById('kpi-confirmado')) document.getElementById('kpi-confirmado').innerText = counts['Confirmado'];
 
-        // Configurar Drop Zones
+        // Configurar Drop Zones (nas colunas inteiras, não apenas no container de conteúdo)
         const colunas = [
-            { el: colSolicitado, status: 'Solicitado' },
-            { el: colPreReservado, status: 'Pré-Reservado' },
-            { el: colConfirmado, status: 'Confirmado' },
-            { el: colCancelado, status: 'Cancelado' }
+            { el: colSolicitado.parentElement, status: 'Solicitado' },
+            { el: colPreReservado.parentElement, status: 'Pré-Reservado' },
+            { el: colConfirmado.parentElement, status: 'Confirmado' },
+            { el: colCancelado.parentElement, status: 'Cancelado' }
         ];
 
         colunas.forEach(col => {
             if(!col.el) return;
             col.el.ondragover = (e) => {
                 e.preventDefault();
-                col.el.style.backgroundColor = 'var(--bg-color-hover, #f8f9fa)';
+                col.el.style.backgroundColor = 'var(--secondary-color, #e7f3f0)';
+                col.el.style.border = '2px dashed var(--primary-color, #00a188)';
+            };
+            col.el.ondragenter = (e) => {
+                e.preventDefault();
             };
             col.el.ondragleave = (e) => {
                 col.el.style.backgroundColor = '';
+                col.el.style.border = '1px solid var(--border-color)';
             };
             col.el.ondrop = (e) => {
                 e.preventDefault();
                 col.el.style.backgroundColor = '';
+                col.el.style.border = '1px solid var(--border-color)';
                 const linhaId = e.dataTransfer.getData('linhaId');
                 const currentStatus = e.dataTransfer.getData('currentStatus');
                 const targetStatus = col.status;
@@ -546,13 +550,29 @@ function abrirModalEditarPedido(linhaId) {
 }
 
 function exportarCSV() {
-    if (!window.pedidosFiltrados || window.pedidosFiltrados.length === 0) {
+    if (!window.pedidosAtuais || window.pedidosAtuais.length === 0) {
         if (window.showAlert) window.showAlert('Nenhum dado para exportar.', 'warning');
         return;
     }
     
+    // Coleta filtros atuais
+    const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
+    const statusFiltro = document.getElementById('filtro-status')?.value || '';
+    
+    // Filtra no momento da exportação
+    const pedidosFiltrados = window.pedidosAtuais.filter(p => {
+        if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return false;
+        if (statusFiltro && p.statusReserva !== statusFiltro) return false;
+        return true;
+    });
+
+    if (pedidosFiltrados.length === 0) {
+        if (window.showAlert) window.showAlert('Nenhum dado filtrado para exportar.', 'warning');
+        return;
+    }
+    
     const headers = ['Pedido ID', 'Linha Reserva ID', 'Cliente', 'Produto Solicitado', 'Quantidade', 'Data Necessidade', 'Status Reserva', 'Isotank Reservado', 'Motivo Rejeicao'];
-    const rows = window.pedidosFiltrados.map(p => [
+    const rows = pedidosFiltrados.map(p => [
         p.pedidoId,
         p.linhaReservaId,
         p.cliente,
