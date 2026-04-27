@@ -21,8 +21,8 @@
   --sidebar-text: #0f3b3d;
   --sidebar-hover: #d9f0eb;
   --sidebar-border: #e0ede8;
-  --nav-active-bg: #d4f3eb;
-  --nav-active-color: #00a188;
+  --nav-active-bg: #00856f;
+  --nav-active-color: #ffffff;
 
   /* Topbar */
   --topbar-bg: #ffffff;
@@ -97,8 +97,8 @@ body.dark {
   --sidebar-text: #cdd9e5;
   --sidebar-hover: #1c2a35;
   --sidebar-border: #21262d;
-  --nav-active-bg: #1c3a33;
-  --nav-active-color: #2dd4b8;
+  --nav-active-bg: #2dd4b8;
+  --nav-active-color: #0a1f1d;
 
   /* Topbar */
   --topbar-bg: #161b22;
