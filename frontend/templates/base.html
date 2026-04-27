@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -10,61 +10,33 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
+        <!-- Top Navbar -->
+        <header class="navbar">
+            <div class="navbar-brand">
                 <div class="logo-circle">E</div>
-                <span>Evera Isotank Hub</span>
+                <span class="navbar-title">Evera Isotank Hub</span>
             </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section">Painéis</div>
-                <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
-                    <span>Início</span>
-                    <small>Visão executiva</small>
-                </a>
 
-                <div class="nav-section">Estoque</div>
-                <a href="/gestao-isotanks" class="nav-link {% if active_page == 'aprovar' %}active{% endif %}">
-                    <span>Aprovar Isotanks</span>
-                    <small>Aprovação técnica</small>
-                </a>
+            <nav class="navbar-nav">
+                <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">Início</a>
+                <a href="/gestao-isotanks" class="nav-link {% if active_page == 'aprovar' %}active{% endif %}">Aprovar Isotanks</a>
                 <a href="/gerenciamento-pedidos" class="nav-link {% if active_page == 'gerenciar' %}active{% endif %}">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Pedidos e Reservas</span>
-                        <span id="sidebar-badge-solicitados" class="badge bg-warning" style="display:none;"></span>
-                    </div>
-                    <small>Status de execução</small>
+                    Pedidos e Reservas
+                    <span id="sidebar-badge-solicitados" class="badge bg-warning" style="display:none;"></span>
                 </a>
-
-                <div class="nav-section">Ferramentas</div>
-                <a href="/realizar-pedido" class="nav-link {% if active_page == 'pedido' %}active{% endif %}">
-                    <span>Novo pedido</span>
-                    <small>Criar linhas de reserva</small>
-                </a>
-                <a href="/escolher-isotanks" class="nav-link {% if active_page == 'alocar' %}active{% endif %}">
-                    <span>Alocar Isotanks</span>
-                    <small>Vincular pedido e tanque</small>
-                </a>
-                <a href="/upload-isotanks" class="nav-link {% if active_page == 'upload' %}active{% endif %}">
-                    <span>Importar dados</span>
-                    <small>Upload CSV (staging)</small>
-                </a>
+                <a href="/realizar-pedido" class="nav-link {% if active_page == 'pedido' %}active{% endif %}">Novo Pedido</a>
+                <a href="/escolher-isotanks" class="nav-link {% if active_page == 'alocar' %}active{% endif %}">Alocar Isotanks</a>
+                <a href="/upload-isotanks" class="nav-link {% if active_page == 'upload' %}active{% endif %}">Importar</a>
             </nav>
-        </div>
+
+            <div class="navbar-actions">
+                <button id="btn-theme-toggle" class="btn btn-outline btn-sm">Modo Escuro</button>
+                <div class="avatar">TE</div>
+            </div>
+        </header>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="topbar">
-                <div class="topbar-left">
-                    <span class="topbar-chip">Gestor de Isotanks</span>
-                </div>
-                <div class="topbar-right">
-                    <button id="btn-theme-toggle" class="btn btn-outline btn-sm">Modo Escuro</button>
-                    <div class="avatar">TE</div>
-                </div>
-            </div>
-
             <main class="container">
                 {% block content %}{% endblock %}
             </main>
