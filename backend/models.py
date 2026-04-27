@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 db = SQLAlchemy()
+
 
 class StagingIsotank(db.Model):
     __tablename__ = 'staging_isotanks'
@@ -21,6 +21,7 @@ class StagingIsotank(db.Model):
             "localAtual": self.localAtual,
             "ultimoProduto": self.ultimoProduto
         }
+
 
 class Isotank(db.Model):
     __tablename__ = 'isotanks'
@@ -57,6 +58,7 @@ class Isotank(db.Model):
             "reservadoPor": self.reservadoPor
         }
 
+
 class Pedido(db.Model):
     __tablename__ = 'pedidos'
     linhaReservaId = db.Column(db.String(50), primary_key=True)
@@ -64,7 +66,8 @@ class Pedido(db.Model):
     cliente = db.Column(db.String(100))
     produtoSolicitado = db.Column(db.String(100))
     quantidadeSolicitada = db.Column(db.Integer, default=1)
-    dataNecessidade = db.Column(db.String(50))
+    # Ponto 11: tipado como Date para permitir ordenação e comparação real por data
+    dataNecessidade = db.Column(db.Date, nullable=True)
     solicitante = db.Column(db.String(100))
     statusReserva = db.Column(db.String(50))
     isotankIdReservado = db.Column(db.String(50), nullable=True)
@@ -79,7 +82,8 @@ class Pedido(db.Model):
             "cliente": self.cliente,
             "produtoSolicitado": self.produtoSolicitado,
             "quantidadeSolicitada": self.quantidadeSolicitada,
-            "dataNecessidade": self.dataNecessidade,
+            # Serializa como string ISO 8601 (YYYY-MM-DD) ou None
+            "dataNecessidade": self.dataNecessidade.isoformat() if self.dataNecessidade else None,
             "solicitante": self.solicitante,
             "statusReserva": self.statusReserva,
             "isotankIdReservado": self.isotankIdReservado,
