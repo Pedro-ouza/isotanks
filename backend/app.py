@@ -7,49 +7,27 @@ import io
 sys.path.append(os.path.dirname(__file__))
 
 from flask import Flask, render_template, request, jsonify
-from sqlalchemy.exc import IntegrityError
 from models import db, StagingIsotank, Isotank, Pedido
 
-# Configuração de caminhos para separar backend e frontend
 basedir = os.path.abspath(os.path.dirname(__file__))
 frontend_dir = os.path.join(basedir, '..', 'frontend')
 template_dir = os.path.join(frontend_dir, 'templates')
 static_dir = os.path.join(frontend_dir, 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-
-# Configuração do Banco de Dados SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'isotanks.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'isotanks.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    
-    # Preencher banco vazio para fins de demonstração se necessário
-    if StagingIsotank.query.count() == 0 and Isotank.query.count() == 0 and Pedido.query.count() == 0:
-        db.session.add(StagingIsotank(id="STG-1001", isotankId="ISO-0001", fornecedor="Fornecedor Alpha", numeroContainer="MSCU1234567", localAtual="Santos/SP", ultimoProduto="Cold Pressed Orange Oil"))
-        db.session.add(StagingIsotank(id="STG-1002", isotankId="ISO-0002", fornecedor="Fornecedor Beta", numeroContainer="CGMU9876543", localAtual="Paranaguá/PR", ultimoProduto="Water Phase Essence"))
-        
-        db.session.add(Isotank(id="ISO-9999", fornecedor="Fornecedor Gama", numeroContainer="GAMA5555555", localAtual="Matão/SP", produto1Canonico="Cold Pressed Orange Oil", statusTecnicoFinal="Processado", escopoAprovacao="Cold Pressed Orange Oil; Qualquer produto", statusDisponibilidade="Disponivel"))
-        db.session.add(Isotank(id="ISO-8888", fornecedor="Fornecedor Delta", numeroContainer="DELT8888888", localAtual="Ghent/BE", produto1Canonico="D-Limonene", statusTecnicoFinal="Processado", escopoAprovacao="D-Limonene; Óleos cítricos", statusDisponibilidade="Disponivel"))
-        db.session.add(Isotank(id="ISO-7777", fornecedor="Fornecedor Alpha", numeroContainer="ALPH7777777", localAtual="Santos/SP", produto1Canonico="Orange Terpenes", statusTecnicoFinal="Processado", escopoAprovacao="Orange Terpenes", statusDisponibilidade="Reservado", reservadoParaPedidoId="PED-20260423-001", reservadoPor="sistema"))
-        
-        db.session.add(Pedido(linhaReservaId="PED-20260423-000-01", pedidoId="PED-20260423-000", cliente="FlavorTech Solutions", produtoSolicitado="Cold Pressed Orange Oil", quantidadeSolicitada=1, dataNecessidade="2026-05-10", solicitante="user@flavortech.com", statusReserva="Solicitado"))
-        db.session.add(Pedido(linhaReservaId="PED-20260423-001-01", pedidoId="PED-20260423-001", cliente="Citrus Beverages Inc", produtoSolicitado="Orange Terpenes", quantidadeSolicitada=1, dataNecessidade="2026-05-15", solicitante="compras@citrusbev.com", statusReserva="Pré-Reservado", isotankIdReservado="ISO-7777", observacoesPedido="Aguardando aprovação final"))
-        
-        db.session.commit()
 
-# Tratamento Global de Erros (Fase 2)
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Log da exceção
     traceback.print_exc()
-    return jsonify({"error": "Erro interno do servidor", "details": str(e)}), 500
-
-# ==========================================
-# ROTAS DE PÁGINA (HTML)
-# ==========================================
+    return jsonify({"error": "Erro interno do servidor"}), 500
 
 @app.route('/')
 def index():
@@ -75,50 +53,56 @@ def gerenciamento_pedidos():
 def upload_isotanks():
     return render_template('upload_isotanks.html', active_page='upload')
 
-
-# ==========================================
-# ROTAS DE API (JSON)
-# ==========================================
-
-# --- Isotanks ---
 @app.route('/api/isotanks', methods=['GET'])
 def get_isotanks():
     status_final = request.args.get('statusTecnicoFinal')
     status_disp = request.args.get('statusDisponibilidade')
     produto = request.args.get('produto')
+    page = max(int(request.args.get('page', 1)), 1)
+    per_page = min(max(int(request.args.get('per_page', 20)), 1), 100)
 
     query = Isotank.query
     if status_final:
         query = query.filter_by(statusTecnicoFinal=status_final)
     if status_disp:
         query = query.filter_by(statusDisponibilidade=status_disp)
-        
+
     isotanks = query.all()
     filtered = [i.to_dict() for i in isotanks]
-    
+
     if produto:
         prod_lower = produto.lower()
         filtered = [
-            i for i in filtered 
-            if prod_lower in str(i.get('escopoAprovacao', '')).lower() 
+            i for i in filtered
+            if prod_lower in str(i.get('escopoAprovacao', '')).lower()
             or prod_lower in str(i.get('produto1Canonico', '')).lower()
             or prod_lower in str(i.get('produto2Canonico', '')).lower()
             or prod_lower in str(i.get('escopoAprovacao2', '')).lower()
             or prod_lower in str(i.get('produto3Canonico', '')).lower()
             or prod_lower in str(i.get('escopoAprovacao3', '')).lower()
         ]
-    
-    return jsonify(filtered)
+
+    total = len(filtered)
+    start = (page - 1) * per_page
+    end = start + per_page
+    return jsonify({
+        "items": filtered[start:end],
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "pages": (total + per_page - 1) // per_page
+        }
+    })
 
 @app.route('/api/isotanks', methods=['POST'])
 def create_isotank():
     data = request.json or {}
     isotank_id = data.get('id')
-    
+
     if not isotank_id:
         return jsonify({"error": "id é obrigatório"}), 400
-    
-    # Verifica duplicidade
+
     if Isotank.query.get(isotank_id):
         return jsonify({"error": "Isotank já existe"}), 400
 
@@ -139,12 +123,11 @@ def create_isotank():
         reservadoPor=None
     )
     db.session.add(new_iso)
-    
-    # CORREÇÃO DO BUG: Remove do staging
+
     staging_item = StagingIsotank.query.filter_by(isotankId=isotank_id).first()
     if staging_item:
         db.session.delete(staging_item)
-        
+
     db.session.commit()
     return jsonify({"message": "Isotank criado com sucesso", "isotank": new_iso.to_dict()}), 201
 
@@ -154,20 +137,17 @@ def update_isotank(id):
     iso = Isotank.query.get(id)
     if not iso:
         return jsonify({"error": "Isotank não encontrado"}), 404
-        
+
     for key, value in data.items():
         if hasattr(iso, key):
             setattr(iso, key, value)
-            
+
     db.session.commit()
     return jsonify({"message": "Isotank atualizado", "isotank": iso.to_dict()})
 
-
-# --- Pedidos ---
 def gerar_pedido_id():
     hoje = datetime.datetime.now()
     base = f"PED-{hoje.strftime('%Y%m%d')}"
-    # Pega contagem de pedidos distintos
     count = db.session.query(Pedido.pedidoId).filter(Pedido.pedidoId.like(f"{base}%")).distinct().count()
     seq = str(count + 1).zfill(3)
     return f"{base}-{seq}"
@@ -181,14 +161,25 @@ def gerar_linha_reserva_id(pedido_id):
 def get_pedidos():
     pedido_id = request.args.get('pedidoId')
     status_reserva = request.args.get('statusReserva')
-    
+    page = max(int(request.args.get('page', 1)), 1)
+    per_page = min(max(int(request.args.get('per_page', 20)), 1), 100)
+
     query = Pedido.query
     if pedido_id:
         query = query.filter_by(pedidoId=pedido_id)
     if status_reserva:
         query = query.filter_by(statusReserva=status_reserva)
-        
-    return jsonify([p.to_dict() for p in query.all()])
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    return jsonify({
+        "items": [p.to_dict() for p in pagination.items],
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": pagination.total,
+            "pages": pagination.pages
+        }
+    })
 
 @app.route('/api/pedidos', methods=['POST'])
 def create_pedido():
@@ -197,12 +188,11 @@ def create_pedido():
         return jsonify({"error": "Formato inválido. Esperado um array de linhas."}), 400
 
     pedido_id = gerar_pedido_id()
-    
+
     for linha_data in linhas:
-        # Validação básica
         if not linha_data.get('quantidadeSolicitada') or int(linha_data.get('quantidadeSolicitada', 0)) <= 0:
             return jsonify({"error": "Quantidade inválida na linha de pedido."}), 400
-            
+
         linha_id = gerar_linha_reserva_id(pedido_id)
         novo_pedido = Pedido(
             linhaReservaId=linha_id,
@@ -217,7 +207,7 @@ def create_pedido():
             observacoesPedido=linha_data.get('observacoesPedido')
         )
         db.session.add(novo_pedido)
-        
+
     db.session.commit()
     return jsonify({
         "message": "Pedido criado com sucesso",
@@ -231,7 +221,6 @@ def reservar_pedido(linha_id):
     isotank_id = data.get('isotankId')
     usuario = data.get('usuario', 'sistema')
 
-    # Controle de concorrência com SELECT FOR UPDATE
     linha = db.session.query(Pedido).filter_by(linhaReservaId=linha_id).with_for_update().first()
     if not linha:
         db.session.rollback()
@@ -341,7 +330,7 @@ def cancelar_pedido(linha_id):
         return jsonify({"error": "Linha de reserva não encontrada"}), 404
 
     isotank_id = linha.isotankIdReservado
-    
+
     if isotank_id:
         isotank = db.session.query(Isotank).filter_by(id=isotank_id).with_for_update().first()
         if isotank:
@@ -360,11 +349,11 @@ def cancelar_pedido(linha_id):
 @app.route('/api/pedidos/<linha_id>', methods=['PUT'])
 def edit_pedido(linha_id):
     data = request.json or {}
-    
+
     linha = Pedido.query.get(linha_id)
     if not linha:
         return jsonify({"error": "Linha de reserva não encontrada"}), 404
-        
+
     if linha.statusReserva not in ['Solicitado', 'Pré-Reservado']:
         return jsonify({"error": "Não é possível editar um pedido que não está Solicitado ou Pré-Reservado."}), 400
 
@@ -378,36 +367,49 @@ def edit_pedido(linha_id):
         linha.dataNecessidade = data['dataNecessidade']
     if 'observacoesPedido' in data:
         linha.observacoesPedido = data.get('observacoesPedido', '')
-        
+
     db.session.commit()
     return jsonify({"message": "Pedido atualizado com sucesso", "linha": linha.to_dict()})
 
-# --- Staging ---
 @app.route('/api/staging', methods=['GET'])
 def get_staging():
-    return jsonify([s.to_dict() for s in StagingIsotank.query.all()])
+    page = max(int(request.args.get('page', 1)), 1)
+    per_page = min(max(int(request.args.get('per_page', 20)), 1), 100)
+    pagination = StagingIsotank.query.paginate(page=page, per_page=per_page, error_out=False)
+    return jsonify({
+        "items": [s.to_dict() for s in pagination.items],
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": pagination.total,
+            "pages": pagination.pages
+        }
+    })
 
 @app.route('/api/staging/upload', methods=['POST'])
 def upload_staging():
     if 'file' not in request.files:
         return jsonify({"error": "Nenhum arquivo enviado"}), 400
-    
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "Nenhum arquivo selecionado"}), 400
+    if not file.filename.lower().endswith('.csv'):
+        return jsonify({"error": "Arquivo inválido. Envie um CSV."}), 400
 
-    # CORREÇÃO DO BUG: Implementado o parser real de CSV
     try:
         stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
         csv_input = csv.DictReader(stream)
-        
+        expected_columns = {'id', 'isotankId', 'fornecedor', 'numeroContainer', 'localAtual', 'ultimoProduto'}
+        if not csv_input.fieldnames or not expected_columns.issubset(set(csv_input.fieldnames)):
+            return jsonify({"error": "CSV inválido. Colunas obrigatórias: id, isotankId, fornecedor, numeroContainer, localAtual, ultimoProduto"}), 400
+
         imported_count = 0
         for row in csv_input:
-            # Assumimos que o cabeçalho tem: id, isotankId, fornecedor, numeroContainer, localAtual, ultimoProduto
-            # Ignora duplicados pelo ID do staging
             stg_id = row.get('id')
-            if not stg_id: continue
-            
+            if not stg_id:
+                continue
+
             if not StagingIsotank.query.get(stg_id):
                 novo_stg = StagingIsotank(
                     id=stg_id,
@@ -419,7 +421,7 @@ def upload_staging():
                 )
                 db.session.add(novo_stg)
                 imported_count += 1
-                
+
         db.session.commit()
         return jsonify({
             "message": f"Upload realizado com sucesso. {imported_count} registros importados.",
@@ -430,13 +432,12 @@ def upload_staging():
         db.session.rollback()
         return jsonify({"error": f"Erro ao processar o CSV: {str(e)}"}), 400
 
-# --- Dashboard Metrics ---
 @app.route('/api/dashboard/metrics', methods=['GET'])
 def get_metrics():
     pedidos_pendentes = Pedido.query.filter(Pedido.statusReserva.in_(['Solicitado', 'Pré-Reservado'])).count()
     iso_disponiveis = Isotank.query.filter_by(statusDisponibilidade='Disponivel').count()
     staging_count = StagingIsotank.query.count()
-    
+
     return jsonify({
         "pedidosPendentes": pedidos_pendentes,
         "isotanksDisponiveis": iso_disponiveis,
@@ -444,8 +445,6 @@ def get_metrics():
     })
 
 if __name__ == '__main__':
-    # Usar variável de ambiente PORT se existir (ex: Render)
     port = int(os.environ.get('PORT', 5000))
-    # Para produção, debug deve ser False. Como é um teste, deixaremos ajustável via ENV.
     debug_mode = os.environ.get('FLASK_ENV') == 'development'
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
