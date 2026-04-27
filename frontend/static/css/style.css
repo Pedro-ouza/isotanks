@@ -12,6 +12,10 @@
   --primary-color: #00a188;
   --primary-hover: #00856f;
 
+  /* Navbar */
+  --navbar-bg: #e8f5f1;
+  --navbar-shadow: 0 2px 8px rgba(0, 100, 80, 0.08);
+
   /* Sidebar */
   --sidebar-bg: #f0faf7;
   --sidebar-text: #0f3b3d;
@@ -83,6 +87,10 @@ body.dark {
   /* Primário */
   --primary-color: #2dd4b8;
   --primary-hover: #22b09a;
+
+  /* Navbar */
+  --navbar-bg: #131920;
+  --navbar-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 
   /* Sidebar */
   --sidebar-bg: #0d1117;
@@ -173,10 +181,11 @@ body {
   min-height: 0;
 }
 
-/* ─── Horizontal Navbar ───────────────────────────────────────────────────── */
+/* ─── Horizontal Navbar ──────────────────────────────────────────────── */
 .navbar {
-  background: var(--sidebar-bg);
+  background: var(--navbar-bg);
   border-bottom: 1px solid var(--sidebar-border);
+  box-shadow: var(--navbar-shadow);
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
@@ -753,7 +762,7 @@ body {
     font-weight: 600;
 }
 
-/* ─── Staging fullpage (one-page, no scroll) ──────────────────────────────── */
+/* ─── Staging fullpage (one-page, no scroll) ───────────────────────────────── */
 .staging-fullpage {
     display: flex;
     flex-direction: column;
@@ -767,7 +776,7 @@ body {
     max-height: calc(100vh - 280px);
 }
 
-/* ─── Product Slot (modal approval) ───────────────────────────────────────── */
+/* ─── Product Slot (modal approval) ───────────────────────────────────── */
 .produto-slot {
     background: var(--secondary-color);
     border-radius: 12px;
@@ -823,7 +832,7 @@ body {
     background: var(--secondary-color);
 }
 
-/* ─── Approval modal — wide, no scroll ────────────────────────────────────── */
+/* ─── Approval modal — wide, no scroll ──────────────────────────────────── */
 .modal-aprovacao-wide {
     width: 95%;
     max-width: 1100px;
@@ -845,4 +854,3 @@ body {
     padding: 0.45rem 0.65rem;
     font-size: 0.85rem;
 }
-
