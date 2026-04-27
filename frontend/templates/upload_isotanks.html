@@ -10,55 +10,76 @@
     </div>
 </div>
 
-<div style="flex: 1; min-height: 0; overflow-y: auto;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 960px;">
+<!-- Wrapper que ocupa todo o espaço vertical restante sem rolar a página -->
+<div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 1.5rem;">
 
-        <!-- Coluna esquerda: upload -->
-        <div class="card">
-            <h3 style="margin-bottom: 0.75rem;">Upload de arquivo</h3>
-            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem;">
-                Selecione um arquivo <strong>.csv</strong> com os dados dos isotanks. O sistema importará apenas registros com IDs ainda não cadastrados no staging.
+    <!-- Grid 2 colunas — altura fixa, cards preenchem o espaço -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; flex: 1; min-height: 0;">
+
+        <!-- ── Coluna esquerda: upload ─────────────────────────────────── -->
+        <div class="card" style="display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+
+            <h3 style="margin-bottom: 0.5rem; flex-shrink: 0;">Upload de arquivo</h3>
+            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem; flex-shrink: 0;">
+                Selecione um arquivo <strong>.csv</strong> com os dados dos isotanks.
+                O sistema importará apenas registros com IDs ainda não cadastrados no staging.
             </p>
 
-            <form id="form-upload-staging" enctype="multipart/form-data">
+            <form id="form-upload-staging" enctype="multipart/form-data" style="flex-shrink: 0;">
                 <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="fileCsv">Arquivo CSV</label>
                     <input type="file" name="file" id="fileCsv" accept=".csv" required>
                 </div>
-                
+
                 <div class="mt-4 flex-between">
                     <button type="submit" class="btn btn-primary">Fazer Upload CSV</button>
                     <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
                 </div>
             </form>
 
-            <div id="csv-preview-container" style="display: none; margin-top: 1.5rem;">
-                <h5 style="margin-bottom: 0.75rem; color: var(--text-color); font-size: 0.9rem;">Pré-visualização (primeiras 5 linhas)</h5>
-                <div class="table-container">
+            <!-- Pré-visualização: ocupa o restante da coluna e rola internamente -->
+            <div id="csv-preview-container" style="display: none; margin-top: 1.25rem; flex: 1; min-height: 0; display: flex; flex-direction: column;">
+                <h5 style="margin-bottom: 0.5rem; color: var(--text-color); font-size: 0.85rem; flex-shrink: 0;">
+                    Pré-visualização (primeiras 5 linhas)
+                </h5>
+                <div class="table-container" style="flex: 1; min-height: 0; overflow-y: auto;">
                     <table class="table" id="tabela-csv-preview">
                         <thead>
                             <tr id="csv-preview-header"></tr>
                         </thead>
-                        <tbody id="csv-preview-body">
-                        </tbody>
+                        <tbody id="csv-preview-body"></tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- Placeholder quando ainda não há pré-visualização -->
+            <div id="csv-empty-state" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; color: var(--muted-color);">
+                <span style="font-size: 2rem;">📂</span>
+                <span style="font-size: 0.85rem;">Nenhum arquivo selecionado ainda</span>
+            </div>
         </div>
 
-        <!-- Coluna direita: template + referência -->
-        <div class="card">
-            <h3 style="margin-bottom: 0.75rem;">Template de importação</h3>
-            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem;">
+        <!-- ── Coluna direita: template + referência ───────────────────── -->
+        <div class="card" style="display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+
+            <h3 style="margin-bottom: 0.5rem; flex-shrink: 0;">Template de importação</h3>
+            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem; flex-shrink: 0;">
                 Baixe o modelo oficial com cabeçalho e exemplos. Preencha os dados e envie pelo formulário ao lado.
             </p>
 
-            <a href="{{ url_for('static', filename='template_isotanks.csv') }}" download="template_isotanks.csv" class="btn btn-outline" style="margin-bottom: 1.5rem;">
+            <a href="{{ url_for('static', filename='template_isotanks.csv') }}"
+               download="template_isotanks.csv"
+               class="btn btn-outline"
+               style="margin-bottom: 1.25rem; align-self: flex-start; flex-shrink: 0;">
                 ⬇ Baixar template CSV
             </a>
 
-            <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">Colunas obrigatórias</h4>
-            <div class="table-container">
+            <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color); flex-shrink: 0;">
+                Colunas obrigatórias
+            </h4>
+
+            <!-- Tabela de referência: ocupa o restante e rola internamente -->
+            <div class="table-container" style="flex: 1; min-height: 0; overflow-y: auto;">
                 <table class="table">
                     <thead>
                         <tr>
@@ -105,9 +126,21 @@
 
     </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/isotanks.js') }}"></script>
+<script>
+  // Oculta empty-state quando a pré-visualização é exibida
+  const observer = new MutationObserver(() => {
+    const preview = document.getElementById('csv-preview-container');
+    const empty   = document.getElementById('csv-empty-state');
+    if (!preview || !empty) return;
+    const showing = preview.style.display !== 'none';
+    preview.style.display = showing ? 'flex' : 'none';
+    empty.style.display   = showing ? 'none' : 'flex';
+  });
+  const previewEl = document.getElementById('csv-preview-container');
+  if (previewEl) observer.observe(previewEl, { attributes: true, attributeFilter: ['style'] });
+</script>
 {% endblock %}
