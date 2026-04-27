@@ -11,94 +11,138 @@
     <button id="btn-recarregar-staging" class="btn btn-outline" onclick="carregarStaging()">Recarregar staging</button>
 </div>
 
-<div class="form-layout-2col">
-    <!-- Lista de Staging -->
-    <div class="card">
-        <h3 class="mb-4">Fila de staging</h3>
-        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
-            <table class="table" id="tabela-staging">
-                <thead>
-                    <tr>
-                        <th>ID (Staging)</th>
-                        <th>IsotankID</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Carregado via JS -->
-                </tbody>
-            </table>
-        </div>
+<!-- Tabela de Staging — full width, one-page -->
+<div class="card staging-fullpage">
+    <h3 class="mb-4">Fila de staging</h3>
+    <div class="table-container" id="staging-table-wrap">
+        <table class="table" id="tabela-staging">
+            <thead>
+                <tr>
+                    <th>ID (Staging)</th>
+                    <th>IsotankID</th>
+                    <th>Fornecedor</th>
+                    <th>Container</th>
+                    <th>Local</th>
+                    <th>Último Produto</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Carregado via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Lightbox — Detalhes de Aprovação -->
+<div id="modal-aprovacao" class="modal" style="display:none;">
+  <div class="modal-content card" style="max-width: 720px;">
+    <div class="flex-between mb-4">
+      <div>
+        <h3>Detalhes de aprovação</h3>
+        <p class="text-muted" style="margin-top:0.25rem;">Revise o isotank e defina o status de cada produto canônico.</p>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalAprovacao()">Fechar</button>
     </div>
 
-    <!-- Formulário de Cadastro Final -->
-    <div class="card">
-        <div class="flex-between mb-4">
-            <div>
-              <h3>Detalhes de aprovação</h3>
-              <p class="text-muted">Revise o isotank selecionado e confirme o escopo.</p>
-            </div>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-              <button id="btn-aprovar" class="btn btn-success btn-sm">Aprovar</button>
-              <button id="btn-rejeitar" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">Rejeitar</button>
-            </div>
-        </div>
+    <div id="chip-editando" style="margin-bottom: 0.75rem;">
+        <span class="topbar-chip" style="font-size:0.8rem;">
+            Editando: <strong id="chip-editando-id"></strong>
+        </span>
+    </div>
 
-        <div id="chip-editando" style="display:none; margin-bottom: 0.75rem;">
-            <span class="topbar-chip" style="font-size:0.8rem;">
-                Editando: <strong id="chip-editando-id"></strong>
-            </span>
-        </div>
-
-        <form id="form-aprovar-isotank" class="mt-4">
-            <div class="form-group">
+    <form id="form-aprovar-isotank">
+        <!-- Dados gerais -->
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group" style="margin-bottom:1rem;">
                 <label>ID Final *</label>
                 <input type="text" id="iso-id" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:1rem;">
                 <label>Fornecedor</label>
                 <input type="text" id="iso-fornecedor">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:1rem;">
                 <label>Container</label>
                 <input type="text" id="iso-container">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:1rem;">
                 <label>Local Atual</label>
                 <input type="text" id="iso-local">
             </div>
-            <div class="form-group">
-                <label>Produto Canônico 1</label>
-                <input type="text" id="iso-produto">
-            </div>
-            <div class="form-group">
-                <label>Escopo de Aprovação 1</label>
-                <input type="text" id="iso-escopo" placeholder="Ex: Produto X; Qualquer Produto">
-            </div>
-            
-            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
-            
-            <div class="form-group">
-                <label>Produto Canônico 2</label>
-                <input type="text" id="iso-produto2">
-            </div>
-            <div class="form-group">
-                <label>Escopo de Aprovação 2</label>
-                <input type="text" id="iso-escopo2" placeholder="Motivo/Escopo para o Produto 2">
-            </div>
+        </div>
 
-            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
-            
-            <div class="form-group">
-                <label>Produto Canônico 3</label>
-                <input type="text" id="iso-produto3">
+        <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid var(--border-color);">
+
+        <!-- Produto 1 -->
+        <div class="produto-slot">
+            <div class="produto-slot-header">
+                <span class="produto-slot-label">Produto Canônico 1</span>
+                <div class="produto-slot-toggle" id="toggle-prod1">
+                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod1','aprovar')">✓ Aprovar</button>
+                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod1','rejeitar')">✗ Rejeitar</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Escopo de Aprovação 3</label>
-                <input type="text" id="iso-escopo3" placeholder="Motivo/Escopo para o Produto 3">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Produto</label>
+                    <input type="text" id="iso-produto">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Escopo de Aprovação</label>
+                    <input type="text" id="iso-escopo" placeholder="Ex: Produto X; Qualquer Produto">
+                </div>
             </div>
-        </form>
-    </div>
+        </div>
+
+        <!-- Produto 2 -->
+        <div class="produto-slot">
+            <div class="produto-slot-header">
+                <span class="produto-slot-label">Produto Canônico 2</span>
+                <div class="produto-slot-toggle" id="toggle-prod2">
+                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod2','aprovar')">✓ Aprovar</button>
+                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod2','rejeitar')">✗ Rejeitar</button>
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Produto</label>
+                    <input type="text" id="iso-produto2">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Escopo de Aprovação</label>
+                    <input type="text" id="iso-escopo2" placeholder="Motivo/Escopo para o Produto 2">
+                </div>
+            </div>
+        </div>
+
+        <!-- Produto 3 -->
+        <div class="produto-slot">
+            <div class="produto-slot-header">
+                <span class="produto-slot-label">Produto Canônico 3</span>
+                <div class="produto-slot-toggle" id="toggle-prod3">
+                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod3','aprovar')">✓ Aprovar</button>
+                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod3','rejeitar')">✗ Rejeitar</button>
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Produto</label>
+                    <input type="text" id="iso-produto3">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label>Escopo de Aprovação</label>
+                    <input type="text" id="iso-escopo3" placeholder="Motivo/Escopo para o Produto 3">
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+            <button type="button" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);" id="btn-rejeitar-all">Rejeitar Tudo</button>
+            <button type="button" class="btn btn-success" id="btn-salvar-aprovacao">Salvar</button>
+        </div>
+    </form>
+  </div>
 </div>
 
 {% endblock %}
