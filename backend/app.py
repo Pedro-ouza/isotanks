@@ -479,7 +479,9 @@ def upload_staging():
                     fornecedor=row.get('fornecedor'),
                     numeroContainer=row.get('numeroContainer'),
                     localAtual=row.get('localAtual'),
-                    ultimoProduto=row.get('ultimoProduto')
+                    ultimoProduto=row.get('ultimoProduto'),
+                    ultimoProduto2=row.get('ultimoProduto2'),
+                    ultimoProduto3=row.get('ultimoProduto3')
                 )
                 db.session.add(novo_stg)
                 imported_count += 1

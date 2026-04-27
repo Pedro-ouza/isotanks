@@ -6,40 +6,103 @@
 <div class="page-header" style="flex-shrink: 0;">
     <div>
         <h1 class="page-title">Importação de dados (Staging)</h1>
-        <p class="text-muted">Faça upload do CSV de staging para atualizar o estoque.</p>
+        <p class="text-muted">Faça upload do CSV de staging para incluir isotanks na fila de aprovação.</p>
     </div>
 </div>
 
 <div style="flex: 1; min-height: 0; overflow-y: auto;">
-    <div class="card" style="max-width: 600px;">
-        <p class="text-muted mb-4">
-          Use o template oficial de isotanks. Arquivos devem estar no formato CSV com cabeçalho.
-        </p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 960px;">
 
-        <form id="form-upload-staging" enctype="multipart/form-data">
-            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
-                <label for="fileCsv">Arquivo CSV</label>
-                <input type="file" name="file" id="fileCsv" accept=".csv" required>
-            </div>
-            
-            <div class="mt-4 flex-between">
-                <button type="submit" class="btn btn-primary">Fazer Upload CSV</button>
-                <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
-            </div>
-        </form>
+        <!-- Coluna esquerda: upload -->
+        <div class="card">
+            <h3 style="margin-bottom: 0.75rem;">Upload de arquivo</h3>
+            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem;">
+                Selecione um arquivo <strong>.csv</strong> com os dados dos isotanks. O sistema importará apenas registros com IDs ainda não cadastrados no staging.
+            </p>
 
-        <div id="csv-preview-container" style="display: none; margin-top: 2rem;">
-            <h5 style="margin-bottom: 1rem; color: var(--text-color);">Pré-visualização do Arquivo (Primeiras 5 linhas)</h5>
+            <form id="form-upload-staging" enctype="multipart/form-data">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
+                    <label for="fileCsv">Arquivo CSV</label>
+                    <input type="file" name="file" id="fileCsv" accept=".csv" required>
+                </div>
+                
+                <div class="mt-4 flex-between">
+                    <button type="submit" class="btn btn-primary">Fazer Upload CSV</button>
+                    <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
+                </div>
+            </form>
+
+            <div id="csv-preview-container" style="display: none; margin-top: 1.5rem;">
+                <h5 style="margin-bottom: 0.75rem; color: var(--text-color); font-size: 0.9rem;">Pré-visualização (primeiras 5 linhas)</h5>
+                <div class="table-container">
+                    <table class="table" id="tabela-csv-preview">
+                        <thead>
+                            <tr id="csv-preview-header"></tr>
+                        </thead>
+                        <tbody id="csv-preview-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna direita: template + referência -->
+        <div class="card">
+            <h3 style="margin-bottom: 0.75rem;">Template de importação</h3>
+            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.85rem;">
+                Baixe o modelo oficial com cabeçalho e exemplos. Preencha os dados e envie pelo formulário ao lado.
+            </p>
+
+            <a href="{{ url_for('static', filename='template_isotanks.csv') }}" download="template_isotanks.csv" class="btn btn-outline" style="margin-bottom: 1.5rem;">
+                ⬇ Baixar template CSV
+            </a>
+
+            <h4 style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">Colunas obrigatórias</h4>
             <div class="table-container">
-                <table class="table" id="tabela-csv-preview">
+                <table class="table">
                     <thead>
-                        <tr id="csv-preview-header"></tr>
+                        <tr>
+                            <th>Coluna</th>
+                            <th>Descrição</th>
+                            <th>Exemplo</th>
+                        </tr>
                     </thead>
-                    <tbody id="csv-preview-body">
+                    <tbody>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">id</code></td>
+                            <td>ID único do registro staging</td>
+                            <td>STG-0001</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">isotankId</code></td>
+                            <td>ID do isotank</td>
+                            <td>ISO-0001</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">fornecedor</code></td>
+                            <td>Nome do fornecedor</td>
+                            <td>Fornecedor Alpha</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">numeroContainer</code></td>
+                            <td>Número do container</td>
+                            <td>MSCU1234567</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">localAtual</code></td>
+                            <td>Localização atual do tanque</td>
+                            <td>Santos/SP</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-size:0.8rem;">ultimoProduto</code></td>
+                            <td>Último produto transportado</td>
+                            <td>Cold Pressed Orange Oil</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 </div>
 

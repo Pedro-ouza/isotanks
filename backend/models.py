@@ -11,6 +11,8 @@ class StagingIsotank(db.Model):
     numeroContainer = db.Column(db.String(50))
     localAtual = db.Column(db.String(100))
     ultimoProduto = db.Column(db.String(100))
+    ultimoProduto2 = db.Column(db.String(100), nullable=True)
+    ultimoProduto3 = db.Column(db.String(100), nullable=True)
 
     def to_dict(self):
         return {
@@ -19,7 +21,9 @@ class StagingIsotank(db.Model):
             "fornecedor": self.fornecedor,
             "numeroContainer": self.numeroContainer,
             "localAtual": self.localAtual,
-            "ultimoProduto": self.ultimoProduto
+            "ultimoProduto": self.ultimoProduto,
+            "ultimoProduto2": self.ultimoProduto2,
+            "ultimoProduto3": self.ultimoProduto3
         }
 
 
