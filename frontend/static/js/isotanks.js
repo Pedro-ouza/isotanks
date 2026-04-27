@@ -140,13 +140,12 @@ function fecharModalAprovacao() {
 
 // ─── Salvar aprovação ────────────────────────────────────────────────────────
 async function salvarAprovacao() {
-    const isoId = document.getElementById('iso-id').value;
+    const isoId = document.getElementById('iso-id').value.trim();
     if (!isoId) {
         if (window.showAlert) window.showAlert('ID do isotank é obrigatório.', 'error');
         return;
     }
 
-    // Determina status geral baseado nos toggles de cada produto preenchido
     const prod1 = document.getElementById('iso-produto').value.trim();
     const prod2 = document.getElementById('iso-produto2').value.trim();
     const prod3 = document.getElementById('iso-produto3').value.trim();
@@ -155,21 +154,27 @@ async function salvarAprovacao() {
     const status2 = getToggleStatus('toggle-prod2');
     const status3 = getToggleStatus('toggle-prod3');
 
-    // Se todos os produtos preenchidos estiverem rejeitados → Rejeitado
-    // Se pelo menos um aprovado → Processado
+    // Monta lista de slots preenchidos com seu status
     const slots = [];
-    if (prod1) slots.push(status1);
-    if (prod2) slots.push(status2);
-    if (prod3) slots.push(status3);
+    if (prod1) slots.push({ nome: prod1, status: status1 });
+    if (prod2) slots.push({ nome: prod2, status: status2 });
+    if (prod3) slots.push({ nome: prod3, status: status3 });
+
+    const aprovados  = slots.filter(s => s.status === 'aprovar');
+    const rejeitados = slots.filter(s => s.status === 'rejeitar');
 
     let statusFinal;
     if (slots.length === 0) {
-        // Sem produto preenchido → usa status do toggle 1
         statusFinal = status1 === 'aprovar' ? 'Processado' : 'Rejeitado';
-    } else if (slots.every(s => s === 'rejeitar')) {
+    } else if (aprovados.length === 0) {
         statusFinal = 'Rejeitado';
     } else {
         statusFinal = 'Processado';
+    }
+
+    // Confirmação se for rejeição total
+    if (statusFinal === 'Rejeitado') {
+        if (!confirm('Todos os produtos serão rejeitados. Confirma a rejeição deste isotank?')) return;
     }
 
     const payload = {
@@ -195,7 +200,10 @@ async function salvarAprovacao() {
         });
         const data = await res.json();
         if (res.ok) {
-            if (window.showAlert) window.showAlert(`Sucesso! Isotank ${statusFinal.toLowerCase()}.`, 'success');
+            const msg = statusFinal === 'Processado'
+                ? `Isotank ${isoId} aprovado (${aprovados.length} produto(s) aprovado(s), ${rejeitados.length} rejeitado(s)).`
+                : `Isotank ${isoId} rejeitado.`;
+            if (window.showAlert) window.showAlert(msg, statusFinal === 'Processado' ? 'success' : 'warning');
             fecharModalAprovacao();
             document.getElementById('form-aprovar-isotank').reset();
             carregarStaging();

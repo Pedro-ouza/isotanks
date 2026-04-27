@@ -771,8 +771,7 @@ body {
 .produto-slot {
     background: var(--secondary-color);
     border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border-color);
 }
 
@@ -780,12 +779,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .produto-slot-label {
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--text-color);
@@ -800,7 +799,7 @@ body {
 }
 
 .toggle-btn {
-    padding: 0.3rem 0.75rem;
+    padding: 0.25rem 0.6rem;
     font-size: 0.78rem;
     font-weight: 600;
     border: none;
@@ -824,17 +823,26 @@ body {
     background: var(--secondary-color);
 }
 
-/* Override form-group inside modal for tighter spacing */
+/* ─── Approval modal — wide, no scroll ────────────────────────────────────── */
+.modal-aprovacao-wide {
+    width: 95%;
+    max-width: 1100px;
+    max-height: none;
+    overflow: visible;
+}
+
 #modal-aprovacao .form-group {
-    margin-bottom: 0.5rem;
-    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+    gap: 0.25rem;
 }
 
 #modal-aprovacao .form-group label {
     margin-bottom: 0;
+    font-size: 0.72rem;
 }
 
-/* Override modal content for larger approval modal */
-#modal-aprovacao .modal-content {
-    max-height: 90vh;
+#modal-aprovacao .form-group input {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.85rem;
 }
+

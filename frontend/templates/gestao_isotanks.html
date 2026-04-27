@@ -36,108 +36,102 @@
 
 <!-- Modal Lightbox — Detalhes de Aprovação -->
 <div id="modal-aprovacao" class="modal" style="display:none;">
-  <div class="modal-content card" style="max-width: 720px;">
-    <div class="flex-between mb-4">
-      <div>
-        <h3>Detalhes de aprovação</h3>
-        <p class="text-muted" style="margin-top:0.25rem;">Revise o isotank e defina o status de cada produto canônico.</p>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="fecharModalAprovacao()">Fechar</button>
-    </div>
-
-    <div id="chip-editando" style="margin-bottom: 0.75rem;">
+  <div class="modal-content card modal-aprovacao-wide">
+    <!-- Header -->
+    <div class="flex-between" style="margin-bottom: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <h3 style="margin: 0;">Detalhes de aprovação</h3>
         <span class="topbar-chip" style="font-size:0.8rem;">
             Editando: <strong id="chip-editando-id"></strong>
         </span>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="fecharModalAprovacao()">✕ Fechar</button>
     </div>
 
     <form id="form-aprovar-isotank">
-        <!-- Dados gerais -->
-        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group" style="margin-bottom:1rem;">
+        <!-- Dados gerais — linha única com 4 campos -->
+        <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div class="form-group" style="margin-bottom:0;">
                 <label>ID Final *</label>
                 <input type="text" id="iso-id" required>
             </div>
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
                 <label>Fornecedor</label>
                 <input type="text" id="iso-fornecedor">
             </div>
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
                 <label>Container</label>
                 <input type="text" id="iso-container">
             </div>
-            <div class="form-group" style="margin-bottom:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
                 <label>Local Atual</label>
                 <input type="text" id="iso-local">
             </div>
         </div>
 
-        <hr style="margin: 1.25rem 0; border: none; border-top: 1px solid var(--border-color);">
+        <hr style="margin: 0.75rem 0; border: none; border-top: 1px solid var(--border-color);">
 
-        <!-- Produto 1 -->
-        <div class="produto-slot">
-            <div class="produto-slot-header">
-                <span class="produto-slot-label">Produto Canônico 1</span>
-                <div class="produto-slot-toggle" id="toggle-prod1">
-                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod1','aprovar')">✓ Aprovar</button>
-                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod1','rejeitar')">✗ Rejeitar</button>
+        <!-- 3 Produtos lado a lado -->
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+            <!-- Produto 1 -->
+            <div class="produto-slot">
+                <div class="produto-slot-header">
+                    <span class="produto-slot-label">Produto 1</span>
+                    <div class="produto-slot-toggle" id="toggle-prod1">
+                        <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod1','aprovar')">✓</button>
+                        <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod1','rejeitar')">✗</button>
+                    </div>
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Produto</label>
+                <div class="form-group" style="margin-bottom:0.5rem;">
+                    <label>Produto Canônico</label>
                     <input type="text" id="iso-produto">
                 </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Escopo de Aprovação</label>
-                    <input type="text" id="iso-escopo" placeholder="Ex: Produto X; Qualquer Produto">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Escopo</label>
+                    <input type="text" id="iso-escopo" placeholder="Ex: Produto X">
                 </div>
             </div>
-        </div>
 
-        <!-- Produto 2 -->
-        <div class="produto-slot">
-            <div class="produto-slot-header">
-                <span class="produto-slot-label">Produto Canônico 2</span>
-                <div class="produto-slot-toggle" id="toggle-prod2">
-                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod2','aprovar')">✓ Aprovar</button>
-                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod2','rejeitar')">✗ Rejeitar</button>
+            <!-- Produto 2 -->
+            <div class="produto-slot">
+                <div class="produto-slot-header">
+                    <span class="produto-slot-label">Produto 2</span>
+                    <div class="produto-slot-toggle" id="toggle-prod2">
+                        <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod2','aprovar')">✓</button>
+                        <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod2','rejeitar')">✗</button>
+                    </div>
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Produto</label>
+                <div class="form-group" style="margin-bottom:0.5rem;">
+                    <label>Produto Canônico</label>
                     <input type="text" id="iso-produto2">
                 </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Escopo de Aprovação</label>
-                    <input type="text" id="iso-escopo2" placeholder="Motivo/Escopo para o Produto 2">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Escopo</label>
+                    <input type="text" id="iso-escopo2" placeholder="Escopo produto 2">
                 </div>
             </div>
-        </div>
 
-        <!-- Produto 3 -->
-        <div class="produto-slot">
-            <div class="produto-slot-header">
-                <span class="produto-slot-label">Produto Canônico 3</span>
-                <div class="produto-slot-toggle" id="toggle-prod3">
-                    <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod3','aprovar')">✓ Aprovar</button>
-                    <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod3','rejeitar')">✗ Rejeitar</button>
+            <!-- Produto 3 -->
+            <div class="produto-slot">
+                <div class="produto-slot-header">
+                    <span class="produto-slot-label">Produto 3</span>
+                    <div class="produto-slot-toggle" id="toggle-prod3">
+                        <button type="button" class="toggle-btn toggle-aprovar active" data-status="aprovar" onclick="setToggle('toggle-prod3','aprovar')">✓</button>
+                        <button type="button" class="toggle-btn toggle-rejeitar" data-status="rejeitar" onclick="setToggle('toggle-prod3','rejeitar')">✗</button>
+                    </div>
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Produto</label>
+                <div class="form-group" style="margin-bottom:0.5rem;">
+                    <label>Produto Canônico</label>
                     <input type="text" id="iso-produto3">
                 </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                    <label>Escopo de Aprovação</label>
-                    <input type="text" id="iso-escopo3" placeholder="Motivo/Escopo para o Produto 3">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Escopo</label>
+                    <input type="text" id="iso-escopo3" placeholder="Escopo produto 3">
                 </div>
             </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.75rem;">
             <button type="button" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);" id="btn-rejeitar-all">Rejeitar Tudo</button>
             <button type="button" class="btn btn-success" id="btn-salvar-aprovacao">Salvar</button>
         </div>
