@@ -30,8 +30,9 @@
   --badge-primary-color: #0f766e;
   --badge-success-bg: #dcfce7;
   --badge-success-color: #166534;
-  --badge-warning-bg: #fef3c7;
-  --badge-warning-color: #92400e;
+  /* warning: fundo âmbar sólido + texto branco → contraste WCAG AA */
+  --badge-warning-bg: #d97706;
+  --badge-warning-color: #ffffff;
   --badge-danger-bg: #fee2e2;
   --badge-danger-color: #991b1b;
   --input-bg: #f9fbfa;
@@ -81,8 +82,9 @@ body.dark {
   --badge-primary-color: #2dd4b8;
   --badge-success-bg: #0f2d1a;
   --badge-success-color: #3fb950;
-  --badge-warning-bg: #2d1f00;
-  --badge-warning-color: #e3b341;
+  /* dark warning: fundo âmbar escuro + texto branco */
+  --badge-warning-bg: #b45309;
+  --badge-warning-color: #ffffff;
   --badge-danger-bg: #2d0f0f;
   --badge-danger-color: #f85149;
   --input-bg: #0d1117;
@@ -727,7 +729,6 @@ body {
 
 /* ── 1024px: PONTO DE QUEBRA PRINCIPAL ───────────────────────────── */
 @media (max-width: 1024px) {
-  /* Libera scroll de página e desfaz layout fixo */
   body {
     height: auto;
     overflow: auto;
@@ -750,36 +751,30 @@ body {
     min-height: unset;
   }
 
-  /* Grids que tinham flex:1 e min-height:0 perdem esses valores */
   .upload-grid,
   .form-layout-2col {
     flex: none;
     min-height: unset;
   }
 
-  /* Colapsa para coluna única */
   .upload-grid      { grid-template-columns: 1fr; }
   .form-layout-2col { grid-template-columns: 1fr; }
 
-  /* Cards: altura auto, sem overflow escondido */
   .card {
     height: auto;
     overflow: visible;
   }
 
-  /* Tabelas internas dos cards: altura limitada + scroll vertical */
   .staging-fullpage #staging-table-wrap {
     max-height: 60vh;
   }
 
-  /* KPIs: 3 em linha com minimo menor */
   .kpi-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
   .page-title { font-size: 1.5rem; }
 
-  /* Modal de aprovação: 2 colunas */
   #modal-aprovacao .grid[style*="repeat(4"] {
     grid-template-columns: 1fr 1fr !important;
   }
@@ -797,13 +792,11 @@ body {
 
   .form-grid      { grid-template-columns: 1fr; }
 
-  /* KPIs: 2 colunas */
   .kpi-grid       { grid-template-columns: repeat(2, 1fr); }
 
   .page-title     { font-size: 1.3rem; }
   .card           { padding: 1rem; }
 
-  /* Pipeline: min-width menor */
   .pipeline-column { min-width: 200px; }
 }
 
@@ -811,7 +804,6 @@ body {
 @media (max-width: 480px) {
   .container  { padding: 0.75rem; }
 
-  /* KPIs: 1 coluna */
   .kpi-grid   { grid-template-columns: 1fr; }
 
   .page-title { font-size: 1.1rem; }
