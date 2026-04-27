@@ -1,12 +1,13 @@
 import os
 import sys
 import datetime
-import traceback
+import logging
 import csv
 import io
 sys.path.append(os.path.dirname(__file__))
 
 from flask import Flask, render_template, request, jsonify
+from werkzeug.exceptions import HTTPException
 from models import db, StagingIsotank, Isotank, Pedido
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,15 +20,70 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
+logging.basicConfig(level=logging.INFO)
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
 
+    # Dados de demonstração — ativados enquanto SEED_DATA=true no ambiente
+    if os.environ.get('SEED_DATA', 'true').lower() == 'true':
+        if StagingIsotank.query.count() == 0 and Isotank.query.count() == 0 and Pedido.query.count() == 0:
+            db.session.add(StagingIsotank(id="STG-1001", isotankId="ISO-0001", fornecedor="Fornecedor Alpha", numeroContainer="MSCU1234567", localAtual="Santos/SP", ultimoProduto="Cold Pressed Orange Oil"))
+            db.session.add(StagingIsotank(id="STG-1002", isotankId="ISO-0002", fornecedor="Fornecedor Beta", numeroContainer="CGMU9876543", localAtual="Paraná/PR", ultimoProduto="Water Phase Essence"))
+
+            db.session.add(Isotank(id="ISO-9999", fornecedor="Fornecedor Gama", numeroContainer="GAMA5555555", localAtual="Matão/SP", produto1Canonico="Cold Pressed Orange Oil", statusTecnicoFinal="Processado", escopoAprovacao="Cold Pressed Orange Oil; Qualquer produto", statusDisponibilidade="Disponivel"))
+            db.session.add(Isotank(id="ISO-8888", fornecedor="Fornecedor Delta", numeroContainer="DELT8888888", localAtual="Ghent/BE", produto1Canonico="D-Limonene", statusTecnicoFinal="Processado", escopoAprovacao="D-Limonene; Óleos cítricos", statusDisponibilidade="Disponivel"))
+            db.session.add(Isotank(id="ISO-7777", fornecedor="Fornecedor Alpha", numeroContainer="ALPH7777777", localAtual="Santos/SP", produto1Canonico="Orange Terpenes", statusTecnicoFinal="Processado", escopoAprovacao="Orange Terpenes", statusDisponibilidade="Reservado", reservadoParaPedidoId="PED-20260423-001", reservadoPor="sistema"))
+            db.session.add(Isotank(id="ISO-6666", fornecedor="Fornecedor Beta", numeroContainer="BETA6666666", localAtual="Santos/SP", produto1Canonico="Water Phase Essence", statusTecnicoFinal="Processado", escopoAprovacao="Water Phase Essence", statusDisponibilidade="Reservado", reservadoParaPedidoId="PED-20260423-002", reservadoPor="sistema"))
+
+            db.session.add(Pedido(linhaReservaId="PED-20260423-000-01", pedidoId="PED-20260423-000", cliente="FlavorTech Solutions", produtoSolicitado="Cold Pressed Orange Oil", quantidadeSolicitada=1, dataNecessidade=datetime.date(2026, 5, 10), solicitante="user@flavortech.com", statusReserva="Solicitado", observacoesPedido="Urgente para nova linha de bebidas"))
+            db.session.add(Pedido(linhaReservaId="PED-20260423-001-01", pedidoId="PED-20260423-001", cliente="Citrus Beverages Inc", produtoSolicitado="Orange Terpenes", quantidadeSolicitada=1, dataNecessidade=datetime.date(2026, 5, 15), solicitante="compras@citrusbev.com", statusReserva="Pré-Reservado", isotankIdReservado="ISO-7777", observacoesPedido="Aguardando aprovação final"))
+            db.session.add(Pedido(linhaReservaId="PED-20260423-002-01", pedidoId="PED-20260423-002", cliente="Global Aromas Ltd", produtoSolicitado="Water Phase Essence", quantidadeSolicitada=1, dataNecessidade=datetime.date(2026, 6, 1), solicitante="supply@globalaromas.com", statusReserva="Confirmado", isotankIdReservado="ISO-6666", observacoesPedido="Reserva garantida para Q3"))
+            db.session.add(Pedido(linhaReservaId="PED-20260423-003-01", pedidoId="PED-20260423-003", cliente="Boutique Fragrances", produtoSolicitado="D-Limonene", quantidadeSolicitada=1, dataNecessidade=datetime.date(2026, 5, 20), solicitante="procurement@boutique.com", statusReserva="Cancelado", observacoesPedido="", motivoRejeicaoOuCancelamento="Cliente desistiu da compra"))
+
+            db.session.commit()
+            app.logger.info("Seed data inserido com sucesso.")
+
+
+# ==========================================
+# TRATAMENTO DE ERROS (Ponto 12)
+# ==========================================
+
+@app.errorhandler(ValueError)
+def handle_value_error(e):
+    # Erros de validação de entrada (ex: data mal formatada)
+    return jsonify({"error": str(e)}), 400
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    return jsonify({"error": e.description}), e.code
+
 @app.errorhandler(Exception)
 def handle_exception(e):
-    traceback.print_exc()
+    # Loga detalhes internamente; nunca expõe stack trace ao cliente
+    app.logger.exception("Erro interno não tratado")
     return jsonify({"error": "Erro interno do servidor"}), 500
+
+
+# ==========================================
+# HELPER — conversão segura de data (Ponto 11)
+# ==========================================
+
+def parse_date(value):
+    """Converte string YYYY-MM-DD para datetime.date. Lança ValueError com mensagem clara se inválido."""
+    if not value:
+        return None
+    try:
+        return datetime.date.fromisoformat(value)
+    except (ValueError, TypeError):
+        raise ValueError("dataNecessidade deve estar no formato YYYY-MM-DD")
+
+
+# ==========================================
+# ROTAS DE PÁGINA (HTML)
+# ==========================================
 
 @app.route('/')
 def index():
@@ -53,6 +109,12 @@ def gerenciamento_pedidos():
 def upload_isotanks():
     return render_template('upload_isotanks.html', active_page='upload')
 
+
+# ==========================================
+# ROTAS DE API (JSON)
+# ==========================================
+
+# --- Isotanks ---
 @app.route('/api/isotanks', methods=['GET'])
 def get_isotanks():
     status_final = request.args.get('statusTecnicoFinal')
@@ -145,6 +207,8 @@ def update_isotank(id):
     db.session.commit()
     return jsonify({"message": "Isotank atualizado", "isotank": iso.to_dict()})
 
+
+# --- Pedidos ---
 def gerar_pedido_id():
     hoje = datetime.datetime.now()
     base = f"PED-{hoje.strftime('%Y%m%d')}"
@@ -200,7 +264,7 @@ def create_pedido():
             cliente=linha_data.get('cliente'),
             produtoSolicitado=linha_data.get('produtoSolicitado'),
             quantidadeSolicitada=int(linha_data.get('quantidadeSolicitada')),
-            dataNecessidade=linha_data.get('dataNecessidade'),
+            dataNecessidade=parse_date(linha_data.get('dataNecessidade')),  # Ponto 11
             solicitante=linha_data.get('solicitante'),
             statusReserva="Solicitado",
             isotankIdReservado=None,
@@ -240,7 +304,6 @@ def reservar_pedido(linha_id):
 
     linha.isotankIdReservado = isotank_id
     linha.statusReserva = "Pré-Reservado"
-
     isotank.reservadoParaPedidoId = linha.pedidoId
     isotank.reservadoPor = usuario
     isotank.statusDisponibilidade = "Reservado"
@@ -281,7 +344,6 @@ def trocar_isotank(linha_id):
 
     linha.isotankIdReservado = novo_isotank_id
     linha.statusReserva = "Pré-Reservado"
-
     novo_isotank.reservadoParaPedidoId = linha.pedidoId
     novo_isotank.reservadoPor = usuario
     novo_isotank.statusDisponibilidade = "Reservado"
@@ -330,7 +392,6 @@ def cancelar_pedido(linha_id):
         return jsonify({"error": "Linha de reserva não encontrada"}), 404
 
     isotank_id = linha.isotankIdReservado
-
     if isotank_id:
         isotank = db.session.query(Isotank).filter_by(id=isotank_id).with_for_update().first()
         if isotank:
@@ -364,13 +425,15 @@ def edit_pedido(linha_id):
     if 'quantidadeSolicitada' in data:
         linha.quantidadeSolicitada = int(data['quantidadeSolicitada'])
     if 'dataNecessidade' in data:
-        linha.dataNecessidade = data['dataNecessidade']
+        linha.dataNecessidade = parse_date(data.get('dataNecessidade'))  # Ponto 11
     if 'observacoesPedido' in data:
         linha.observacoesPedido = data.get('observacoesPedido', '')
 
     db.session.commit()
     return jsonify({"message": "Pedido atualizado com sucesso", "linha": linha.to_dict()})
 
+
+# --- Staging ---
 @app.route('/api/staging', methods=['GET'])
 def get_staging():
     page = max(int(request.args.get('page', 1)), 1)
@@ -409,7 +472,6 @@ def upload_staging():
             stg_id = row.get('id')
             if not stg_id:
                 continue
-
             if not StagingIsotank.query.get(stg_id):
                 novo_stg = StagingIsotank(
                     id=stg_id,
@@ -432,17 +494,19 @@ def upload_staging():
         db.session.rollback()
         return jsonify({"error": f"Erro ao processar o CSV: {str(e)}"}), 400
 
+
+# --- Dashboard Metrics ---
 @app.route('/api/dashboard/metrics', methods=['GET'])
 def get_metrics():
     pedidos_pendentes = Pedido.query.filter(Pedido.statusReserva.in_(['Solicitado', 'Pré-Reservado'])).count()
     iso_disponiveis = Isotank.query.filter_by(statusDisponibilidade='Disponivel').count()
     staging_count = StagingIsotank.query.count()
-
     return jsonify({
         "pedidosPendentes": pedidos_pendentes,
         "isotanksDisponiveis": iso_disponiveis,
         "stagingCount": staging_count
     })
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
