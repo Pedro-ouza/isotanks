@@ -15,7 +15,7 @@
 </div>
 
 <!-- KPI Cards -->
-<div class="grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; flex-shrink: 0;">
     <div class="card text-center" style="padding: 1rem;">
         <h3 class="text-muted mb-2" style="font-size: 0.9rem;">Total de Pedidos</h3>
         <div id="kpi-total" style="font-size: 1.5rem; font-weight: bold; color: var(--text-color);">0</div>
@@ -34,13 +34,13 @@
     </div>
 </div>
 
-<div class="card mb-4">
+<div class="card" style="margin: 1rem 0; flex-shrink: 0;">
     <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0; gap: 0.35rem;">
             <label>Cliente</label>
             <input type="text" id="filtro-cliente">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0; gap: 0.35rem;">
             <label>Status</label>
             <select id="filtro-status">
                 <option value="">Todos</option>
@@ -50,15 +50,15 @@
                 <option value="Cancelado">Cancelado</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0; gap: 0.35rem;">
             <label>Data Necessidade — De</label>
             <input type="date" id="filtro-data-de">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0; gap: 0.35rem;">
             <label>Data Necessidade — Até</label>
             <input type="date" id="filtro-data-ate">
         </div>
-        <div class="form-group" style="justify-content: flex-end;">
+        <div class="form-group" style="margin-bottom: 0; justify-content: flex-end;">
             <button id="btn-aplicar-filtros" class="btn btn-primary" onclick="carregarGerenciamentoPedidos()">Aplicar filtros</button>
         </div>
     </div>
@@ -165,23 +165,23 @@
     </div>
     <form id="form-novo-pedido-modal">
         <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="modal-cliente">Cliente *</label>
                 <input type="text" id="modal-cliente" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="modal-produto">Produto Solicitado *</label>
                 <input type="text" id="modal-produto" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="modal-quantidade">Quantidade (Isotanks) *</label>
                 <input type="number" id="modal-quantidade" min="1" value="1" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="modal-data">Data de Necessidade *</label>
                 <input type="date" id="modal-data" required>
             </div>
-            <div class="form-group" style="grid-column: 1 / -1;">
+            <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="modal-observacoes">Observações</label>
                 <input type="text" id="modal-observacoes">
             </div>
@@ -203,23 +203,23 @@
     <form id="form-editar-pedido-modal">
         <input type="hidden" id="edit-linha-id">
         <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="edit-cliente">Cliente *</label>
                 <input type="text" id="edit-cliente" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="edit-produto">Produto Solicitado *</label>
                 <input type="text" id="edit-produto" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="edit-quantidade">Quantidade *</label>
                 <input type="number" id="edit-quantidade" min="1" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="edit-data">Data de Necessidade *</label>
                 <input type="date" id="edit-data" required>
             </div>
-            <div class="form-group" style="grid-column: 1 / -1;">
+            <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0.5rem; gap: 0.35rem;">
                 <label for="edit-observacoes">Observações</label>
                 <input type="text" id="edit-observacoes">
             </div>

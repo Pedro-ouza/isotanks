@@ -3,38 +3,38 @@
 {% block page_title %}Novo Pedido{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header" style="flex-shrink: 0;">
     <div>
         <h1 class="page-title">Área de criação de pedidos</h1>
         <p class="text-muted">Cadastre uma ou mais linhas de pedido para o mesmo cliente.</p>
     </div>
 </div>
 
-<div class="form-layout-2col">
+<div class="form-layout-2col" style="flex: 1; min-height: 0; overflow-y: auto; align-content: start;">
     <div class="card">
         <form id="form-realizar-pedido">
             <div class="form-grid">
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="cliente">Cliente *</label>
                     <input type="text" id="cliente" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="produtoSolicitado">Produto Solicitado *</label>
                     <input type="text" id="produtoSolicitado" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="quantidadeSolicitada">Quantidade (Isotanks) *</label>
                     <input type="number" id="quantidadeSolicitada" min="1" value="1" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="dataNecessidade">Data de Necessidade *</label>
                     <input type="date" id="dataNecessidade" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="solicitante">E-mail do Solicitante *</label>
                     <input type="email" id="solicitante" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
                     <label for="observacoesPedido">Observações</label>
                     <input type="text" id="observacoesPedido">
                 </div>

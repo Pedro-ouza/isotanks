@@ -3,48 +3,53 @@
 {% block page_title %}Alocar Isotanks{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<div class="page-header" style="flex-shrink: 0;">
     <div>
         <h1 class="page-title">Alocar Isotanks</h1>
         <p class="text-muted">Abaixo estão as linhas de pedido solicitadas que aguardam alocação de um isotank.</p>
     </div>
 </div>
 
-<div class="card table-container">
-    <table id="tabela-linhas-pedido" class="table">
-        <thead>
-            <tr>
-                <th>Pedido ID</th>
-                <th>Linha Reserva ID</th>
-                <th>Cliente</th>
-                <th>Produto Solicitado</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Preenchido via JS -->
-        </tbody>
-    </table>
-</div>
+<div style="display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 1rem;">
+    <!-- Tabela de pedidos aguardando alocação -->
+    <div class="card table-container" style="flex: 1; min-height: 0; overflow-y: auto;">
+        <table id="tabela-linhas-pedido" class="table">
+            <thead>
+                <tr>
+                    <th>Pedido ID</th>
+                    <th>Linha Reserva ID</th>
+                    <th>Cliente</th>
+                    <th>Produto Solicitado</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Preenchido via JS -->
+            </tbody>
+        </table>
+    </div>
 
-<h2 class="page-title mt-4 mb-4" style="font-size: 1.4rem;">Estoque de Isotanks</h2>
-<div class="card table-container mb-4">
-    <table id="tabela-estoque-isotanks" class="table">
-        <thead>
-            <tr>
-                <th>Isotank ID</th>
-                <th>Container</th>
-                <th>Fornecedor</th>
-                <th>Local</th>
-                <th>Escopo / Produto</th>
-                <th>Status Técnico</th>
-                <th>Disponibilidade</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Preenchido via JS -->
-        </tbody>
-    </table>
+    <h2 class="page-title" style="font-size: 1.2rem; flex-shrink: 0; margin: 0;">Estoque de Isotanks</h2>
+
+    <!-- Tabela de estoque -->
+    <div class="card table-container" style="flex: 1; min-height: 0; overflow-y: auto;">
+        <table id="tabela-estoque-isotanks" class="table">
+            <thead>
+                <tr>
+                    <th>Isotank ID</th>
+                    <th>Container</th>
+                    <th>Fornecedor</th>
+                    <th>Local</th>
+                    <th>Escopo / Produto</th>
+                    <th>Status Técnico</th>
+                    <th>Disponibilidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Preenchido via JS -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal Escolha Isotank -->
@@ -55,7 +60,7 @@
       <button id="modal-close" class="btn btn-outline btn-sm" onclick="fecharModal()">Fechar</button>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
       <label>Filtrar por local</label>
       <select id="filtro-local">
           <option value="">Todos</option>

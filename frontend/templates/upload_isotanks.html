@@ -1,40 +1,44 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Importar Dados{% endblock %}
+
 {% block content %}
-<div class="page-header">
+<div class="page-header" style="flex-shrink: 0;">
     <div>
         <h1 class="page-title">Importação de dados (Staging)</h1>
         <p class="text-muted">Faça upload do CSV de staging para atualizar o estoque.</p>
     </div>
 </div>
 
-<div class="card" style="max-width: 600px;">
-    <p class="text-muted mb-4">
-      Use o template oficial de isotanks. Arquivos devem estar no formato CSV com cabeçalho.
-    </p>
+<div style="flex: 1; min-height: 0; overflow-y: auto;">
+    <div class="card" style="max-width: 600px;">
+        <p class="text-muted mb-4">
+          Use o template oficial de isotanks. Arquivos devem estar no formato CSV com cabeçalho.
+        </p>
 
-    <form id="form-upload-staging" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="fileCsv">Arquivo CSV</label>
-            <input type="file" name="file" id="fileCsv" accept=".csv" required>
-        </div>
-        
-        <div class="mt-4 flex-between">
-            <button type="submit" class="btn btn-primary">Fazer Upload CSV</button>
-            <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
-        </div>
-    </form>
+        <form id="form-upload-staging" enctype="multipart/form-data">
+            <div class="form-group" style="margin-bottom: 0.5rem; gap: 0.35rem;">
+                <label for="fileCsv">Arquivo CSV</label>
+                <input type="file" name="file" id="fileCsv" accept=".csv" required>
+            </div>
+            
+            <div class="mt-4 flex-between">
+                <button type="submit" class="btn btn-primary">Fazer Upload CSV</button>
+                <div id="upload-message" class="text-muted" style="font-size: 0.85rem;"></div>
+            </div>
+        </form>
 
-    <div id="csv-preview-container" style="display: none; margin-top: 2rem;">
-        <h5 style="margin-bottom: 1rem; color: var(--text-color);">Pré-visualização do Arquivo (Primeiras 5 linhas)</h5>
-        <div class="table-container">
-            <table class="table" id="tabela-csv-preview">
-                <thead>
-                    <tr id="csv-preview-header"></tr>
-                </thead>
-                <tbody id="csv-preview-body">
-                </tbody>
-            </table>
+        <div id="csv-preview-container" style="display: none; margin-top: 2rem;">
+            <h5 style="margin-bottom: 1rem; color: var(--text-color);">Pré-visualização do Arquivo (Primeiras 5 linhas)</h5>
+            <div class="table-container">
+                <table class="table" id="tabela-csv-preview">
+                    <thead>
+                        <tr id="csv-preview-header"></tr>
+                    </thead>
+                    <tbody id="csv-preview-body">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
