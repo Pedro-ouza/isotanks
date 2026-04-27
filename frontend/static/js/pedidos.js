@@ -1,46 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- Lógica para realizar_pedido.html ---
     const formRealizarPedido = document.getElementById('form-realizar-pedido');
     if (formRealizarPedido) {
         formRealizarPedido.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const messageDiv = document.getElementById('form-message');
-            
-            // Monta o array com a linha de pedido
-            const linhas = [
-                {
-                    cliente: document.getElementById('cliente').value,
-                    produtoSolicitado: document.getElementById('produtoSolicitado').value,
-                    quantidadeSolicitada: parseInt(document.getElementById('quantidadeSolicitada').value, 10),
-                    dataNecessidade: document.getElementById('dataNecessidade').value,
-                    solicitante: document.getElementById('solicitante').value,
-                    observacoesPedido: document.getElementById('observacoesPedido').value
-                }
-            ];
-
+            const linhas = [{
+                cliente:             document.getElementById('cliente').value,
+                produtoSolicitado:   document.getElementById('produtoSolicitado').value,
+                quantidadeSolicitada:parseInt(document.getElementById('quantidadeSolicitada').value, 10),
+                dataNecessidade:     document.getElementById('dataNecessidade').value,
+                solicitante:         document.getElementById('solicitante').value,
+                observacoesPedido:   document.getElementById('observacoesPedido').value
+            }];
             try {
-                const res = await fetch('/api/pedidos', {
+                const res  = await fetch('/api/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(linhas)
                 });
-                
                 const data = await res.json();
-                
                 if (res.ok) {
                     if (window.showAlert) window.showAlert(`Sucesso! Pedido gerado: ${data.pedidoId}`, 'success');
-                    
                     const resumoDiv = document.getElementById('pedido-resumo');
-                    resumoDiv.innerHTML = `
-                      <ul style="list-style:none; padding:0;">
-                        <li style="margin-bottom:0.5rem;"><strong>ID:</strong> ${data.pedidoId}</li>
-                        <li style="margin-bottom:0.5rem;"><strong>Cliente:</strong> ${linhas[0].cliente}</li>
-                        <li style="margin-bottom:0.5rem;"><strong>Produto:</strong> ${linhas[0].produtoSolicitado}</li>
-                        <li style="margin-bottom:0.5rem;"><strong>Quantidade:</strong> ${linhas[0].quantidadeSolicitada} Isotank(s)</li>
-                      </ul>
-                    `;
+                    if (resumoDiv) {
+                        resumoDiv.innerHTML = '';
+                        const ul = document.createElement('ul');
+                        ul.style.cssText = 'list-style:none;padding:0;';
+                        [['ID', data.pedidoId], ['Cliente', linhas[0].cliente],
+                         ['Produto', linhas[0].produtoSolicitado], ['Quantidade', linhas[0].quantidadeSolicitada + ' Isotank(s)']]
+                        .forEach(([label, val]) => {
+                            const li = document.createElement('li');
+                            li.style.marginBottom = '0.5rem';
+                            li.innerHTML = `<strong>${label}:</strong> `;
+                            li.appendChild(document.createTextNode(val));
+                            ul.appendChild(li);
+                        });
+                        resumoDiv.appendChild(ul);
+                    }
                     formRealizarPedido.reset();
                 } else {
                     if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
@@ -52,33 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Lógica para escolher_isotanks.html ---
-    const tabelaLinhas = document.getElementById('tabela-linhas-pedido');
-    if (tabelaLinhas) {
+    if (document.getElementById('tabela-linhas-pedido')) {
         carregarLinhasPedido();
         carregarEstoqueIsotanks();
     }
 
     // --- Lógica para gerenciamento_pedidos.html ---
-    const colSolicitado = document.getElementById('col-solicitado');
-    if (colSolicitado) {
+    if (document.getElementById('col-solicitado')) {
         carregarGerenciamentoPedidos();
     }
 
-    // Modal Novo Pedido Inline
+    // Modal Novo Pedido
     const formNovoPedidoModal = document.getElementById('form-novo-pedido-modal');
     if (formNovoPedidoModal) {
         formNovoPedidoModal.addEventListener('submit', async (e) => {
             e.preventDefault();
             const linhas = [{
-                cliente: document.getElementById('modal-cliente').value,
-                produtoSolicitado: document.getElementById('modal-produto').value,
-                quantidadeSolicitada: parseInt(document.getElementById('modal-quantidade').value, 10),
-                dataNecessidade: document.getElementById('modal-data').value,
-                solicitante: 'usuario_gerenciamento@citrosuco.com',
-                observacoesPedido: document.getElementById('modal-observacoes').value
+                cliente:             document.getElementById('modal-cliente').value,
+                produtoSolicitado:   document.getElementById('modal-produto').value,
+                quantidadeSolicitada:parseInt(document.getElementById('modal-quantidade').value, 10),
+                dataNecessidade:     document.getElementById('modal-data').value,
+                solicitante:         document.getElementById('modal-solicitante')?.value || '',
+                observacoesPedido:   document.getElementById('modal-observacoes').value
             }];
             try {
-                const res = await fetch('/api/pedidos', {
+                const res  = await fetch('/api/pedidos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(linhas)
@@ -105,14 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const linhaId = document.getElementById('edit-linha-id').value;
             const payload = {
-                cliente: document.getElementById('edit-cliente').value,
-                produtoSolicitado: document.getElementById('edit-produto').value,
-                quantidadeSolicitada: parseInt(document.getElementById('edit-quantidade').value, 10),
-                dataNecessidade: document.getElementById('edit-data').value,
-                observacoesPedido: document.getElementById('edit-observacoes').value
+                cliente:             document.getElementById('edit-cliente').value,
+                produtoSolicitado:   document.getElementById('edit-produto').value,
+                quantidadeSolicitada:parseInt(document.getElementById('edit-quantidade').value, 10),
+                dataNecessidade:     document.getElementById('edit-data').value,
+                observacoesPedido:   document.getElementById('edit-observacoes').value
             };
             try {
-                const res = await fetch(`/api/pedidos/${linhaId}`, {
+                const res  = await fetch(`/api/pedidos/${linhaId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -132,65 +127,95 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Funções Helpers para as tabelas
-
+// ─── Linhas de Pedido (escolher_isotanks) ────────────────────────────────────
 async function carregarLinhasPedido() {
     const tbody = document.querySelector('#tabela-linhas-pedido tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Carregando...</td></tr>';
     try {
-        const res = await fetch('/api/pedidos');
-        const pedidos = await res.json();
-        
+        const res    = await fetch('/api/pedidos?per_page=100');
+        const payload = await res.json();
+        const pedidos = payload.items ?? payload;
+
         tbody.innerHTML = '';
-        pedidos.filter(p => p.statusReserva === 'Solicitado').forEach(p => {
+        const solicitados = pedidos.filter(p => p.statusReserva === 'Solicitado');
+
+        if (solicitados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhum pedido aguardando alocação.</td></tr>';
+            return;
+        }
+
+        solicitados.forEach(p => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${p.pedidoId}</td>
-                <td>${p.linhaReservaId}</td>
-                <td>${p.cliente}</td>
-                <td>${p.produtoSolicitado}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm" onclick="abrirModalEscolha('${p.linhaReservaId}', '${p.produtoSolicitado}')">
-                        Escolher Isotank
-                    </button>
-                </td>
-            `;
+            const tdPedido  = document.createElement('td'); tdPedido.textContent  = p.pedidoId;
+            const tdLinha   = document.createElement('td'); tdLinha.textContent   = p.linhaReservaId;
+            const tdCliente = document.createElement('td'); tdCliente.textContent = p.cliente;
+            const tdProduto = document.createElement('td'); tdProduto.textContent = p.produtoSolicitado;
+            const tdAcao    = document.createElement('td');
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-primary btn-sm';
+            btn.textContent = 'Escolher Isotank';
+            btn.onclick = () => abrirModalIsotanks(p.linhaReservaId, p.produtoSolicitado, 'reservar');
+            tdAcao.appendChild(btn);
+            tr.append(tdPedido, tdLinha, tdCliente, tdProduto, tdAcao);
             tbody.appendChild(tr);
         });
     } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Erro ao carregar pedidos.</td></tr>';
         console.error(err);
     }
 }
 
-async function abrirModalEscolha(linhaId, produtoSolicitado) {
-    // Busca isotanks compatíveis
+// ─── Modal unificado de seleção de Isotank ───────────────────────────────────
+// modo: 'reservar' | 'trocar'
+async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
+    const tbody = document.querySelector('#tabela-candidatos tbody');
+    if (!tbody) return;
+
+    // Fecha modal de detalhes se estiver aberto
+    const modalDetalhes = document.getElementById('modal-detalhes-pedido');
+    if (modalDetalhes) modalDetalhes.style.display = 'none';
+
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Carregando isotanks compatíveis...</td></tr>';
+    document.getElementById('modal-isotanks').style.display = 'flex';
+
     try {
-        const res = await fetch(`/api/isotanks?statusTecnicoFinal=Processado&statusDisponibilidade=Disponivel&produto=${encodeURIComponent(produtoSolicitado)}`);
-        const isotanks = await res.json();
-        
-        const tbody = document.querySelector('#tabela-candidatos tbody');
-        if (!tbody) return;
+        const url = `/api/isotanks?statusTecnicoFinal=Processado&statusDisponibilidade=Disponivel&produto=${encodeURIComponent(produtoSolicitado)}&per_page=100`;
+        const res     = await fetch(url);
+        const payload = await res.json();
+        const isotanks = payload.items ?? payload;
+
         tbody.innerHTML = '';
-        
         if (isotanks.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
-        } else {
-            isotanks.forEach(iso => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${iso.id}</strong></td>
-                    <td>${iso.fornecedor}</td>
-                    <td>${iso.localAtual}</td>
-                    <td><small>${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}</small></td>
-                    <td><button class="btn btn-success btn-sm" onclick="reservarIsotank('${linhaId}', '${iso.id}')">Reservar</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
+            return;
         }
-        
-        // Mostra o modal
-        document.getElementById('modal-isotanks').style.display = 'flex';
+
+        isotanks.forEach(iso => {
+            const tr = document.createElement('tr');
+
+            const tdId   = document.createElement('td'); const strong = document.createElement('strong'); strong.textContent = iso.id; tdId.appendChild(strong);
+            const tdForn = document.createElement('td'); tdForn.textContent = iso.fornecedor;
+            const tdLoc  = document.createElement('td'); tdLoc.textContent  = iso.localAtual;
+            const tdProd = document.createElement('td');
+            const small  = document.createElement('small'); small.textContent = `${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}`;
+            tdProd.appendChild(small);
+            const tdAcao = document.createElement('td');
+            const btn    = document.createElement('button');
+            btn.className   = 'btn btn-success btn-sm';
+            btn.textContent = modo === 'trocar' ? 'Selecionar' : 'Reservar';
+            btn.onclick = modo === 'trocar'
+                ? () => trocarIsotank(linhaId, iso.id)
+                : () => reservarIsotank(linhaId, iso.id);
+            tdAcao.appendChild(btn);
+
+            tr.append(tdId, tdForn, tdLoc, tdProd, tdAcao);
+            tbody.appendChild(tr);
+        });
     } catch (e) {
-        if(window.showAlert) window.showAlert("Erro ao buscar isotanks compatíveis.", 'error');
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Erro ao buscar isotanks.</td></tr>';
+        if (window.showAlert) window.showAlert('Erro ao buscar isotanks compatíveis.', 'error');
     }
 }
 
@@ -204,138 +229,122 @@ async function reservarIsotank(linhaId, isotankId) {
         const res = await fetch(`/api/pedidos/${linhaId}/reservar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isotankId: isotankId, usuario: 'planejador_demo' })
+            body: JSON.stringify({ isotankId, usuario: 'planejador_demo' })
         });
-        if(res.ok) {
-            if(window.showAlert) window.showAlert('Reserva efetuada com sucesso!', 'success');
+        if (res.ok) {
+            if (window.showAlert) window.showAlert('Reserva efetuada com sucesso!', 'success');
             fecharModal();
-            carregarLinhasPedido(); // recarrega a tabela
+            carregarLinhasPedido();
         } else {
             const err = await res.json();
-            if(window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
+            if (window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 }
 
+// ─── Gerenciamento de Pedidos (Kanban) ───────────────────────────────────────
 async function carregarGerenciamentoPedidos() {
-    // Coleta filtros
     const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
-    const statusFiltro = document.getElementById('filtro-status')?.value || '';
+    const statusFiltro  = document.getElementById('filtro-status')?.value || '';
 
-    // Colunas do Kanban
-    const colSolicitado = document.getElementById('col-solicitado');
-    const colPreReservado = document.getElementById('col-pre-reservado');
-    const colConfirmado = document.getElementById('col-confirmado');
-    const colCancelado = document.getElementById('col-cancelado');
+    const colSolicitado  = document.getElementById('col-solicitado');
+    const colPreReservado= document.getElementById('col-pre-reservado');
+    const colConfirmado  = document.getElementById('col-confirmado');
+    const colCancelado   = document.getElementById('col-cancelado');
+    if (!colSolicitado) return;
 
-    if (!colSolicitado) return; // Segurança caso não esteja na página
+    // Estado de loading
+    [colSolicitado, colPreReservado, colConfirmado, colCancelado].forEach(col => {
+        col.innerHTML = '<div class="text-muted" style="padding:1rem;font-size:0.85rem;">Carregando...</div>';
+    });
 
     try {
-        const res = await fetch('/api/pedidos');
-        const pedidos = await res.json();
-        
-        window.pedidosAtuais = pedidos;
-        
-        colSolicitado.innerHTML = '';
-        colPreReservado.innerHTML = '';
-        colConfirmado.innerHTML = '';
-        colCancelado.innerHTML = '';
+        const res     = await fetch('/api/pedidos?per_page=100');
+        const payload = await res.json();
+        const pedidos = payload.items ?? payload;
 
-        let counts = { 'Solicitado': 0, 'Pré-Reservado': 0, 'Confirmado': 0, 'Cancelado': 0 };
-        
+        window.pedidosAtuais = pedidos;
+
+        [colSolicitado, colPreReservado, colConfirmado, colCancelado].forEach(col => col.innerHTML = '');
+
+        const counts = { 'Solicitado': 0, 'Pré-Reservado': 0, 'Confirmado': 0, 'Cancelado': 0 };
+
         pedidos.forEach(p => {
             if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
-            if (statusFiltro && p.statusReserva !== statusFiltro) return;
+            if (statusFiltro  && p.statusReserva !== statusFiltro) return;
 
             counts[p.statusReserva] = (counts[p.statusReserva] || 0) + 1;
 
             const card = document.createElement('div');
-            let statusClass = p.statusReserva.toLowerCase().replace('é', 'e'); // solicitado, pre-reservado, confirmado, cancelado
+            const statusClass = p.statusReserva.toLowerCase().replace('é', 'e');
             card.className = `pipeline-card status-${statusClass}`;
-            card.onclick = () => abrirModalDetalhes(p.linhaReservaId);
-
-            // Drag and drop
+            card.onclick   = () => abrirModalDetalhes(p.linhaReservaId);
             card.draggable = true;
             card.ondragstart = (e) => {
                 e.dataTransfer.setData('linhaId', p.linhaReservaId);
                 e.dataTransfer.setData('currentStatus', p.statusReserva);
             };
 
-            card.innerHTML = `
-                <div class="pipeline-card-info">
-                    <span class="pipeline-card-id">${p.pedidoId}</span>
-                </div>
-                <div class="pipeline-card-title">${p.cliente}</div>
-                <div class="pipeline-card-info" style="margin-top: 0.5rem;">
-                    <span>Prod: <strong>${p.produtoSolicitado}</strong></span>
-                </div>
-                <div class="pipeline-card-info">
-                    <span>Iso: <strong>${p.isotankIdReservado || 'N/A'}</strong></span>
-                </div>
-            `;
-            
-            if (p.statusReserva === 'Solicitado') colSolicitado.appendChild(card);
+            // textContent para dados do usuário — previne XSS
+            const divInfo = document.createElement('div'); divInfo.className = 'pipeline-card-info';
+            const spanId  = document.createElement('span'); spanId.className = 'pipeline-card-id'; spanId.textContent = p.pedidoId;
+            divInfo.appendChild(spanId);
+
+            const divTitle = document.createElement('div'); divTitle.className = 'pipeline-card-title'; divTitle.textContent = p.cliente;
+
+            const divProd = document.createElement('div'); divProd.className = 'pipeline-card-info'; divProd.style.marginTop = '0.5rem';
+            divProd.innerHTML = 'Prod: <strong></strong>';
+            divProd.querySelector('strong').textContent = p.produtoSolicitado;
+
+            const divIso = document.createElement('div'); divIso.className = 'pipeline-card-info';
+            divIso.innerHTML = 'Iso: <strong></strong>';
+            divIso.querySelector('strong').textContent = p.isotankIdReservado || 'N/A';
+
+            card.append(divInfo, divTitle, divProd, divIso);
+
+            if      (p.statusReserva === 'Solicitado')    colSolicitado.appendChild(card);
             else if (p.statusReserva === 'Pré-Reservado') colPreReservado.appendChild(card);
-            else if (p.statusReserva === 'Confirmado') colConfirmado.appendChild(card);
-            else if (p.statusReserva === 'Cancelado') colCancelado.appendChild(card);
+            else if (p.statusReserva === 'Confirmado')    colConfirmado.appendChild(card);
+            else if (p.statusReserva === 'Cancelado')     colCancelado.appendChild(card);
         });
 
-        document.getElementById('count-solicitado').innerText = counts['Solicitado'];
-        document.getElementById('count-pre-reservado').innerText = counts['Pré-Reservado'];
-        document.getElementById('count-confirmado').innerText = counts['Confirmado'];
-        document.getElementById('count-cancelado').innerText = counts['Cancelado'];
+        document.getElementById('count-solicitado').textContent   = counts['Solicitado'];
+        document.getElementById('count-pre-reservado').textContent= counts['Pré-Reservado'];
+        document.getElementById('count-confirmado').textContent   = counts['Confirmado'];
+        document.getElementById('count-cancelado').textContent    = counts['Cancelado'];
 
-        // Atualizar KPIs globais
-        const totalPedidos = counts['Solicitado'] + counts['Pré-Reservado'] + counts['Confirmado'] + counts['Cancelado'];
-        if(document.getElementById('kpi-total')) document.getElementById('kpi-total').innerText = totalPedidos;
-        if(document.getElementById('kpi-solicitado')) document.getElementById('kpi-solicitado').innerText = counts['Solicitado'];
-        if(document.getElementById('kpi-pre-reservado')) document.getElementById('kpi-pre-reservado').innerText = counts['Pré-Reservado'];
-        if(document.getElementById('kpi-confirmado')) document.getElementById('kpi-confirmado').innerText = counts['Confirmado'];
+        const total = Object.values(counts).reduce((a, b) => a + b, 0);
+        if (document.getElementById('kpi-total'))        document.getElementById('kpi-total').textContent        = total;
+        if (document.getElementById('kpi-solicitado'))   document.getElementById('kpi-solicitado').textContent   = counts['Solicitado'];
+        if (document.getElementById('kpi-pre-reservado'))document.getElementById('kpi-pre-reservado').textContent= counts['Pré-Reservado'];
+        if (document.getElementById('kpi-confirmado'))   document.getElementById('kpi-confirmado').textContent   = counts['Confirmado'];
 
-        // Configurar Drop Zones (nas colunas inteiras, não apenas no container de conteúdo)
+        // Drop zones do Kanban
         const colunas = [
-            { el: colSolicitado.parentElement, status: 'Solicitado' },
+            { el: colSolicitado.parentElement,   status: 'Solicitado' },
             { el: colPreReservado.parentElement, status: 'Pré-Reservado' },
-            { el: colConfirmado.parentElement, status: 'Confirmado' },
-            { el: colCancelado.parentElement, status: 'Cancelado' }
+            { el: colConfirmado.parentElement,   status: 'Confirmado' },
+            { el: colCancelado.parentElement,    status: 'Cancelado' }
         ];
-
         colunas.forEach(col => {
-            if(!col.el) return;
-            col.el.ondragover = (e) => {
-                e.preventDefault();
-                col.el.style.backgroundColor = 'var(--secondary-color, #e7f3f0)';
-                col.el.style.border = '2px dashed var(--primary-color, #00a188)';
-            };
-            col.el.ondragenter = (e) => {
-                e.preventDefault();
-            };
-            col.el.ondragleave = (e) => {
-                col.el.style.backgroundColor = '';
-                col.el.style.border = '1px solid var(--border-color)';
-            };
+            if (!col.el) return;
+            col.el.ondragover  = (e) => { e.preventDefault(); col.el.style.backgroundColor = 'var(--secondary-color, #e7f3f0)'; col.el.style.border = '2px dashed var(--primary-color, #00a188)'; };
+            col.el.ondragenter = (e) => { e.preventDefault(); };
+            col.el.ondragleave = ()  => { col.el.style.backgroundColor = ''; col.el.style.border = '1px solid var(--border-color)'; };
             col.el.ondrop = (e) => {
                 e.preventDefault();
                 col.el.style.backgroundColor = '';
                 col.el.style.border = '1px solid var(--border-color)';
-                const linhaId = e.dataTransfer.getData('linhaId');
+                const linhaId       = e.dataTransfer.getData('linhaId');
                 const currentStatus = e.dataTransfer.getData('currentStatus');
-                const targetStatus = col.status;
-
+                const targetStatus  = col.status;
                 if (currentStatus === targetStatus) return;
-
                 const pedido = window.pedidosAtuais?.find(p => p.linhaReservaId === linhaId);
-
                 if (targetStatus === 'Pré-Reservado') {
-                    if (pedido) abrirModalEscolha(linhaId, pedido.produtoSolicitado);
+                    if (pedido) abrirModalIsotanks(linhaId, pedido.produtoSolicitado, 'reservar');
                 } else if (targetStatus === 'Confirmado') {
-                    if (currentStatus === 'Pré-Reservado') {
-                        aprovarReserva(linhaId);
-                    } else {
-                        if (window.showAlert) window.showAlert('Apenas pedidos Pré-Reservados podem ser Confirmados.', 'warning');
-                    }
+                    if (currentStatus === 'Pré-Reservado') aprovarReserva(linhaId);
+                    else if (window.showAlert) window.showAlert('Apenas pedidos Pré-Reservados podem ser Confirmados.', 'warning');
                 } else if (targetStatus === 'Cancelado') {
                     cancelarReserva(linhaId);
                 } else if (targetStatus === 'Solicitado') {
@@ -345,29 +354,29 @@ async function carregarGerenciamentoPedidos() {
         });
 
     } catch (err) {
+        [colSolicitado, colPreReservado, colConfirmado, colCancelado].forEach(col => {
+            col.innerHTML = '<div class="text-muted" style="padding:1rem;font-size:0.85rem;">Erro ao carregar dados.</div>';
+        });
         console.error(err);
     }
 }
 
 async function cancelarReserva(linhaId) {
-    if(!confirm("Tem certeza que deseja cancelar esta reserva/pedido?")) return;
-    
+    if (!confirm('Tem certeza que deseja cancelar esta reserva/pedido?')) return;
     try {
         const res = await fetch(`/api/pedidos/${linhaId}/cancelar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ motivo: 'Cancelado pelo usuário', usuario: 'planejador_demo' })
         });
-        if(res.ok) {
-            if(window.showAlert) window.showAlert('Reserva cancelada com sucesso!', 'success');
+        if (res.ok) {
+            if (window.showAlert) window.showAlert('Reserva cancelada com sucesso!', 'success');
             carregarGerenciamentoPedidos();
         } else {
             const err = await res.json();
-            if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível cancelar'), 'error');
+            if (window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível cancelar'), 'error');
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 }
 
 function fecharModalDetalhes() {
@@ -380,123 +389,83 @@ function abrirModalDetalhes(linhaId) {
     if (!pedido) return;
 
     const conteudo = document.getElementById('modal-detalhes-conteudo');
-    conteudo.innerHTML = `
-        <ul style="list-style:none; padding:0; line-height: 1.6;">
-            <li><strong>Pedido ID:</strong> ${pedido.pedidoId}</li>
-            <li><strong>Linha Reserva ID:</strong> ${pedido.linhaReservaId}</li>
-            <li><strong>Cliente:</strong> ${pedido.cliente}</li>
-            <li><strong>Produto Solicitado:</strong> ${pedido.produtoSolicitado}</li>
-            <li><strong>Quantidade:</strong> ${pedido.quantidadeSolicitada}</li>
-            <li><strong>Data Necessidade:</strong> ${pedido.dataNecessidade}</li>
-            <li><strong>Status Reserva:</strong> ${obterBadgeReserva(pedido.statusReserva)}</li>
-            <li><strong>Isotank Reservado:</strong> ${pedido.isotankIdReservado || 'Nenhum'}</li>
-            ${pedido.motivoRejeicaoOuCancelamento ? `<li><strong>Motivo Cancelamento:</strong> ${pedido.motivoRejeicaoOuCancelamento}</li>` : ''}
-        </ul>
-    `;
+    conteudo.innerHTML = '';
+    const ul = document.createElement('ul');
+    ul.style.cssText = 'list-style:none;padding:0;line-height:1.6;';
+
+    [
+        ['Pedido ID',         pedido.pedidoId],
+        ['Linha Reserva ID',  pedido.linhaReservaId],
+        ['Cliente',           pedido.cliente],
+        ['Produto Solicitado',pedido.produtoSolicitado],
+        ['Quantidade',        pedido.quantidadeSolicitada],
+        ['Data Necessidade',  pedido.dataNecessidade],
+        ['Isotank Reservado', pedido.isotankIdReservado || 'Nenhum'],
+    ].forEach(([label, val]) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${label}:</strong> `;
+        li.appendChild(document.createTextNode(val ?? ''));
+        ul.appendChild(li);
+    });
+
+    // Status com badge (HTML seguro pois é estático)
+    const liStatus = document.createElement('li');
+    liStatus.innerHTML = `<strong>Status Reserva:</strong> ${obterBadgeReserva(pedido.statusReserva)}`;
+    ul.appendChild(liStatus);
+
+    if (pedido.motivoRejeicaoOuCancelamento) {
+        const liMotivo = document.createElement('li');
+        liMotivo.innerHTML = '<strong>Motivo Cancelamento:</strong> ';
+        liMotivo.appendChild(document.createTextNode(pedido.motivoRejeicaoOuCancelamento));
+        ul.appendChild(liMotivo);
+    }
+    conteudo.appendChild(ul);
 
     const btnAprovar = document.getElementById('btn-aprovar-modal');
-    const btnCancelar = document.getElementById('btn-cancelar-modal');
-    const btnTrocar = document.getElementById('btn-trocar-isotank-modal');
-    const btnEditar = document.getElementById('btn-editar-modal');
+    const btnCancelar= document.getElementById('btn-cancelar-modal');
+    const btnTrocar  = document.getElementById('btn-trocar-isotank-modal');
+    const btnEditar  = document.getElementById('btn-editar-modal');
 
-    // Reset callbacks
-    btnAprovar.onclick = null;
-    btnCancelar.onclick = null;
-    btnTrocar.onclick = null;
-    if(btnEditar) btnEditar.onclick = null;
+    btnAprovar.onclick = btnCancelar.onclick = btnTrocar.onclick = null;
+    if (btnEditar) btnEditar.onclick = null;
 
     if (btnEditar) {
-        if (pedido.statusReserva === 'Solicitado' || pedido.statusReserva === 'Pré-Reservado') {
-            btnEditar.style.display = 'inline-block';
-            btnEditar.onclick = () => abrirModalEditarPedido(linhaId);
-        } else {
-            btnEditar.style.display = 'none';
-        }
+        const editavel = ['Solicitado','Pré-Reservado'].includes(pedido.statusReserva);
+        btnEditar.style.display = editavel ? 'inline-block' : 'none';
+        if (editavel) btnEditar.onclick = () => abrirModalEditarPedido(linhaId);
     }
 
-    if (pedido.statusReserva === 'Pré-Reservado' || pedido.statusReserva === 'Confirmado') {
-        if (pedido.isotankIdReservado) {
-            btnTrocar.style.display = 'inline-block';
-            btnTrocar.onclick = () => abrirModalTroca(linhaId, pedido.produtoSolicitado);
-        } else {
-            btnTrocar.style.display = 'none';
-        }
-    } else {
-        btnTrocar.style.display = 'none';
-    }
+    const temIso = !!pedido.isotankIdReservado;
+    btnTrocar.style.display = (temIso && ['Pré-Reservado','Confirmado'].includes(pedido.statusReserva)) ? 'inline-block' : 'none';
+    if (temIso) btnTrocar.onclick = () => abrirModalIsotanks(linhaId, pedido.produtoSolicitado, 'trocar');
 
-    if (pedido.statusReserva === 'Pré-Reservado') {
-        btnAprovar.style.display = 'inline-block';
-        btnAprovar.onclick = () => aprovarReserva(linhaId);
-    } else {
-        btnAprovar.style.display = 'none';
-    }
+    btnAprovar.style.display = pedido.statusReserva === 'Pré-Reservado' ? 'inline-block' : 'none';
+    if (pedido.statusReserva === 'Pré-Reservado') btnAprovar.onclick = () => aprovarReserva(linhaId);
 
-    if (pedido.statusReserva === 'Solicitado' || pedido.statusReserva === 'Pré-Reservado') {
-        btnCancelar.style.display = 'inline-block';
-        btnCancelar.onclick = () => {
-            cancelarReserva(linhaId).then(() => fecharModalDetalhes());
-        };
-    } else {
-        btnCancelar.style.display = 'none';
-    }
+    const cancelavel = ['Solicitado','Pré-Reservado'].includes(pedido.statusReserva);
+    btnCancelar.style.display = cancelavel ? 'inline-block' : 'none';
+    if (cancelavel) btnCancelar.onclick = () => cancelarReserva(linhaId).then(() => fecharModalDetalhes());
 
-    const modal = document.getElementById('modal-detalhes-pedido');
-    if (modal) modal.style.display = 'flex';
+    document.getElementById('modal-detalhes-pedido').style.display = 'flex';
 }
 
 async function aprovarReserva(linhaId) {
-    if(!confirm("Tem certeza que deseja aprovar esta reserva?")) return;
-    
+    if (!confirm('Tem certeza que deseja aprovar esta reserva?')) return;
     try {
         const res = await fetch(`/api/pedidos/${linhaId}/aprovar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuario: 'planejador_demo' })
         });
-        if(res.ok) {
-            if(window.showAlert) window.showAlert('Reserva aprovada com sucesso!', 'success');
+        if (res.ok) {
+            if (window.showAlert) window.showAlert('Reserva aprovada com sucesso!', 'success');
             fecharModalDetalhes();
             carregarGerenciamentoPedidos();
         } else {
             const err = await res.json();
-            if(window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível aprovar'), 'error');
+            if (window.showAlert) window.showAlert('Erro: ' + (err.error || 'Não foi possível aprovar'), 'error');
         }
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-async function abrirModalTroca(linhaId, produtoSolicitado) {
-    fecharModalDetalhes();
-    try {
-        const res = await fetch(`/api/isotanks?statusTecnicoFinal=Processado&statusDisponibilidade=Disponivel&produto=${encodeURIComponent(produtoSolicitado)}`);
-        const isotanks = await res.json();
-        
-        const tbody = document.querySelector('#tabela-candidatos tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        
-        if (isotanks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
-        } else {
-            isotanks.forEach(iso => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${iso.id}</strong></td>
-                    <td>${iso.fornecedor}</td>
-                    <td>${iso.localAtual}</td>
-                    <td><small>${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}</small></td>
-                    <td><button class="btn btn-success btn-sm" onclick="trocarIsotank('${linhaId}', '${iso.id}')">Selecionar</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        
-        document.getElementById('modal-isotanks').style.display = 'flex';
-    } catch (e) {
-        if(window.showAlert) window.showAlert("Erro ao buscar isotanks compatíveis.", 'error');
-    }
+    } catch (e) { console.error(e); }
 }
 
 async function trocarIsotank(linhaId, novoIsotankId) {
@@ -506,110 +475,95 @@ async function trocarIsotank(linhaId, novoIsotankId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isotankId: novoIsotankId, usuario: 'planejador_demo' })
         });
-        if(res.ok) {
-            if(window.showAlert) window.showAlert('Isotank trocado com sucesso!', 'success');
+        if (res.ok) {
+            if (window.showAlert) window.showAlert('Isotank trocado com sucesso!', 'success');
             fecharModal();
             carregarGerenciamentoPedidos();
         } else {
             const err = await res.json();
-            if(window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
+            if (window.showAlert) window.showAlert('Erro: ' + err.error, 'error');
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-function fecharModalNovoPedido() {
-    const modal = document.getElementById('modal-novo-pedido');
-    if (modal) modal.style.display = 'none';
-}
-
-function abrirModalNovoPedido() {
-    const modal = document.getElementById('modal-novo-pedido');
-    if (modal) modal.style.display = 'flex';
-}
-
-function fecharModalEditarPedido() {
-    const modal = document.getElementById('modal-editar-pedido');
-    if (modal) modal.style.display = 'none';
-}
+function fecharModalNovoPedido()    { const m = document.getElementById('modal-novo-pedido');    if (m) m.style.display = 'none'; }
+function abrirModalNovoPedido()     { const m = document.getElementById('modal-novo-pedido');    if (m) m.style.display = 'flex'; }
+function fecharModalEditarPedido()  { const m = document.getElementById('modal-editar-pedido'); if (m) m.style.display = 'none'; }
 
 function abrirModalEditarPedido(linhaId) {
     const pedido = window.pedidosAtuais?.find(p => p.linhaReservaId === linhaId);
     if (!pedido) return;
-    
-    document.getElementById('edit-linha-id').value = pedido.linhaReservaId;
-    document.getElementById('edit-cliente').value = pedido.cliente || '';
-    document.getElementById('edit-produto').value = pedido.produtoSolicitado || '';
-    document.getElementById('edit-quantidade').value = pedido.quantidadeSolicitada || 1;
-    document.getElementById('edit-data').value = pedido.dataNecessidade || '';
+    document.getElementById('edit-linha-id').value    = pedido.linhaReservaId;
+    document.getElementById('edit-cliente').value     = pedido.cliente || '';
+    document.getElementById('edit-produto').value     = pedido.produtoSolicitado || '';
+    document.getElementById('edit-quantidade').value  = pedido.quantidadeSolicitada || 1;
+    document.getElementById('edit-data').value        = pedido.dataNecessidade || '';
     document.getElementById('edit-observacoes').value = pedido.observacoesPedido || '';
-
     fecharModalDetalhes();
-    const modal = document.getElementById('modal-editar-pedido');
-    if (modal) modal.style.display = 'flex';
+    const m = document.getElementById('modal-editar-pedido');
+    if (m) m.style.display = 'flex';
 }
 
-function exportarCSV() {
-    if (!window.pedidosAtuais || window.pedidosAtuais.length === 0) {
-        if (window.showAlert) window.showAlert('Nenhum dado para exportar.', 'warning');
-        return;
-    }
-    
-    // Coleta filtros atuais
+// ─── Exportar CSV com todos os dados (ignora paginação) ───────────────────────
+async function exportarCSV() {
     const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
-    const statusFiltro = document.getElementById('filtro-status')?.value || '';
-    
-    // Filtra no momento da exportação
-    const pedidosFiltrados = window.pedidosAtuais.filter(p => {
-        if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return false;
-        if (statusFiltro && p.statusReserva !== statusFiltro) return false;
-        return true;
-    });
+    const statusFiltro  = document.getElementById('filtro-status')?.value || '';
 
-    if (pedidosFiltrados.length === 0) {
-        if (window.showAlert) window.showAlert('Nenhum dado filtrado para exportar.', 'warning');
-        return;
+    try {
+        // Busca todos os registros explicitamente para não cortar dados paginados
+        const res     = await fetch('/api/pedidos?per_page=1000');
+        const payload = await res.json();
+        const todos   = payload.items ?? payload;
+
+        const pedidosFiltrados = todos.filter(p => {
+            if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return false;
+            if (statusFiltro  && p.statusReserva !== statusFiltro) return false;
+            return true;
+        });
+
+        if (pedidosFiltrados.length === 0) {
+            if (window.showAlert) window.showAlert('Nenhum dado para exportar.', 'warning');
+            return;
+        }
+
+        const headers = ['Pedido ID','Linha Reserva ID','Cliente','Produto Solicitado','Quantidade','Data Necessidade','Status Reserva','Isotank Reservado','Motivo Rejeicao'];
+        const rows    = pedidosFiltrados.map(p => [
+            p.pedidoId, p.linhaReservaId, p.cliente, p.produtoSolicitado,
+            p.quantidadeSolicitada, p.dataNecessidade, p.statusReserva,
+            p.isotankIdReservado || '', p.motivoRejeicaoOuCancelamento || ''
+        ]);
+
+        const csvContent = [
+            headers.join(';'),
+            ...rows.map(e => e.map(f => `"${String(f).replace(/"/g, '""')}"`).join(';'))
+        ].join('\n');
+
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', 'pedidos_export.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (e) {
+        if (window.showAlert) window.showAlert('Erro ao exportar dados.', 'error');
+        console.error(e);
     }
-    
-    const headers = ['Pedido ID', 'Linha Reserva ID', 'Cliente', 'Produto Solicitado', 'Quantidade', 'Data Necessidade', 'Status Reserva', 'Isotank Reservado', 'Motivo Rejeicao'];
-    const rows = pedidosFiltrados.map(p => [
-        p.pedidoId,
-        p.linhaReservaId,
-        p.cliente,
-        p.produtoSolicitado,
-        p.quantidadeSolicitada,
-        p.dataNecessidade,
-        p.statusReserva,
-        p.isotankIdReservado || '',
-        p.motivoRejeicaoOuCancelamento || ''
-    ]);
-    
-    const csvContent = [
-        headers.join(';'),
-        ...rows.map(e => e.map(field => `"${String(field).replace(/"/g, '""')}"`).join(';'))
-    ].join('\n');
-    
-    const blob = new Blob(["\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'pedidos_export.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }
 
-// Helper para tabela de Estoque de Isotanks
+// ─── Estoque de Isotanks (escolher_isotanks) ─────────────────────────────────
 async function carregarEstoqueIsotanks() {
     const tbody = document.querySelector('#tabela-estoque-isotanks tbody');
     if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Carregando...</td></tr>';
     try {
-        const res = await fetch('/api/isotanks');
+        const res     = await fetch('/api/isotanks?per_page=100');
         if (!res.ok) throw new Error('Erro na resposta');
-        const isotanks = await res.json();
-        
+        const payload = await res.json();
+        const isotanks = payload.items ?? payload;
+
         tbody.innerHTML = '';
         if (isotanks.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum isotank cadastrado.</td></tr>';
@@ -619,21 +573,36 @@ async function carregarEstoqueIsotanks() {
         isotanks.forEach(iso => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${iso.id}</td>
-                <td>${iso.numeroContainer || '-'}</td>
-                <td>${iso.fornecedor || '-'}</td>
-                <td>${iso.localAtual || '-'}</td>
-                <td>
-                    ${iso.produto1Canonico || '-'}<br><small class="text-muted">${iso.escopoAprovacao || ''}</small>
-                    ${iso.produto2Canonico ? `<br>${iso.produto2Canonico}<br><small class="text-muted">${iso.escopoAprovacao2 || ''}</small>` : ''}
-                    ${iso.produto3Canonico ? `<br>${iso.produto3Canonico}<br><small class="text-muted">${iso.escopoAprovacao3 || ''}</small>` : ''}
-                </td>
-                <td><span class="badge ${iso.statusTecnicoFinal === 'Processado' ? 'bg-success' : 'bg-warning'}">${iso.statusTecnicoFinal}</span></td>
-                <td><span class="badge ${iso.statusDisponibilidade === 'Disponivel' ? 'bg-primary' : 'bg-danger'}">${iso.statusDisponibilidade}</span></td>
+                <td></td><td></td><td></td><td></td><td></td>
+                <td>${obterBadgeTecnico(iso.statusTecnicoFinal)}</td>
+                <td>${obterBadgeDisp(iso.statusDisponibilidade)}</td>
             `;
+            // textContent para campos de dados livres
+            const tds = tr.querySelectorAll('td');
+            tds[0].textContent = iso.id;
+            tds[1].textContent = iso.numeroContainer || '-';
+            tds[2].textContent = iso.fornecedor      || '-';
+            tds[3].textContent = iso.localAtual      || '-';
+            // Produtos: montados manualmente para evitar XSS
+            const tdProd = tds[4];
+            tdProd.innerHTML = '';
+            [[iso.produto1Canonico, iso.escopoAprovacao],
+             [iso.produto2Canonico, iso.escopoAprovacao2],
+             [iso.produto3Canonico, iso.escopoAprovacao3]]
+            .filter(([p]) => p)
+            .forEach(([prod, esc], i) => {
+                if (i > 0) tdProd.appendChild(document.createElement('br'));
+                tdProd.appendChild(document.createTextNode(prod));
+                if (esc) {
+                    tdProd.appendChild(document.createElement('br'));
+                    const small = document.createElement('small'); small.className = 'text-muted'; small.textContent = esc;
+                    tdProd.appendChild(small);
+                }
+            });
             tbody.appendChild(tr);
         });
     } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Erro ao carregar isotanks.</td></tr>';
         if (window.showAlert) window.showAlert('Erro ao carregar estoque de isotanks.', 'error');
         console.error(e);
     }

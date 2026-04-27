@@ -4,68 +4,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaStaging = document.getElementById('tabela-staging');
     if (tabelaStaging) {
         carregarStaging();
-        
-        const btnAprovar = document.getElementById('btn-aprovar');
+
+        const btnAprovar  = document.getElementById('btn-aprovar');
         const btnRejeitar = document.getElementById('btn-rejeitar');
         const formAprovar = document.getElementById('form-aprovar-isotank');
-        
+
         async function submitAprovacao(statusFinal) {
             if (!document.getElementById('iso-id').value) {
                 if (window.showAlert) window.showAlert('Selecione um isotank primeiro.', 'error');
                 return;
             }
-            
             const payload = {
-                id: document.getElementById('iso-id').value,
-                fornecedor: document.getElementById('iso-fornecedor').value,
-                numeroContainer: document.getElementById('iso-container').value,
-                localAtual: document.getElementById('iso-local').value,
-                produto1Canonico: document.getElementById('iso-produto').value,
-                escopoAprovacao: document.getElementById('iso-escopo').value,
-                produto2Canonico: document.getElementById('iso-produto2').value,
-                escopoAprovacao2: document.getElementById('iso-escopo2').value,
-                produto3Canonico: document.getElementById('iso-produto3').value,
-                escopoAprovacao3: document.getElementById('iso-escopo3').value,
-                statusTecnicoFinal: statusFinal,
-                statusDisponibilidade: statusFinal === 'Processado' ? 'Disponivel' : 'Indisponivel'
+                id:                document.getElementById('iso-id').value,
+                fornecedor:        document.getElementById('iso-fornecedor').value,
+                numeroContainer:   document.getElementById('iso-container').value,
+                localAtual:        document.getElementById('iso-local').value,
+                produto1Canonico:  document.getElementById('iso-produto').value,
+                escopoAprovacao:   document.getElementById('iso-escopo').value,
+                produto2Canonico:  document.getElementById('iso-produto2').value,
+                escopoAprovacao2:  document.getElementById('iso-escopo2').value,
+                produto3Canonico:  document.getElementById('iso-produto3').value,
+                escopoAprovacao3:  document.getElementById('iso-escopo3').value,
+                statusTecnicoFinal:   statusFinal,
+                statusDisponibilidade:statusFinal === 'Processado' ? 'Disponivel' : 'Indisponivel'
             };
-            
             try {
-                const res = await fetch('/api/isotanks', {
+                const res  = await fetch('/api/isotanks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
-                
                 if (res.ok) {
                     if (window.showAlert) window.showAlert(`Sucesso! Isotank ${statusFinal.toLowerCase()}.`, 'success');
                     if (formAprovar) formAprovar.reset();
-                    // Limpar seleção
                     document.querySelectorAll('#tabela-staging tbody tr').forEach(row => row.classList.remove('selected'));
                     carregarStaging();
                 } else {
                     if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
-                if (window.showAlert) window.showAlert(`Erro de rede ao processar isotank.`, 'error');
+                if (window.showAlert) window.showAlert('Erro de rede ao processar isotank.', 'error');
                 console.error(err);
             }
         }
-        
-        if (btnAprovar) {
-            btnAprovar.addEventListener('click', () => submitAprovacao('Processado'));
-        }
-        if (btnRejeitar) {
-            btnRejeitar.addEventListener('click', () => submitAprovacao('Rejeitado'));
-        }
+
+        if (btnAprovar)  btnAprovar.addEventListener('click',  () => submitAprovacao('Processado'));
+        if (btnRejeitar) btnRejeitar.addEventListener('click', () => submitAprovacao('Rejeitado'));
     }
 
     // --- Lógica para upload_isotanks.html ---
     const formUpload = document.getElementById('form-upload-staging');
     if (formUpload) {
         const fileInput = document.getElementById('fileCsv');
-        
+
         if (fileInput) {
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
@@ -73,39 +65,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('csv-preview-container').style.display = 'none';
                     return;
                 }
-                
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    const text = event.target.result;
-                    // Divide por quebra de linha considerando diferentes S.O.s e remove linhas vazias
+                    const text  = event.target.result;
                     const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
                     if (lines.length > 0) {
                         const headers = lines[0].split(',');
-                        
-                        const trHead = document.getElementById('csv-preview-header');
+                        const trHead  = document.getElementById('csv-preview-header');
                         trHead.innerHTML = '';
                         headers.forEach(h => {
                             const th = document.createElement('th');
                             th.textContent = h.trim();
                             trHead.appendChild(th);
                         });
-                        
                         const tbody = document.getElementById('csv-preview-body');
                         tbody.innerHTML = '';
-                        
-                        // Mostra apenas as 5 primeiras linhas
-                        const previewLines = lines.slice(1, 6);
-                        previewLines.forEach(line => {
+                        lines.slice(1, 6).forEach(line => {
                             const cols = line.split(',');
-                            const tr = document.createElement('tr');
+                            const tr   = document.createElement('tr');
                             cols.forEach(col => {
                                 const td = document.createElement('td');
-                                td.textContent = col.trim();
+                                td.textContent = col.trim(); // textContent — previne XSS no preview
                                 tr.appendChild(td);
                             });
                             tbody.appendChild(tr);
                         });
-                        
                         document.getElementById('csv-preview-container').style.display = 'block';
                     }
                 };
@@ -115,23 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formUpload.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const fileInput = document.getElementById('fileCsv');
             if (fileInput.files.length === 0) return;
-            
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
-            
             const msgDiv = document.getElementById('upload-message');
-            msgDiv.innerHTML = 'Enviando...';
-            
+            if (msgDiv) msgDiv.textContent = 'Enviando...';
             try {
-                const res = await fetch('/api/staging/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+                const res  = await fetch('/api/staging/upload', { method: 'POST', body: formData });
                 const data = await res.json();
-                
                 if (res.ok) {
                     if (window.showAlert) window.showAlert(data.message, 'success');
                     formUpload.reset();
@@ -139,30 +115,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (window.showAlert) window.showAlert(`Erro: ${data.error}`, 'error');
                 }
             } catch (err) {
-                if (window.showAlert) window.showAlert(`Falha na comunicação com o servidor.`, 'error');
+                if (window.showAlert) window.showAlert('Falha na comunicação com o servidor.', 'error');
             }
         });
     }
 });
 
-// Helper de Staging
+// ─── Staging ─────────────────────────────────────────────────────────────────
 async function carregarStaging() {
     const tbody = document.querySelector('#tabela-staging tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Carregando...</td></tr>';
     try {
-        const res = await fetch('/api/staging');
-        const dados = await res.json();
-        
+        const res     = await fetch('/api/staging?per_page=100');
+        const payload = await res.json();
+        const dados   = payload.items ?? payload;
+
         tbody.innerHTML = '';
-        dados.forEach((stg, idx) => {
+
+        if (dados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Nenhum isotank em staging.</td></tr>';
+            return;
+        }
+
+        dados.forEach(stg => {
             const tr = document.createElement('tr');
-            tr.dataset.index = idx;
-            tr.innerHTML = `
-                <td>${stg.id}</td>
-                <td>${stg.isotankId}</td>
-                <td>
-                    <button type="button" class="btn btn-outline btn-sm">Analisar</button>
-                </td>
-            `;
+
+            const tdId  = document.createElement('td'); tdId.textContent  = stg.id;
+            const tdIso = document.createElement('td'); tdIso.textContent = stg.isotankId;
+            const tdAcao= document.createElement('td');
+            const btn   = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'btn btn-outline btn-sm';
+            btn.textContent = 'Analisar';
+            tdAcao.appendChild(btn);
+            tr.append(tdId, tdIso, tdAcao);
+
             tr.addEventListener('click', () => {
                 document.querySelectorAll('#tabela-staging tbody tr').forEach(row => row.classList.remove('selected'));
                 tr.classList.add('selected');
@@ -171,22 +160,22 @@ async function carregarStaging() {
             tbody.appendChild(tr);
         });
     } catch (e) {
-        if (window.showAlert) window.showAlert(`Erro ao carregar staging.`, 'error');
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Erro ao carregar staging.</td></tr>';
+        if (window.showAlert) window.showAlert('Erro ao carregar staging.', 'error');
         console.error(e);
     }
 }
 
 function preencherFormulario(stg) {
-    document.getElementById('iso-id').value = stg.isotankId || '';
-    document.getElementById('iso-fornecedor').value = stg.fornecedor || '';
+    document.getElementById('iso-id').value        = stg.isotankId    || '';
+    document.getElementById('iso-fornecedor').value= stg.fornecedor   || '';
     document.getElementById('iso-container').value = stg.numeroContainer || '';
-    document.getElementById('iso-local').value = stg.localAtual || '';
-    document.getElementById('iso-produto').value = stg.ultimoProduto || '';
-    document.getElementById('iso-escopo').value = '';
-    document.getElementById('iso-produto2').value = '';
-    document.getElementById('iso-escopo2').value = '';
-    document.getElementById('iso-produto3').value = '';
-    document.getElementById('iso-escopo3').value = '';
-    // Rolagem automática pro form
+    document.getElementById('iso-local').value     = stg.localAtual   || '';
+    document.getElementById('iso-produto').value   = stg.ultimoProduto|| '';
+    document.getElementById('iso-escopo').value    = '';
+    document.getElementById('iso-produto2').value  = '';
+    document.getElementById('iso-escopo2').value   = '';
+    document.getElementById('iso-produto3').value  = '';
+    document.getElementById('iso-escopo3').value   = '';
     document.getElementById('form-aprovar-isotank').scrollIntoView({ behavior: 'smooth' });
 }
