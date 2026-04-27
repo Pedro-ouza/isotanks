@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica para realizar_pedido.html ---
     const formRealizarPedido = document.getElementById('form-realizar-pedido');
@@ -178,6 +178,10 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
     if (modalDetalhes) modalDetalhes.style.display = 'none';
 
     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Carregando isotanks compatíveis...</td></tr>';
+    // Popula chip do produto alvo
+    const chipProd = document.getElementById('modal-produto-alvo');
+    if (chipProd) chipProd.textContent = produtoSolicitado;
+
     document.getElementById('modal-isotanks').style.display = 'flex';
 
     try {
@@ -209,6 +213,19 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
                 ? () => trocarIsotank(linhaId, iso.id)
                 : () => reservarIsotank(linhaId, iso.id);
             tdAcao.appendChild(btn);
+
+            // Destaque de compatibilidade
+            const produtos = [iso.produto1Canonico, iso.produto2Canonico, iso.produto3Canonico]
+                .filter(Boolean).map(p => p.toLowerCase());
+            const match = produtos.some(p => p.includes(produtoSolicitado.toLowerCase()));
+            if (match) {
+                tr.style.background = 'var(--badge-success-bg, #dcfce7)';
+                const spanMatch = document.createElement('span');
+                spanMatch.className = 'badge bg-success';
+                spanMatch.style.marginLeft = '0.4rem';
+                spanMatch.textContent = String.fromCharCode(0x2713) + ' compat' + String.fromCharCode(0xed) + 'vel';
+                tdProd.appendChild(spanMatch);
+            }
 
             tr.append(tdId, tdForn, tdLoc, tdProd, tdAcao);
             tbody.appendChild(tr);
@@ -246,6 +263,8 @@ async function reservarIsotank(linhaId, isotankId) {
 async function carregarGerenciamentoPedidos() {
     const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
     const statusFiltro  = document.getElementById('filtro-status')?.value || '';
+    const dataDefiltro  = document.getElementById('filtro-data-de')?.value || '';
+    const dataAtefiltro = document.getElementById('filtro-data-ate')?.value || '';
 
     const colSolicitado  = document.getElementById('col-solicitado');
     const colPreReservado= document.getElementById('col-pre-reservado');
@@ -272,6 +291,8 @@ async function carregarGerenciamentoPedidos() {
         pedidos.forEach(p => {
             if (clienteFiltro && !p.cliente.toLowerCase().includes(clienteFiltro)) return;
             if (statusFiltro  && p.statusReserva !== statusFiltro) return;
+            if (dataDefiltro  && p.dataNecessidade < dataDefiltro) return;
+            if (dataAtefiltro && p.dataNecessidade > dataAtefiltro) return;
 
             counts[p.statusReserva] = (counts[p.statusReserva] || 0) + 1;
 
@@ -300,7 +321,28 @@ async function carregarGerenciamentoPedidos() {
             divIso.innerHTML = 'Iso: <strong></strong>';
             divIso.querySelector('strong').textContent = p.isotankIdReservado || 'N/A';
 
-            card.append(divInfo, divTitle, divProd, divIso);
+            // Data de necessidade + badge de urgência
+            const divData = document.createElement('div');
+            divData.className = 'pipeline-card-info';
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const dataNec = new Date(p.dataNecessidade + 'T00:00:00');
+            const diffDias = Math.ceil((dataNec - hoje) / 86400000);
+
+            divData.innerHTML = '📅 ';
+            const spanData = document.createElement('span');
+            spanData.textContent = p.dataNecessidade || 'N/A';
+            divData.appendChild(spanData);
+
+            if (diffDias <= 3 && !['Cancelado','Confirmado'].includes(p.statusReserva)) {
+                const badgeUrg = document.createElement('span');
+                badgeUrg.className = 'badge bg-danger';
+                badgeUrg.style.marginLeft = '0.5rem';
+                badgeUrg.textContent = diffDias < 0 ? 'Vencido' : 'Urgente';
+                divData.appendChild(badgeUrg);
+                card.classList.add('card-urgente');
+            }
+
+            card.append(divInfo, divTitle, divProd, divData, divIso);
 
             if      (p.statusReserva === 'Solicitado')    colSolicitado.appendChild(card);
             else if (p.statusReserva === 'Pré-Reservado') colPreReservado.appendChild(card);
@@ -343,10 +385,22 @@ async function carregarGerenciamentoPedidos() {
                 if (targetStatus === 'Pré-Reservado') {
                     if (pedido) abrirModalIsotanks(linhaId, pedido.produtoSolicitado, 'reservar');
                 } else if (targetStatus === 'Confirmado') {
-                    if (currentStatus === 'Pré-Reservado') aprovarReserva(linhaId);
+                    if (currentStatus === 'Pré-Reservado') {
+                        let undoTimer;
+                        const toast = mostrarToastUndo(
+                            'Pedido movido para Confirmado.',
+                            () => { clearTimeout(undoTimer); toast.remove(); carregarGerenciamentoPedidos(); }
+                        );
+                        undoTimer = setTimeout(() => { toast.remove(); aprovarReserva(linhaId); }, 5000);
+                    }
                     else if (window.showAlert) window.showAlert('Apenas pedidos Pré-Reservados podem ser Confirmados.', 'warning');
                 } else if (targetStatus === 'Cancelado') {
-                    cancelarReserva(linhaId);
+                    let undoTimer2;
+                    const toast2 = mostrarToastUndo(
+                        'Pedido movido para Cancelado.',
+                        () => { clearTimeout(undoTimer2); toast2.remove(); carregarGerenciamentoPedidos(); }
+                    );
+                    undoTimer2 = setTimeout(() => { toast2.remove(); cancelarReserva(linhaId); }, 5000);
                 } else if (targetStatus === 'Solicitado') {
                     if (window.showAlert) window.showAlert('Não é possível reverter para Solicitado por drag-and-drop.', 'warning');
                 }
@@ -508,6 +562,8 @@ function abrirModalEditarPedido(linhaId) {
 async function exportarCSV() {
     const clienteFiltro = document.getElementById('filtro-cliente')?.value.toLowerCase() || '';
     const statusFiltro  = document.getElementById('filtro-status')?.value || '';
+    const dataDefiltro  = document.getElementById('filtro-data-de')?.value || '';
+    const dataAtefiltro = document.getElementById('filtro-data-ate')?.value || '';
 
     try {
         // Busca todos os registros explicitamente para não cortar dados paginados
@@ -606,4 +662,21 @@ async function carregarEstoqueIsotanks() {
         if (window.showAlert) window.showAlert('Erro ao carregar estoque de isotanks.', 'error');
         console.error(e);
     }
+}
+
+// ─── Toast Undo ─────────────────────────────────────
+function mostrarToastUndo(mensagem, onUndo) {
+    document.getElementById('toast-undo')?.remove();
+    const toast = document.createElement('div');
+    toast.id = 'toast-undo';
+    const span = document.createElement('span');
+    span.textContent = mensagem;
+    const btn = document.createElement('button');
+    btn.id = 'btn-undo-toast';
+    btn.textContent = 'Desfazer';
+    btn.onclick = onUndo;
+    toast.appendChild(span);
+    toast.appendChild(btn);
+    document.body.appendChild(toast);
+    return toast;
 }

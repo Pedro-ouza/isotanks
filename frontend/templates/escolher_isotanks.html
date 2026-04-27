@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Alocar Isotanks{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <div>
@@ -49,7 +51,7 @@
 <div id="modal-isotanks" class="modal" style="display:none;">
   <div class="modal-content card">
     <div class="flex-between mb-4">
-      <h3>Escolher isotank</h3>
+      <h3>Escolher isotank — <span id="modal-produto-alvo" class="topbar-chip" style="font-size:0.8rem;"></span></h3>
       <button id="modal-close" class="btn btn-outline btn-sm" onclick="fecharModal()">Fechar</button>
     </div>
 

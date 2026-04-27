@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Aprovação de Isotanks{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <div>
@@ -40,6 +42,12 @@
               <button id="btn-aprovar" class="btn btn-success btn-sm">Aprovar</button>
               <button id="btn-rejeitar" class="btn btn-outline btn-sm" style="color: var(--danger-color); border-color: var(--danger-color);">Rejeitar</button>
             </div>
+        </div>
+
+        <div id="chip-editando" style="display:none; margin-bottom: 0.75rem;">
+            <span class="topbar-chip" style="font-size:0.8rem;">
+                Editando: <strong id="chip-editando-id"></strong>
+            </span>
         </div>
 
         <form id="form-aprovar-isotank" class="mt-4">

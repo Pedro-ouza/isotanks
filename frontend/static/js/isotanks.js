@@ -178,4 +178,12 @@ function preencherFormulario(stg) {
     document.getElementById('iso-produto3').value  = '';
     document.getElementById('iso-escopo3').value   = '';
     document.getElementById('form-aprovar-isotank').scrollIntoView({ behavior: 'smooth' });
+
+    // Atualiza chip de edição
+    const chip = document.getElementById('chip-editando');
+    const chipId = document.getElementById('chip-editando-id');
+    if (chip && chipId) {
+        chipId.textContent = stg.isotankId || stg.id;
+        chip.style.display = 'block';
+    }
 }

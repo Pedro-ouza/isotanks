@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Pedidos e Reservas{% endblock %}
+
 {% block content %}
 <div class="page-header flex-between">
     <div>
@@ -47,6 +49,14 @@
                 <option value="Confirmado">Confirmado</option>
                 <option value="Cancelado">Cancelado</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label>Data Necessidade — De</label>
+            <input type="date" id="filtro-data-de">
+        </div>
+        <div class="form-group">
+            <label>Data Necessidade — Até</label>
+            <input type="date" id="filtro-data-ate">
         </div>
         <div class="form-group" style="justify-content: flex-end;">
             <button id="btn-aplicar-filtros" class="btn btn-primary" onclick="carregarGerenciamentoPedidos()">Aplicar filtros</button>

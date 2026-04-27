@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Evera Isotank Hub — plataforma de gestão de isotanks, pedidos e reservas.">
-    <title>Isotank Gestor | Evera</title>
+    <title>{% block page_title %}Isotank Gestor{% endblock %} | Evera</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -30,7 +30,10 @@
                     <small>Aprovação técnica</small>
                 </a>
                 <a href="/gerenciamento-pedidos" class="nav-link {% if active_page == 'gerenciar' %}active{% endif %}">
-                    <span>Pedidos e Reservas</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Pedidos e Reservas</span>
+                        <span id="sidebar-badge-solicitados" class="badge bg-warning" style="display:none;"></span>
+                    </div>
                     <small>Status de execução</small>
                 </a>
 

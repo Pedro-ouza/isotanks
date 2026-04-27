@@ -82,6 +82,25 @@ async function carregarMetricas() {
         const payload = await resPedidos.json();
         const pedidos = payload.items ?? payload; // retrocompatibilidade
 
+        // Popula badge da sidebar
+        const allPedidos = await fetch('/api/pedidos?per_page=1000').then(r => r.json());
+        const todosP = allPedidos.items ?? allPedidos;
+        const solicitados = todosP.filter(p => p.statusReserva === 'Solicitado').length;
+        const badgeSidebar = document.getElementById('sidebar-badge-solicitados');
+        if (badgeSidebar) {
+            if (solicitados > 0) {
+                badgeSidebar.textContent = solicitados;
+                badgeSidebar.style.display = 'inline-block';
+            } else {
+                badgeSidebar.style.display = 'none';
+            }
+        }
+
+        // Atualiza título da aba
+        document.title = solicitados > 0
+            ? `(${solicitados}) Dashboard | Evera`
+            : 'Dashboard | Evera';
+
         const tbody = document.querySelector('#tabela-ultimos-pedidos tbody');
         if (!tbody) return;
 
@@ -96,7 +115,18 @@ async function carregarMetricas() {
             const tdStatus  = document.createElement('td'); tdStatus.innerHTML   = obterBadgeReserva(p.statusReserva);
             const tdIso     = document.createElement('td'); tdIso.textContent     = p.isotankIdReservado || '-';
 
-            tr.append(tdId, tdCliente, tdProduto, tdStatus, tdIso);
+            // Coluna de ação
+            const tdAcao = document.createElement('td');
+            if (p.statusReserva === 'Solicitado') {
+                const btnAlocar = document.createElement('a');
+                btnAlocar.href = '/escolher-isotanks';
+                btnAlocar.className = 'btn btn-primary btn-sm';
+                btnAlocar.textContent = 'Alocar';
+                tdAcao.appendChild(btnAlocar);
+            } else {
+                tdAcao.textContent = '\u2014';
+            }
+            tr.append(tdId, tdCliente, tdProduto, tdStatus, tdIso, tdAcao);
             tbody.appendChild(tr);
         });
     } catch (e) {
