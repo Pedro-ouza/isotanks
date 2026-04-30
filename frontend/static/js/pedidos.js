@@ -206,7 +206,7 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
             const small  = document.createElement('small'); small.textContent = `${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}`;
             tdProd.appendChild(small);
             const tdAprovCPOO = document.createElement('td');
-            tdAprovCPOO.innerHTML = iso.aprovadoParaCPOO ? '<span class="badge bg-success">Sim</span>' : '<span class="badge bg-secondary">Não</span>';
+            tdAprovCPOO.innerHTML = iso.aprovadoPara ? `<span class="badge bg-info">${iso.aprovadoPara}</span>` : '-';
             const tdAcao = document.createElement('td');
             const btn    = document.createElement('button');
             btn.className   = 'btn btn-success btn-sm';
@@ -634,7 +634,7 @@ async function carregarEstoqueIsotanks() {
                 <td></td><td></td><td></td><td></td><td></td>
                 <td>${obterBadgeTecnico(iso.statusTecnicoFinal)}</td>
                 <td>${obterBadgeDisp(iso.statusDisponibilidade)}</td>
-                <td>${iso.aprovadoParaCPOO ? '<span class="badge bg-success">Sim</span>' : '<span class="badge bg-secondary">Não</span>'}</td>
+                <td>${iso.aprovadoPara ? `<span class="badge bg-info">${iso.aprovadoPara}</span>` : '-'}</td>
             `;
             // textContent para campos de dados livres
             const tds = tr.querySelectorAll('td');

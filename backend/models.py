@@ -41,7 +41,7 @@ class Isotank(db.Model):
     escopoAprovacao3 = db.Column(db.String(255), nullable=True)
     statusTecnicoFinal = db.Column(db.String(50))
     statusDisponibilidade = db.Column(db.String(50))
-    aprovadoParaCPOO = db.Column(db.Boolean, default=False)
+    aprovadoPara = db.Column(db.String(50), nullable=True)
     reservadoParaPedidoId = db.Column(db.String(50), nullable=True)
     reservadoPor = db.Column(db.String(100), nullable=True)
 
@@ -59,7 +59,7 @@ class Isotank(db.Model):
             "escopoAprovacao3": self.escopoAprovacao3,
             "statusTecnicoFinal": self.statusTecnicoFinal,
             "statusDisponibilidade": self.statusDisponibilidade,
-            "aprovadoParaCPOO": self.aprovadoParaCPOO,
+            "aprovadoPara": self.aprovadoPara,
             "reservadoParaPedidoId": self.reservadoParaPedidoId,
             "reservadoPor": self.reservadoPor
         }
