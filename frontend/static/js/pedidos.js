@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica para realizar_pedido.html ---
     const formRealizarPedido = document.getElementById('form-realizar-pedido');
@@ -132,7 +132,7 @@ async function carregarLinhasPedido() {
     const tbody = document.querySelector('#tabela-linhas-pedido tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Carregando...</td></tr>';
     try {
         const res    = await fetch('/api/pedidos?per_page=100');
         const payload = await res.json();
@@ -142,7 +142,7 @@ async function carregarLinhasPedido() {
         const solicitados = pedidos.filter(p => p.statusReserva === 'Solicitado');
 
         if (solicitados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhum pedido aguardando alocação.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhum pedido aguardando alocação.</td></tr>';
             return;
         }
 
@@ -162,7 +162,7 @@ async function carregarLinhasPedido() {
             tbody.appendChild(tr);
         });
     } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Erro ao carregar pedidos.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Erro ao carregar pedidos.</td></tr>';
         console.error(err);
     }
 }
@@ -177,7 +177,7 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
     const modalDetalhes = document.getElementById('modal-detalhes-pedido');
     if (modalDetalhes) modalDetalhes.style.display = 'none';
 
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Carregando isotanks compatíveis...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Carregando isotanks compatíveis...</td></tr>';
     // Popula chip do produto alvo
     const chipProd = document.getElementById('modal-produto-alvo');
     if (chipProd) chipProd.textContent = produtoSolicitado;
@@ -192,7 +192,7 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
 
         tbody.innerHTML = '';
         if (isotanks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-muted text-center">Nenhum isotank processado e disponível encontrado para este produto.</td></tr>';
             return;
         }
 
@@ -205,6 +205,8 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
             const tdProd = document.createElement('td');
             const small  = document.createElement('small'); small.textContent = `${iso.produto1Canonico} / ${iso.escopoAprovacao || '-'}`;
             tdProd.appendChild(small);
+            const tdAprovCPOO = document.createElement('td');
+            tdAprovCPOO.innerHTML = iso.aprovadoParaCPOO ? '<span class="badge bg-success">Sim</span>' : '<span class="badge bg-secondary">Não</span>';
             const tdAcao = document.createElement('td');
             const btn    = document.createElement('button');
             btn.className   = 'btn btn-success btn-sm';
@@ -227,11 +229,11 @@ async function abrirModalIsotanks(linhaId, produtoSolicitado, modo) {
                 tdProd.appendChild(spanMatch);
             }
 
-            tr.append(tdId, tdForn, tdLoc, tdProd, tdAcao);
+            tr.append(tdId, tdForn, tdLoc, tdProd, tdAprovCPOO, tdAcao);
             tbody.appendChild(tr);
         });
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Erro ao buscar isotanks.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Erro ao buscar isotanks.</td></tr>';
         if (window.showAlert) window.showAlert('Erro ao buscar isotanks compatíveis.', 'error');
     }
 }
@@ -613,7 +615,7 @@ async function carregarEstoqueIsotanks() {
     const tbody = document.querySelector('#tabela-estoque-isotanks tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Carregando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Carregando...</td></tr>';
     try {
         const res     = await fetch('/api/isotanks?per_page=100');
         if (!res.ok) throw new Error('Erro na resposta');
@@ -622,7 +624,7 @@ async function carregarEstoqueIsotanks() {
 
         tbody.innerHTML = '';
         if (isotanks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum isotank cadastrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum isotank cadastrado.</td></tr>';
             return;
         }
 
@@ -632,6 +634,7 @@ async function carregarEstoqueIsotanks() {
                 <td></td><td></td><td></td><td></td><td></td>
                 <td>${obterBadgeTecnico(iso.statusTecnicoFinal)}</td>
                 <td>${obterBadgeDisp(iso.statusDisponibilidade)}</td>
+                <td>${iso.aprovadoParaCPOO ? '<span class="badge bg-success">Sim</span>' : '<span class="badge bg-secondary">Não</span>'}</td>
             `;
             // textContent para campos de dados livres
             const tds = tr.querySelectorAll('td');
@@ -658,7 +661,7 @@ async function carregarEstoqueIsotanks() {
             tbody.appendChild(tr);
         });
     } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Erro ao carregar isotanks.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Erro ao carregar isotanks.</td></tr>';
         if (window.showAlert) window.showAlert('Erro ao carregar estoque de isotanks.', 'error');
         console.error(e);
     }

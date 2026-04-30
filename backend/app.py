@@ -181,6 +181,7 @@ def create_isotank():
         escopoAprovacao3=data.get('escopoAprovacao3'),
         statusTecnicoFinal=data.get('statusTecnicoFinal'),
         statusDisponibilidade=data.get('statusDisponibilidade'),
+        aprovadoParaCPOO=data.get('aprovadoParaCPOO', False),
         reservadoParaPedidoId=None,
         reservadoPor=None
     )
