@@ -42,33 +42,7 @@
             </main>
         </div>
     </div>
-
-    <!-- Botão Flutuante WhatsApp -->
-    <a href="https://wa.me/5516994499952" target="_blank" rel="noopener noreferrer"
-       title="Fale conosco pelo WhatsApp"
-       style="
-           position: fixed;
-           bottom: 24px;
-           right: 24px;
-           z-index: 9999;
-           width: 56px;
-           height: 56px;
-           background-color: #25D366;
-           border-radius: 50%;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-           transition: transform 0.2s ease, box-shadow 0.2s ease;
-           text-decoration: none;
-       "
-       onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 18px rgba(0,0,0,0.35)';"
-       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.25)';">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="30" height="30" fill="#ffffff">
-            <path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.738 5.471 2.027 7.774L0 32l8.469-2.001A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.27 13.27 0 0 1-6.766-1.852l-.485-.288-5.026 1.188 1.212-4.895-.317-.503A13.267 13.267 0 0 1 2.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.27-9.987c-.398-.199-2.354-1.162-2.719-1.294-.365-.133-.63-.199-.896.199-.265.398-1.029 1.294-1.261 1.559-.232.265-.465.299-.863.1-.398-.199-1.681-.619-3.202-1.977-1.183-1.057-1.982-2.362-2.214-2.76-.232-.398-.025-.613.174-.811.179-.178.398-.465.597-.697.199-.232.265-.398.398-.664.133-.265.066-.498-.033-.697-.1-.199-.896-2.16-1.228-2.958-.323-.777-.651-.672-.896-.684l-.763-.013c-.265 0-.697.1-.1063.498-.365.398-1.395 1.362-1.395 3.322s1.428 3.854 1.627 4.119c.199.265 2.811 4.291 6.812 6.018.952.411 1.695.657 2.274.841.955.304 1.824.261 2.511.158.766-.114 2.354-.962 2.686-1.891.332-.929.332-1.726.232-1.891-.099-.166-.365-.265-.763-.464z"/>
-        </svg>
-    </a>
-
+    
     <!-- Scripts Globais -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
