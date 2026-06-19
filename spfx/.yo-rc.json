@@ -1,0 +1,15 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "environment": "spo",
+    "solutionName": "isotanks-spfx",
+    "solutionShortDescription": "Gestão de Isotanks com SharePoint Lists",
+    "skipFeatures": false,
+    "isDomainIsolated": false,
+    "packageManager": "npm",
+    "powershell": false,
+    "nodeVersion": "18.19.0",
+    "framework": "react",
+    "whichFolder": "subdir"
+  }
+}
