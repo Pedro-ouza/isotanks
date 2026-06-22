@@ -13,6 +13,11 @@
     "ship": "heft test --clean --production && heft package-solution --production",
     "ci": "npm ci && npm run ship",
     "version:sync": "node scripts/sync-spfx-version.cjs",
+    "deps:inspect": "npm ls @typescript-eslint/parser @typescript-eslint/eslint-plugin ajv picomatch --all",
+    "deps:why:eslint": "npm explain @typescript-eslint/parser @typescript-eslint/eslint-plugin",
+    "deps:why:ajv": "npm explain ajv json-schema-traverse uri-js",
+    "deps:why:picomatch": "npm explain picomatch",
+    "warnings:audit": "npm run deps:inspect && npm run deps:why:eslint && npm run deps:why:ajv && npm run deps:why:picomatch",
     "eject-webpack": "heft eject-webpack",
     "reset:local": "rm -rf node_modules && npm ci"
   },
