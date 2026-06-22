@@ -15,6 +15,9 @@ import { sp } from '@pnp/sp';
 import '@pnp/sp/webs';
 import '@pnp/sp/lists';
 import '@pnp/sp/items';
+import { StatusDisponibilidade } from '../domain/isotanks/StatusDisponibilidade';
+import { isIsotankCompatibleWithProduct } from '../domain/isotanks/isotankCompatibility';
+import { StatusReserva } from '../domain/pedidos/StatusReserva';
 import {
   IIsotank,
   IStagingIsotank,
@@ -49,7 +52,7 @@ export class SharePointListService {
 
   /** Busca todos os isotanks, com filtros opcionais */
   public static async getIsotanks(filters?: {
-    status?: string;
+    status?: StatusDisponibilidade;
     produto?: string;
   }): Promise<IIsotank[]> {
     let query = sp.web.lists
@@ -94,15 +97,11 @@ export class SharePointListService {
         'Produto2Canonico',
         'Produto3Canonico'
       )
-      .filter(`StatusDisponibilidade eq 'Disponível'`)
+      .filter(`StatusDisponibilidade eq '${StatusDisponibilidade.Disponivel}'`)
       .top(200)();
 
-    // Filtrar por compatibilidade de produto (client-side)
-    return (items as IIsotank[]).filter(
-      (i) =>
-        i.Produto1Canonico === produto ||
-        i.Produto2Canonico === produto ||
-        i.Produto3Canonico === produto
+    return (items as IIsotank[]).filter((isotank) =>
+      isIsotankCompatibleWithProduct(isotank, produto)
     );
   }
 
@@ -124,7 +123,7 @@ export class SharePointListService {
       .update(data);
   }
 
-  /** Reserva um isotank para um pedido */
+  /** Reserva um isotank para um pedido, deixando a linha em Pré-Reservado */
   public static async reservarIsotank(
     isotankId: number,
     pedidoId: number,
@@ -134,12 +133,11 @@ export class SharePointListService {
       .getByTitle(LISTS.isotanks)
       .items.getById(isotankId)
       .update({
-        StatusDisponibilidade: 'Reservado',
+        StatusDisponibilidade: StatusDisponibilidade.Reservado,
         ReservadoParaPedidoId: pedidoId,
         ReservadoPor: reservadoPor,
       });
 
-    // Atualizar o pedido para "Reservado"
     const pedidos = (await sp.web.lists
       .getByTitle(LISTS.pedidos)
       .items.filter(`Id eq ${pedidoId}`)
@@ -150,7 +148,7 @@ export class SharePointListService {
         .getByTitle(LISTS.pedidos)
         .items.getById(pedidoId)
         .update({
-          StatusReserva: 'Reservado',
+          StatusReserva: StatusReserva.PreReservado,
           IsotankIdReservado: isotankId,
         });
     }
@@ -187,7 +185,7 @@ export class SharePointListService {
   ): Promise<void> {
     await sp.web.lists.getByTitle(LISTS.isotanks).items.add({
       ...dados,
-      StatusDisponibilidade: 'Disponível',
+      StatusDisponibilidade: StatusDisponibilidade.Disponivel,
     });
     await sp.web.lists
       .getByTitle(LISTS.staging)
@@ -217,7 +215,7 @@ export class SharePointListService {
   // ─── PEDIDOS ─────────────────────────────────────────────────────────────
 
   /** Busca pedidos com filtro opcional de status */
-  public static async getPedidos(statusFiltro?: string): Promise<IPedido[]> {
+  public static async getPedidos(statusFiltro?: StatusReserva): Promise<IPedido[]> {
     let query = sp.web.lists
       .getByTitle(LISTS.pedidos)
       .items.select(
@@ -319,9 +317,10 @@ export class SharePointListService {
 
     return {
       isotanksTotais: itens.length,
-      isotanksDisponiveis: itens.filter((i) => i.StatusDisponibilidade === 'Disponível').length,
-      pedidosAbertos: pedidosItens.filter((p) => p.StatusReserva === 'Solicitado').length,
-      pedidosReservados: pedidosItens.filter((p) => p.StatusReserva === 'Reservado').length,
+      isotanksDisponiveis: itens.filter((i) => i.StatusDisponibilidade === StatusDisponibilidade.Disponivel).length,
+      pedidosAbertos: pedidosItens.filter((p) => p.StatusReserva === StatusReserva.Solicitado).length,
+      pedidosPreReservados: pedidosItens.filter((p) => p.StatusReserva === StatusReserva.PreReservado).length,
+      pedidosConfirmados: pedidosItens.filter((p) => p.StatusReserva === StatusReserva.Confirmado).length,
       itemsEmStaging: staging.length,
     };
   }

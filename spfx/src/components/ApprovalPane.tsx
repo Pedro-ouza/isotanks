@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { SharePointListService } from '../services/SharePointListService';
 import { IStagingIsotank } from '../services/models';
+import { StatusDisponibilidade } from '../domain/isotanks/StatusDisponibilidade';
 import {
   Spinner,
   SpinnerSize,
@@ -90,7 +91,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
         Produto1Canonico: selectedItem.UltimoProduto1,
         Produto2Canonico: selectedItem.UltimoProduto2,
         Produto3Canonico: selectedItem.UltimoProduto3,
-        StatusDisponibilidade: 'Disponível',
+        StatusDisponibilidade: StatusDisponibilidade.Disponivel,
         AprovadoPara: currentUser,
       });
       this.setState({

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { SharePointListService } from '../services/SharePointListService';
 import { IPedido, IIsotank } from '../services/models';
+import { StatusReserva } from '../domain/pedidos/StatusReserva';
 import {
   Spinner,
   SpinnerSize,
@@ -60,7 +61,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
   private async _loadPedidos(): Promise<void> {
     this.setState({ loading: true, error: null });
     try {
-      const pedidos = await SharePointListService.getPedidos('Solicitado');
+      const pedidos = await SharePointListService.getPedidos(StatusReserva.Solicitado);
       this.setState({ pedidos, loading: false });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -99,7 +100,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
         selectedPedido: null,
         selectedIsotank: null,
         isotanksCompativeis: [],
-        successMsg: `✅ Isotank "${selectedIsotank.Title}" reservado com sucesso para o pedido "${selectedPedido.Title}"!`,
+        successMsg: `✅ Isotank "${selectedIsotank.Title}" pré-reservado com sucesso para o pedido "${selectedPedido.Title}"!`,
       });
       await this._loadPedidos();
       setTimeout(() => this.setState({ successMsg: null }), 5000);
@@ -142,7 +143,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
       key: 'action', name: '', minWidth: 100, maxWidth: 120,
       onRender: (item: IIsotank) => (
         <PrimaryButton
-          text="Reservar"
+          text="Pré-reservar"
           iconProps={{ iconName: 'Lock' }}
           onClick={() => this.setState({ selectedIsotank: item, confirmDialogOpen: true })}
           styles={{ root: { height: 28, fontSize: 12 } }}
@@ -224,15 +225,15 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           onDismiss={() => this.setState({ confirmDialogOpen: false })}
           dialogContentProps={{
             type: DialogType.largeHeader,
-            title: 'Confirmar Reserva',
+            title: 'Confirmar Pré-Reserva',
             subText: selectedIsotank && selectedPedido
-              ? `Deseja reservar o isotank "${selectedIsotank.Title}" para o pedido "${selectedPedido.Title}"?`
+              ? `Deseja pré-reservar o isotank "${selectedIsotank.Title}" para o pedido "${selectedPedido.Title}"?`
               : '',
           }}
         >
           <DialogFooter>
             <PrimaryButton
-              text={saving ? 'Reservando...' : 'Confirmar'}
+              text={saving ? 'Pré-reservando...' : 'Confirmar'}
               onClick={() => this._confirmarReserva()}
               disabled={saving}
             />

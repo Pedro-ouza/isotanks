@@ -3,6 +3,9 @@
  * Site: Citrosuco Brasil - BU-Ingredientes
  */
 
+import { StatusDisponibilidade } from '../domain/isotanks/StatusDisponibilidade';
+import { StatusReserva } from '../domain/pedidos/StatusReserva';
+
 /** Isotank aprovado (lista: Cadastro_Final_Isotanks) */
 export interface IIsotank {
   Id: number;
@@ -11,7 +14,7 @@ export interface IIsotank {
   Fornecedor?: string;
   LocalAtual?: string;
   StatusTecnicoFinal?: string;
-  StatusDisponibilidade?: string;    // Disponível | Reservado | Em Uso | Manutenção
+  StatusDisponibilidade?: StatusDisponibilidade;
   Produto1Canonico?: string;
   Produto2Canonico?: string;
   Produto3Canonico?: string;
@@ -49,7 +52,7 @@ export interface IPedido {
   QuantidadeSolicitada?: number;
   DataNecessidade?: string;
   Solicitante?: string;
-  StatusReserva?: 'Solicitado' | 'Pré-Reservado' | 'Reservado' | 'Cancelado';
+  StatusReserva?: StatusReserva;
   IsotankIdReservado?: number;
   ObservacoesPedido?: string;
   MotivoRejeicaoOuCancelamento?: string;
@@ -85,6 +88,7 @@ export interface IMetricas {
   isotanksDisponiveis: number;
   isotanksTotais: number;
   pedidosAbertos: number;
-  pedidosReservados: number;
+  pedidosPreReservados: number;
+  pedidosConfirmados: number;
   itemsEmStaging: number;
 }
