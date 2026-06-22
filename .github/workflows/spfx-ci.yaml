@@ -24,5 +24,16 @@ jobs:
           cache-dependency-path: spfx/package-lock.json
       - run: npm ci
         working-directory: spfx
-      - run: npm run ship
+      - name: Build and package SPFx
+        id: ship
+        continue-on-error: true
+        run: npm run ship > ../spfx-ship.log 2>&1
         working-directory: spfx
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spfx-ship-log
+          path: spfx-ship.log
+      - name: Fail on ship error
+        if: steps.ship.outcome == 'failure'
+        run: exit 1
