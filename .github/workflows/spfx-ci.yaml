@@ -12,32 +12,17 @@ on:
       - spfx/**
       - .github/workflows/spfx-ci.yaml
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: spfx/.nvmrc
           cache: npm
           cache-dependency-path: spfx/package-lock.json
-      - run: npm install
+      - run: npm ci
         working-directory: spfx
-      - name: Commit synchronized lockfile
-        if: github.event_name == 'pull_request'
-        run: |
-          if ! git diff --quiet -- spfx/package-lock.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add spfx/package-lock.json
-            git commit -m "fix(spfx): synchronize package-lock"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
       - run: npm run ship
         working-directory: spfx
