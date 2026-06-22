@@ -6,13 +6,15 @@
     "node": ">=22.14.0 < 23.0.0"
   },
   "scripts": {
-    "build": "heft test --clean --production && heft package-solution --production",
+    "build": "heft build --clean",
     "clean": "heft clean",
     "start": "heft start --clean",
-    "eject-webpack": "heft eject-webpack",
+    "test": "heft test --clean",
     "ship": "heft test --clean --production && heft package-solution --production",
-    "clean:all": "rm -rf node_modules package-lock.json && npm cache clean --force && npm install",
-    "rebuild": "npm run clean:all && npm run build"
+    "ci": "npm ci && npm run ship",
+    "version:sync": "node scripts/sync-spfx-version.cjs",
+    "eject-webpack": "heft eject-webpack",
+    "reset:local": "rm -rf node_modules && npm ci"
   },
   "dependencies": {
     "@microsoft/sp-core-library": "1.23.0",
@@ -20,15 +22,11 @@
     "@microsoft/sp-office-ui-fabric-core": "1.23.0",
     "@microsoft/sp-property-pane": "1.23.0",
     "@microsoft/sp-webpart-base": "1.23.0",
-    "@pnp/common": "2.15.0",
-    "@pnp/logging": "2.15.0",
-    "@pnp/odata": "2.15.0",
     "@pnp/sp": "2.15.0",
     "@fluentui/react": "8.106.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "tslib": "2.3.1",
-    "ajv": "6.12.6"
+    "tslib": "2.3.1"
   },
   "devDependencies": {
     "@microsoft/sp-module-interfaces": "1.23.0",
@@ -42,9 +40,8 @@
     "@types/jest": "30.0.0",
     "@rushstack/eslint-config": "4.5.2",
     "typescript": "~5.8.0",
-    "@typescript-eslint/parser": "5.20.0",
-    "css-loader": "3.6.0",
-    "sass-loader": "7.1.2",
+    "@typescript-eslint/parser": "8.46.2",
+    "css-loader": "7.1.2",
     "@types/heft-jest": "1.0.2",
     "@microsoft/rush-stack-compiler-5.3": "0.1.0",
     "@types/react": "17.0.45",
