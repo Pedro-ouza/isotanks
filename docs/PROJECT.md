@@ -31,6 +31,21 @@ spfx/
 │  ├─ components/
 │  │  ├─ ApprovalPane.tsx
 │  │  └─ IsotankAllocationPane.tsx
+│  ├─ domain/
+│  │  ├─ isotanks/
+│  │  │  ├─ StatusDisponibilidade.ts
+│  │  │  └─ isotankCompatibility.ts
+│  │  └─ pedidos/
+│  │     └─ StatusReserva.ts
+│  ├─ infrastructure/
+│  │  └─ sharepoint/
+│  │     ├─ listNames.ts
+│  │     └─ repositories/
+│  │        ├─ FornecedorRepository.ts
+│  │        ├─ IsotankRepository.ts
+│  │        ├─ PedidoRepository.ts
+│  │        ├─ ProdutoRefRepository.ts
+│  │        └─ StagingRepository.ts
 │  ├─ services/
 │  │  ├─ SharePointListService.ts
 │  │  └─ models.ts
@@ -51,7 +66,7 @@ spfx/
 | Webpart | Responsabilidade |
 |---|---|
 | Dashboard de Isotanks | Exibir indicadores gerais e atalhos operacionais |
-| Alocação de Isotanks | Listar pedidos pendentes e reservar isotanks compatíveis |
+| Alocação de Isotanks | Listar pedidos pendentes e pré-reservar isotanks compatíveis |
 | Aprovação de Isotanks | Analisar itens em staging e mover isotanks aprovados para o cadastro final |
 
 ## Listas SharePoint usadas
@@ -63,6 +78,39 @@ spfx/
 | pedidos | Pedidos_Reservas |
 | fornecedores | iso_Fornecedores |
 | produtos | iso_produtos_ref |
+
+## Camadas da solução SPFx
+
+| Camada | Responsabilidade |
+|---|---|
+| `webparts` | Entrada das webparts SPFx |
+| `components` | Componentes React usados pelas webparts |
+| `services` | Fachada de compatibilidade usada pelos componentes atuais |
+| `domain` | Status, regras puras e decisões de negócio sem dependência de SharePoint |
+| `infrastructure/sharepoint` | Configurações e repositories de acesso às listas SharePoint |
+
+## Fluxo de status padronizado
+
+### Reserva de pedido
+
+| Status | Uso |
+|---|---|
+| Solicitado | Pedido criado e aguardando alocação |
+| Pré-Reservado | Isotank selecionado e bloqueado para o pedido |
+| Confirmado | Reserva aprovada/confirmada |
+| Cancelado | Reserva cancelada |
+| Rejeitado | Reserva rejeitada |
+| Expirado | Reserva expirada |
+
+### Disponibilidade de isotank
+
+| Status | Uso |
+|---|---|
+| Disponível | Isotank liberado para seleção |
+| Reservado | Isotank bloqueado para um pedido |
+| Indisponível | Isotank não pode ser usado |
+| Em Uso | Isotank em operação |
+| Manutenção | Isotank em manutenção |
 
 ## Padrão de versionamento
 
@@ -99,11 +147,11 @@ npm run version:sync
 
 ### Modularização planejada
 
-- [ ] Criar camada `domain` para status e regras puras.
-- [ ] Centralizar status de reserva.
-- [ ] Centralizar status de disponibilidade.
-- [ ] Remover strings soltas de status do `SharePointListService`.
-- [ ] Separar repositories SharePoint por lista.
+- [x] Criar camada `domain` para status e regras puras.
+- [x] Centralizar status de reserva.
+- [x] Centralizar status de disponibilidade.
+- [x] Remover strings soltas de status do fluxo principal de reserva no `SharePointListService`.
+- [x] Separar repositories SharePoint por lista.
 - [ ] Criar use cases por módulo: dashboard, allocation e approval.
 - [ ] Reduzir responsabilidades do `SharePointListService`.
 
@@ -124,3 +172,7 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 |---|---|
 | 2026-06-22 | Criada documentação inicial do projeto e checklist de evolução. |
 | 2026-06-22 | Registrada estabilização inicial do SPFx após PR #1. |
+| 2026-06-22 | Criada camada `domain` para status de reserva, disponibilidade e compatibilidade de isotanks. |
+| 2026-06-22 | Fluxo de alocação ajustado para gravar pedido como `Pré-Reservado` e isotank como `Reservado`. |
+| 2026-06-22 | Dashboard atualizado para separar pedidos abertos, pré-reservados e confirmados. |
+| 2026-06-22 | Criada camada `infrastructure/sharepoint/repositories` e `SharePointListService` foi reduzido para fachada. |
