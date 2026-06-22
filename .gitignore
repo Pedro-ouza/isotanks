@@ -4,3 +4,14 @@ __pycache__/
 *.pyd
 .env
 venv/
+
+# Node.js
+node_modules/
+spfx/node_modules/
+
+# SPFx build directories
+spfx/dist/
+spfx/lib/
+spfx/temp/
+spfx/release/
+spfx/sharepoint/

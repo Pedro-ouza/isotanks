@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+lib/
+temp/
+release/
+sharepoint/
+
+# Logs
+*.log
+
+# VS Code files
+.vscode/
