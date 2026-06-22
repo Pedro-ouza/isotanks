@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - spfx/**
+      - .github/workflows/spfx-ci.yaml
   push:
     branches:
       - main
     paths:
       - spfx/**
+      - .github/workflows/spfx-ci.yaml
 
 jobs:
   validate:
