@@ -177,3 +177,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Dashboard atualizado para separar pedidos abertos, pré-reservados e confirmados. |
 | 2026-06-22 | Criada camada `infrastructure/sharepoint/repositories` e `SharePointListService` foi reduzido para fachada. |
 | 2026-06-22 | Adicionado workflow GitHub Actions para validar alterações em `spfx/**` com `npm ci` e `npm run ship`. |
+| 2026-06-22 | Corrigidos os gatilhos do workflow para também rodar quando `.github/workflows/spfx-ci.yaml` for alterado. |
