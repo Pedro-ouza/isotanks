@@ -15,7 +15,7 @@ export const STATUS_RESERVA_EM_ABERTO: StatusReserva[] = [
 ];
 
 export function isReservaEmAberto(status?: string): boolean {
-  return STATUS_RESERVA_EM_ABERTO.includes(status as StatusReserva);
+  return STATUS_RESERVA_EM_ABERTO.indexOf(status as StatusReserva) >= 0;
 }
 
 export function canPreReserve(status?: string): boolean {
