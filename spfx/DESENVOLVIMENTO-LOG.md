@@ -145,6 +145,9 @@ Fase 8: Testes em Produção           [░░░░░░░░░░] 0%
 | ID | Descrição | Severidade | Status | Solução |
 |----|-----------|-----------|--------|---------|
 | 1 | TypeScript comp. error: 'mystrings.d.ts' modules | Média | Resolvido ✅ | Criado arquivo `mystrings.d.ts` nas pastas `loc/` de cada Web Part. |
+| 2 | npm ERESOLVE peer dependency conflict (eslint) | Média | Resolvido ✅ | Downgraded eslint para `8.57.0` no package.json para casar com o compiler 5.3 e usado `--legacy-peer-deps`. |
+| 3 | TS2322: Type WebPartContext not assignable to ISPFXContext | Alta | Resolvido ✅ | Efetuado cast do `context as any` no `sp.setup` do Central Service. |
+| 4 | TS2307: Cannot find module DashboardIsotanks.module.scss | Média | Resolvido ✅ | Criado arquivo `src/scss.d.ts` com declaração global de módulos scss. |
 
 ---
 

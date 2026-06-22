@@ -39,7 +39,7 @@ export class SharePointListService {
   /** Deve ser chamado uma vez no onInit() da web part */
   public static initialize(context: WebPartContext): void {
     if (!SharePointListService._initialized) {
-      sp.setup({ spfxContext: context });
+      sp.setup({ spfxContext: context as any });
       SharePointListService._initialized = true;
     }
   }
