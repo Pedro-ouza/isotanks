@@ -3,7 +3,7 @@ import { IDashboardIsotanksProps } from './IDashboardIsotanksProps';
 import { SharePointListService } from '../../../services/SharePointListService';
 import { IMetricas } from '../../../services/models';
 import styles from './DashboardIsotanks.module.scss';
-import { Spinner, SpinnerSize, MessageBar, MessageBarType } from 'office-ui-fabric-react';
+import { Spinner, SpinnerSize, MessageBar, MessageBarType } from '@fluentui/react';
 
 interface IDashboardState {
   metricas: IMetricas | null;

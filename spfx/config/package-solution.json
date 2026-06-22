@@ -8,12 +8,52 @@
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
-      "name": "",
+      "name": "Pedro Ouza",
       "websiteUrl": "",
       "privacyUrl": "",
       "termsOfUseUrl": "",
       "mpnId": ""
-    }
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "isotanks-spfx description"
+      },
+      "longDescription": {
+        "default": "isotanks-spfx description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "isotanks-spfx AllocationIsotanksWebPart Feature",
+        "description": "The feature that activates AllocationIsotanksWebPart from the isotanks-spfx solution.",
+        "id": "a1b2c3d4-0002-0000-0000-000000000002",
+        "version": "1.0.0.0",
+        "componentIds": [
+          "a1b2c3d4-0002-0000-0000-000000000002"
+        ]
+      },
+      {
+        "title": "isotanks-spfx ApprovalIsotanksWebPart Feature",
+        "description": "The feature that activates ApprovalIsotanksWebPart from the isotanks-spfx solution.",
+        "id": "a1b2c3d4-0003-0000-0000-000000000003",
+        "version": "1.0.0.0",
+        "componentIds": [
+          "a1b2c3d4-0003-0000-0000-000000000003"
+        ]
+      },
+      {
+        "title": "isotanks-spfx DashboardIsotanksWebPart Feature",
+        "description": "The feature that activates DashboardIsotanksWebPart from the isotanks-spfx solution.",
+        "id": "a1b2c3d4-0001-0000-0000-000000000001",
+        "version": "1.0.0.0",
+        "componentIds": [
+          "a1b2c3d4-0001-0000-0000-000000000001"
+        ]
+      }
+    ]
   },
   "paths": {
     "zippedPackage": "solution/isotanks-spfx.sppkg"

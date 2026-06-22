@@ -1,7 +1,7 @@
 # 📊 LOG DE PROGRESSO - Desenvolvimento SPFx Isotanks
 
 **Arquivo de Rastreamento**: `DESENVOLVIMENTO-CHECKLIST.md`  
-**Atualizado**: 2026-06-22 10:30 (CONCLUSÃO SESSÃO 3)  
+**Atualizado**: 2026-06-22 10:45 (CONCLUSÃO SESSÃO 4)  
 **Desenvolvedor(a)**: Pedro Ouza (Código) / Antigravity (IA)  
 
 ---
@@ -14,14 +14,14 @@
 | **Tarefas Concluídas** | 12 | ⬆️ 22% ✅ |
 | **Tarefas em Progresso** | 0 | ✅ Fases 1, 2 & 5 (Código/Listas) |
 | **Taxa Completação** | 22% | 📈 Em andamento |
-| **Estimado de Conclusão** | 2 semanas | 📅 Acelerado (Ambiente pronto) |
+| **Estimado de Conclusão** | 2 semanas | 📅 Acelerado (SPFx Upgraded) |
 
 ---
 
 ## 📈 Progresso por Fase
 
 ```
-Fase 1: Setup Inicial                [█████░░░░░] 57%
+Fase 1: Setup Inicial                [█████░░░░░] 57% (SPFx 1.23.0 Upgraded)
 Fase 2: Setup SharePoint             [██████████] 100% ✅
 Fase 3: Desenvolvimento Local        [░░░░░░░░░░] 0% (Suspenso local)
 Fase 4: Validação Dados              [░░░░░░░░░░] 0%
@@ -37,6 +37,14 @@ Fase 8: Testes em Produção           [░░░░░░░░░░] 0%
 ## 📝 Atualizações do Dia
 
 ### 2026-06-22
+- ✅ **Upgrade para SPFx 1.23.0**: Realizado o upgrade completo do projeto SPFx da v1.11.0 para a v1.23.0.
+  - Atualizado o [package.json](file:///c:/Users/50116696/OneDrive%20-%20CITROSUCO%20S%20A%20AGROINDUSTRIA%20ME/Documentos/GitHub/isotanks/spfx/package.json) para incluir as dependências modernas, trocar React para a v17, habilitar o compilador TS 5.3 e descontinuar TSLint e Gulp.
+  - Removidos os legados `gulpfile.js` e `config/copy-assets.json`.
+  - Adicionadas as configurações do motor de build **Heft**: `config/rig.json`, `config/typescript.json`, `config/sass.json`, e `.npmignore`.
+  - Configurado o **ESLint** com `eslint.config.js` e `.eslintrc.js` para garantir conformidade moderna.
+  - Atualizado o `tsconfig.json` para estender o compiler rig do SPFx 1.23.
+  - Migrado todas as importações dos componentes de `office-ui-fabric-react` para `@fluentui/react` de forma transparente.
+  - Configurado suporte de debug no Edge com `.vscode/launch.json` apontando direto para a URL do Workbench real.
 - ✅ **Aprovação e Alocação**: Finalizada a criação das web parts `AllocationIsotanksWebPart` e `ApprovalIsotanksWebPart` encapsulando seus respectivos componentes React.
 - ✅ **Pacotes e Tipagem**: Adicionados os arquivos de definição de tipos localization `mystrings.d.ts` nas pastas de idioma do projeto spfx para evitar erros no compilador de TypeScript.
 - ✅ **Setup do SharePoint**: Confirmado pelo usuário que as 5 listas reais (`Cadastro_Final_Isotanks`, `Pedidos_Reservas`, `iso_staging`, `iso_Fornecedores`, `iso_produtos_ref`) já foram devidamente criadas no ambiente SharePoint com suas colunas correspondentes e dados de teste.
@@ -54,14 +62,14 @@ Fase 8: Testes em Produção           [░░░░░░░░░░] 0%
 
 ### Hoje (2026-06-22)
 
-1. **⏱️ Agora**: 
-   - [ ] Iniciar um GitHub Codespace a partir do repositório
-   - [ ] Verificar a versão do Node.js (Node 16 via `nvm use 16`)
+1. **⏱️ Agora**:
+   - [ ] Iniciar o GitHub Codespace a partir do repositório
+   - [ ] Verificar a versão do Node.js (Node 22 via `nvm use 22`)
 
 2. **🎯 Próximas Horas (Codespace)**:
-   - [ ] Executar `npm install --ignore-scripts`
-   - [ ] Executar build de teste: `gulp build`
-   - [ ] Executar `gulp serve` para testar as Web Parts no workbench real com dados do SharePoint.
+   - [ ] Executar `npm install`
+   - [ ] Executar build de teste: `npm run build` (rodará o Heft compiler)
+   - [ ] Executar `npm run start` para rodar o servidor local do Heft e testar no Workbench do SharePoint.
 
 ---
 
