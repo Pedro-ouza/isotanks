@@ -1,10 +1,17 @@
-import { IIsotank } from '../../services/models';
+interface CompatibleIsotankLike {
+  Produto1Canonico?: string;
+  Produto2Canonico?: string;
+  Produto3Canonico?: string;
+}
 
 function normalizeProduct(value?: string): string {
   return (value || '').trim().toLowerCase();
 }
 
-export function isIsotankCompatibleWithProduct(isotank: IIsotank, productName?: string): boolean {
+export function isIsotankCompatibleWithProduct(
+  isotank: CompatibleIsotankLike,
+  productName?: string
+): boolean {
   const expected = normalizeProduct(productName);
 
   if (!expected) {
