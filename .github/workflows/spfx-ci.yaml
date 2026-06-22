@@ -1,0 +1,26 @@
+name: SPFx CI
+
+on:
+  pull_request:
+    paths:
+      - spfx/**
+  push:
+    branches:
+      - main
+    paths:
+      - spfx/**
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: spfx/.nvmrc
+          cache: npm
+          cache-dependency-path: spfx/package-lock.json
+      - run: npm ci
+        working-directory: spfx
+      - run: npm run ship
+        working-directory: spfx
