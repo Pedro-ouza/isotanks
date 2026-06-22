@@ -133,18 +133,18 @@ var ApprovalPane = /** @class */ (function (_super) {
     };
     ApprovalPane.prototype._aprovarItem = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, selectedItem, comentario, currentUser, err_2, msg;
+            var selectedItem, currentUser, err_2, msg;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = this.state, selectedItem = _a.selectedItem, comentario = _a.comentario;
+                        selectedItem = this.state.selectedItem;
                         if (!selectedItem)
                             return [2 /*return*/];
                         this.setState({ saving: true });
-                        _b.label = 1;
+                        _a.label = 1;
                     case 1:
-                        _b.trys.push([1, 4, , 5]);
+                        _a.trys.push([1, 4, , 5]);
                         currentUser = this.props.context.pageContext.user.displayName;
                         return [4 /*yield*/, SharePointListService_1.SharePointListService.aprovarStaging(selectedItem.Id, {
                                 Title: selectedItem.Title,
@@ -158,7 +158,7 @@ var ApprovalPane = /** @class */ (function (_super) {
                                 AprovadoPara: currentUser,
                             })];
                     case 2:
-                        _b.sent();
+                        _a.sent();
                         this.setState({
                             saving: false,
                             panelOpen: false,
@@ -167,11 +167,11 @@ var ApprovalPane = /** @class */ (function (_super) {
                         });
                         return [4 /*yield*/, this._loadStaging()];
                     case 3:
-                        _b.sent();
+                        _a.sent();
                         setTimeout(function () { return _this.setState({ successMsg: null }); }, 5000);
                         return [3 /*break*/, 5];
                     case 4:
-                        err_2 = _b.sent();
+                        err_2 = _a.sent();
                         msg = err_2 instanceof Error ? err_2.message : String(err_2);
                         this.setState({ saving: false, error: "Erro ao aprovar: ".concat(msg) });
                         return [3 /*break*/, 5];
