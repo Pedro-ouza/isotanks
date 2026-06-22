@@ -76,7 +76,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
   }
 
   private async _aprovarItem(): Promise<void> {
-    const { selectedItem, comentario } = this.state;
+    const { selectedItem } = this.state;
     if (!selectedItem) return;
 
     this.setState({ saving: true });

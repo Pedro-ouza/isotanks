@@ -39,6 +39,7 @@ export class SharePointListService {
   /** Deve ser chamado uma vez no onInit() da web part */
   public static initialize(context: WebPartContext): void {
     if (!SharePointListService._initialized) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sp.setup({ spfxContext: context as any });
       SharePointListService._initialized = true;
     }
