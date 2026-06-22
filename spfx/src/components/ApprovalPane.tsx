@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
   Label,
-} from 'office-ui-fabric-react';
+} from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 interface IApprovalPaneProps {

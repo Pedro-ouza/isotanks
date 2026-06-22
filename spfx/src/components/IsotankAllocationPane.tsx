@@ -17,7 +17,7 @@ import {
   DialogFooter,
   Text,
   Stack,
-} from 'office-ui-fabric-react';
+} from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 interface IAllocationPaneProps {

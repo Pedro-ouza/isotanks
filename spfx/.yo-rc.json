@@ -8,8 +8,14 @@
     "isDomainIsolated": false,
     "packageManager": "npm",
     "powershell": false,
-    "nodeVersion": "18.19.0",
+    "nodeVersion": "20.20.2",
     "framework": "react",
-    "whichFolder": "subdir"
+    "whichFolder": "subdir",
+    "version": "1.23.0",
+    "useGulp": false,
+    "sdkVersions": {
+      "@microsoft/teams-js": "2.24.0",
+      "@microsoft/microsoft-graph-client": "3.0.2"
+    }
   }
 }
