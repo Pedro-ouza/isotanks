@@ -25,7 +25,8 @@
     "@fluentui/react": "8.106.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "tslib": "2.3.1"
+    "tslib": "2.3.1",
+    "ajv": "6.14.0"
   },
   "devDependencies": {
     "@microsoft/sp-module-interfaces": "1.23.0",
