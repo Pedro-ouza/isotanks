@@ -1,0 +1,21 @@
+name: SPFx Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: spfx/.nvmrc
+      - run: npm ci
+        working-directory: spfx
+      - run: npm run release:check
+        working-directory: spfx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: isotanks-spfx-sppkg
+          path: spfx/solution/isotanks-spfx.sppkg
