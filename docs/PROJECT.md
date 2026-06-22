@@ -142,7 +142,7 @@ npm run version:sync
 - [x] Remover script que apagava o lockfile.
 - [x] Corrigir import de `IPropertyPaneConfiguration` no webpart de aprovação.
 - [x] Criar script de sincronização de versão SPFx.
-- [ ] Adicionar workflow GitHub Actions para validar `spfx/**`.
+- [x] Adicionar workflow GitHub Actions para validar `spfx/**`.
 - [ ] Validar localmente `npm ci` e `npm run ship` após cada alteração estrutural.
 
 ### Modularização planejada
@@ -176,3 +176,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Fluxo de alocação ajustado para gravar pedido como `Pré-Reservado` e isotank como `Reservado`. |
 | 2026-06-22 | Dashboard atualizado para separar pedidos abertos, pré-reservados e confirmados. |
 | 2026-06-22 | Criada camada `infrastructure/sharepoint/repositories` e `SharePointListService` foi reduzido para fachada. |
+| 2026-06-22 | Adicionado workflow GitHub Actions para validar alterações em `spfx/**` com `npm ci` e `npm run ship`. |
