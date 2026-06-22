@@ -59,26 +59,35 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
   }
 
   private async _loadPedidos(): Promise<void> {
-    this.setState({ loading: true, error: null });
+    this.setState({ loading: true, error: null, successMsg: null });
     try {
       const pedidos = await SharePointListService.getPedidos(StatusReserva.Solicitado);
       this.setState({ pedidos, loading: false });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.setState({ error: `Erro ao carregar pedidos: ${msg}`, loading: false });
+      this.setState({
+        error: `Não foi possível carregar os pedidos aguardando alocação. Verifique o acesso à lista de pedidos e tente atualizar. Detalhe técnico: ${msg}`,
+        loading: false,
+      });
     }
   }
 
   private async _onSelectPedido(pedido: IPedido): Promise<void> {
-    this.setState({ selectedPedido: pedido, isotanksCompativeis: [], selectedIsotank: null });
+    this.setState({ selectedPedido: pedido, isotanksCompativeis: [], selectedIsotank: null, error: null });
     if (pedido.ProdutoSolicitado) {
       try {
         const isotanks = await SharePointListService.getIsotanksCompativeis(pedido.ProdutoSolicitado);
         this.setState({ isotanksCompativeis: isotanks });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        this.setState({ error: `Erro ao buscar isotanks compatíveis: ${msg}` });
+        this.setState({
+          error: `Não foi possível buscar isotanks compatíveis para o produto "${pedido.ProdutoSolicitado}". Revise o cadastro do produto ou tente atualizar. Detalhe técnico: ${msg}`,
+        });
       }
+    } else {
+      this.setState({
+        error: `O pedido "${pedido.Title}" não possui produto solicitado. Preencha o produto antes de tentar pré-reservar um isotank.`,
+      });
     }
   }
 
@@ -86,7 +95,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
     const { selectedPedido, selectedIsotank } = this.state;
     if (!selectedPedido || !selectedIsotank) return;
 
-    this.setState({ saving: true });
+    this.setState({ saving: true, error: null });
     try {
       const currentUser = this.props.context.pageContext.user.displayName;
       await SharePointListService.reservarIsotank(
@@ -100,13 +109,16 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
         selectedPedido: null,
         selectedIsotank: null,
         isotanksCompativeis: [],
-        successMsg: `✅ Isotank "${selectedIsotank.Title}" pré-reservado com sucesso para o pedido "${selectedPedido.Title}"!`,
+        successMsg: `Isotank "${selectedIsotank.Title}" pré-reservado para o pedido "${selectedPedido.Title}".`,
       });
       await this._loadPedidos();
       setTimeout(() => this.setState({ successMsg: null }), 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.setState({ saving: false, error: `Erro ao reservar: ${msg}` });
+      this.setState({
+        saving: false,
+        error: `A pré-reserva não foi concluída. Verifique se o isotank ainda está disponível e tente novamente. Detalhe técnico: ${msg}`,
+      });
     }
   }
 
@@ -119,10 +131,11 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
       onRender: (item: IPedido) => item.DataNecessidade ? new Date(item.DataNecessidade).toLocaleDateString('pt-BR') : '-',
     },
     {
-      key: 'action', name: '', minWidth: 120, maxWidth: 140,
+      key: 'action', name: 'Ação', minWidth: 120, maxWidth: 140,
       onRender: (item: IPedido) => (
         <DefaultButton
           text="Selecionar"
+          ariaLabel={`Selecionar pedido ${item.Title}`}
           iconProps={{ iconName: 'CheckMark' }}
           onClick={() => this._onSelectPedido(item)}
           styles={{ root: { height: 28, fontSize: 12 } }}
@@ -140,10 +153,11 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
       onRender: (item: IIsotank) => [item.Produto1Canonico, item.Produto2Canonico, item.Produto3Canonico].filter(Boolean).join(', '),
     },
     {
-      key: 'action', name: '', minWidth: 100, maxWidth: 120,
+      key: 'action', name: 'Ação', minWidth: 100, maxWidth: 120,
       onRender: (item: IIsotank) => (
         <PrimaryButton
           text="Pré-reservar"
+          ariaLabel={`Pré-reservar isotank ${item.Title}`}
           iconProps={{ iconName: 'Lock' }}
           onClick={() => this.setState({ selectedIsotank: item, confirmDialogOpen: true })}
           styles={{ root: { height: 28, fontSize: 12 } }}
@@ -159,33 +173,43 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
     } = this.state;
 
     return (
-      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }}>
+      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }} aria-label="Alocação de isotanks">
         <Stack horizontal horizontalAlign="space-between" verticalAlign="center" style={{ marginBottom: 16 }}>
-          <Text variant="xLarge" style={{ fontWeight: 600 }}>🔗 Alocação de Isotanks</Text>
-          <DefaultButton text="🔄 Atualizar" onClick={() => this._loadPedidos()} />
+          <Text variant="xLarge" style={{ fontWeight: 600 }}>Alocação de Isotanks</Text>
+          <DefaultButton
+            text="Atualizar"
+            ariaLabel="Atualizar pedidos aguardando alocação"
+            iconProps={{ iconName: 'Refresh' }}
+            onClick={() => this._loadPedidos()}
+            disabled={loading || saving}
+          />
         </Stack>
 
-        {successMsg && (
-          <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
-            {successMsg}
-          </MessageBar>
-        )}
-        {error && (
-          <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
-            {error}
-          </MessageBar>
-        )}
+        <div aria-live="polite">
+          {successMsg && (
+            <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
+              {successMsg}
+            </MessageBar>
+          )}
+        </div>
+        <div aria-live="assertive">
+          {error && (
+            <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
+              {error}
+            </MessageBar>
+          )}
+        </div>
 
         {loading ? (
-          <Spinner size={SpinnerSize.large} label="Carregando pedidos..." />
+          <Spinner size={SpinnerSize.large} label="Carregando pedidos aguardando alocação..." ariaLive="polite" />
         ) : (
           <>
             <Text variant="mediumPlus" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
-              📋 Pedidos aguardando alocação ({pedidos.length})
+              Pedidos aguardando alocação ({pedidos.length})
             </Text>
             {pedidos.length === 0 ? (
               <MessageBar messageBarType={MessageBarType.success}>
-                ✅ Nenhum pedido aguardando alocação.
+                Nenhum pedido aguardando alocação no momento.
               </MessageBar>
             ) : (
               <DetailsList
@@ -193,18 +217,19 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
                 columns={this._pedidoCols}
                 layoutMode={DetailsListLayoutMode.justified}
                 selectionMode={SelectionMode.none}
+                ariaLabelForGrid="Pedidos aguardando alocação de isotank"
                 compact
               />
             )}
 
             {selectedPedido && (
-              <div style={{ marginTop: 24, padding: 16, background: '#deecf9', borderRadius: 8 }}>
+              <div style={{ marginTop: 24, padding: 16, background: '#deecf9', borderRadius: 8 }} aria-live="polite">
                 <Text variant="mediumPlus" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  🟢 Isotanks compatíveis com "{selectedPedido.ProdutoSolicitado}" para pedido "{selectedPedido.Title}"
+                  Isotanks compatíveis com "{selectedPedido.ProdutoSolicitado}" para o pedido "{selectedPedido.Title}"
                 </Text>
                 {isotanksCompativeis.length === 0 ? (
                   <MessageBar messageBarType={MessageBarType.warning}>
-                    Nenhum isotank disponível e compatível com este produto.
+                    Nenhum isotank disponível e compatível foi encontrado para este produto. Revise o cadastro de produtos aprovados ou selecione outro pedido.
                   </MessageBar>
                 ) : (
                   <DetailsList
@@ -212,6 +237,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
                     columns={this._isotankCols}
                     layoutMode={DetailsListLayoutMode.justified}
                     selectionMode={SelectionMode.none}
+                    ariaLabelForGrid={`Isotanks compatíveis com ${selectedPedido.ProdutoSolicitado}`}
                     compact
                   />
                 )}
@@ -225,7 +251,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           onDismiss={() => this.setState({ confirmDialogOpen: false })}
           dialogContentProps={{
             type: DialogType.largeHeader,
-            title: 'Confirmar Pré-Reserva',
+            title: 'Confirmar pré-reserva',
             subText: selectedIsotank && selectedPedido
               ? `Deseja pré-reservar o isotank "${selectedIsotank.Title}" para o pedido "${selectedPedido.Title}"?`
               : '',
@@ -233,12 +259,14 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
         >
           <DialogFooter>
             <PrimaryButton
-              text={saving ? 'Pré-reservando...' : 'Confirmar'}
+              text={saving ? 'Pré-reservando...' : 'Confirmar pré-reserva'}
+              ariaLabel="Confirmar pré-reserva do isotank selecionado"
               onClick={() => this._confirmarReserva()}
               disabled={saving}
             />
             <DefaultButton
               text="Cancelar"
+              ariaLabel="Cancelar pré-reserva"
               onClick={() => this.setState({ confirmDialogOpen: false })}
               disabled={saving}
             />
