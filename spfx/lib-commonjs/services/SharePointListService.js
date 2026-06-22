@@ -77,6 +77,7 @@ var SharePointListService = /** @class */ (function () {
     /** Deve ser chamado uma vez no onInit() da web part */
     SharePointListService.initialize = function (context) {
         if (!SharePointListService._initialized) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             sp_1.sp.setup({ spfxContext: context });
             SharePointListService._initialized = true;
         }
