@@ -10,7 +10,9 @@
     "clean": "heft clean",
     "start": "heft start --clean",
     "eject-webpack": "heft eject-webpack",
-    "ship": "heft test --clean --production && heft package-solution --production"
+    "ship": "heft test --clean --production && heft package-solution --production",
+    "clean:all": "rm -rf node_modules package-lock.json && npm cache clean --force && npm install",
+    "rebuild": "npm run clean:all && npm run build"
   },
   "dependencies": {
     "@microsoft/sp-core-library": "1.23.0",
@@ -26,7 +28,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "tslib": "2.3.1",
-    "ajv": "^8.12.0"
+    "ajv": "6.12.6"
   },
   "devDependencies": {
     "@microsoft/sp-module-interfaces": "1.23.0",
