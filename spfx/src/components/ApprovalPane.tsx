@@ -58,13 +58,16 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
   }
 
   private async _loadStaging(): Promise<void> {
-    this.setState({ loading: true, error: null });
+    this.setState({ loading: true, error: null, successMsg: null });
     try {
       const items = await SharePointListService.getStagingIsotanks();
       this.setState({ stagingItems: items, loading: false });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.setState({ error: `Erro ao carregar staging: ${msg}`, loading: false });
+      this.setState({
+        error: `Não foi possível carregar os itens de staging. Verifique o acesso à lista iso_staging e tente atualizar. Detalhe técnico: ${msg}`,
+        loading: false,
+      });
     }
   }
 
@@ -73,6 +76,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
       selectedItem: item,
       panelOpen: true,
       comentario: item.ComentarioAnalista || '',
+      error: null,
     });
   }
 
@@ -80,7 +84,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
     const { selectedItem } = this.state;
     if (!selectedItem) return;
 
-    this.setState({ saving: true });
+    this.setState({ saving: true, error: null });
     try {
       const currentUser = this.props.context.pageContext.user.displayName;
       await SharePointListService.aprovarStaging(selectedItem.Id, {
@@ -98,13 +102,16 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
         saving: false,
         panelOpen: false,
         selectedItem: null,
-        successMsg: `✅ Isotank "${selectedItem.Title}" aprovado com sucesso e movido para o cadastro!`,
+        successMsg: `Isotank "${selectedItem.Title}" aprovado e movido para o cadastro final.`,
       });
       await this._loadStaging();
       setTimeout(() => this.setState({ successMsg: null }), 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.setState({ saving: false, error: `Erro ao aprovar: ${msg}` });
+      this.setState({
+        saving: false,
+        error: `A aprovação não foi concluída. Revise os dados obrigatórios do isotank e tente novamente. Detalhe técnico: ${msg}`,
+      });
     }
   }
 
@@ -112,7 +119,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
     const { selectedItem, comentario } = this.state;
     if (!selectedItem) return;
 
-    this.setState({ saving: true });
+    this.setState({ saving: true, error: null });
     try {
       await SharePointListService.updateStagingIsotank(selectedItem.Id, {
         StatusTratamento: 'Rejeitado',
@@ -123,13 +130,16 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
         saving: false,
         panelOpen: false,
         selectedItem: null,
-        successMsg: `⚠️ Isotank "${selectedItem.Title}" marcado como rejeitado.`,
+        successMsg: `Isotank "${selectedItem.Title}" marcado como rejeitado.`,
       });
       await this._loadStaging();
       setTimeout(() => this.setState({ successMsg: null }), 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.setState({ saving: false, error: `Erro ao rejeitar: ${msg}` });
+      this.setState({
+        saving: false,
+        error: `A rejeição não foi salva. Verifique sua permissão de edição na lista de staging e tente novamente. Detalhe técnico: ${msg}`,
+      });
     }
   }
 
@@ -144,10 +154,11 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
     },
     { key: 'StatusTratamento', name: 'Status', fieldName: 'StatusTratamento', minWidth: 80, maxWidth: 120 },
     {
-      key: 'action', name: '', minWidth: 110, maxWidth: 130,
+      key: 'action', name: 'Ação', minWidth: 110, maxWidth: 130,
       onRender: (item: IStagingIsotank) => (
         <PrimaryButton
           text="Analisar"
+          ariaLabel={`Analisar isotank ${item.Title}`}
           iconProps={{ iconName: 'Search' }}
           onClick={() => this._openPanel(item)}
           styles={{ root: { height: 28, fontSize: 12 } }}
@@ -163,39 +174,50 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
     } = this.state;
 
     return (
-      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }}>
+      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }} aria-label="Aprovação de isotanks em staging">
         <Stack horizontal horizontalAlign="space-between" verticalAlign="center" style={{ marginBottom: 16 }}>
-          <Text variant="xLarge" style={{ fontWeight: 600 }}>✅ Aprovação de Staging</Text>
-          <DefaultButton text="🔄 Atualizar" onClick={() => this._loadStaging()} />
+          <Text variant="xLarge" style={{ fontWeight: 600 }}>Aprovação de Staging</Text>
+          <DefaultButton
+            text="Atualizar"
+            ariaLabel="Atualizar itens de staging aguardando aprovação"
+            iconProps={{ iconName: 'Refresh' }}
+            onClick={() => this._loadStaging()}
+            disabled={loading || saving}
+          />
         </Stack>
 
-        {successMsg && (
-          <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
-            {successMsg}
-          </MessageBar>
-        )}
-        {error && (
-          <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
-            {error}
-          </MessageBar>
-        )}
+        <div aria-live="polite">
+          {successMsg && (
+            <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
+              {successMsg}
+            </MessageBar>
+          )}
+        </div>
+        <div aria-live="assertive">
+          {error && (
+            <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
+              {error}
+            </MessageBar>
+          )}
+        </div>
 
         {loading ? (
-          <Spinner size={SpinnerSize.large} label="Carregando itens de staging..." />
+          <Spinner size={SpinnerSize.large} label="Carregando itens de staging..." ariaLive="polite" />
         ) : stagingItems.length === 0 ? (
           <MessageBar messageBarType={MessageBarType.success}>
-            ✅ Nenhum isotank aguardando aprovação em staging.
+            Nenhum isotank aguardando aprovação em staging.
           </MessageBar>
         ) : (
           <>
             <Text variant="medium" style={{ display: 'block', marginBottom: 12, color: '#605e5c' }}>
-              {stagingItems.length} item(s) aguardando análise
+              {stagingItems.length} item(s) aguardando análise.
             </Text>
             <DetailsList
               items={stagingItems}
               columns={this._columns}
               layoutMode={DetailsListLayoutMode.justified}
               selectionMode={SelectionMode.none}
+              ariaLabelForGrid="Isotanks aguardando aprovação em staging"
               compact
             />
           </>
@@ -204,24 +226,32 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
         <Panel
           isOpen={panelOpen}
           type={PanelType.medium}
-          headerText={selectedItem ? `Análise: ${selectedItem.Title}` : 'Análise'}
+          headerText={selectedItem ? `Análise do isotank ${selectedItem.Title}` : 'Análise do isotank'}
+          closeButtonAriaLabel="Fechar painel de análise"
           onDismiss={() => this.setState({ panelOpen: false })}
           isFooterAtBottom
           onRenderFooterContent={() => (
             <Stack horizontal gap={8}>
               <PrimaryButton
-                text={saving ? 'Salvando...' : '✅ Aprovar'}
+                text={saving ? 'Salvando...' : 'Aprovar'}
+                ariaLabel="Aprovar isotank selecionado"
                 onClick={() => this._aprovarItem()}
                 disabled={saving}
                 styles={{ root: { background: '#107c10', border: 'none' } }}
               />
               <DefaultButton
-                text={saving ? 'Salvando...' : '❌ Rejeitar'}
+                text={saving ? 'Salvando...' : 'Rejeitar'}
+                ariaLabel="Rejeitar isotank selecionado"
                 onClick={() => this._rejeitarItem()}
                 disabled={saving}
                 styles={{ root: { color: '#a4262c', borderColor: '#a4262c' } }}
               />
-              <DefaultButton text="Cancelar" onClick={() => this.setState({ panelOpen: false })} disabled={saving} />
+              <DefaultButton
+                text="Cancelar"
+                ariaLabel="Cancelar análise e fechar painel"
+                onClick={() => this.setState({ panelOpen: false })}
+                disabled={saving}
+              />
             </Stack>
           )}
         >
@@ -260,12 +290,13 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
                 <Text>{selectedItem.StatusTratamento || 'Aguardando'}</Text>
               </div>
               <TextField
-                label="Comentário do Analista"
+                label="Comentário do analista"
+                ariaLabel="Comentário do analista sobre a análise do isotank"
                 multiline
                 rows={4}
                 value={comentario}
                 onChange={(_, val) => this.setState({ comentario: val || '' })}
-                placeholder="Adicione observações sobre a análise..."
+                placeholder="Registre o motivo da aprovação ou rejeição, especialmente quando houver pendência operacional."
               />
             </Stack>
           )}
