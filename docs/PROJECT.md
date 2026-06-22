@@ -37,6 +37,15 @@ spfx/
 │  │  │  └─ isotankCompatibility.ts
 │  │  └─ pedidos/
 │  │     └─ StatusReserva.ts
+│  ├─ infrastructure/
+│  │  └─ sharepoint/
+│  │     ├─ listNames.ts
+│  │     └─ repositories/
+│  │        ├─ FornecedorRepository.ts
+│  │        ├─ IsotankRepository.ts
+│  │        ├─ PedidoRepository.ts
+│  │        ├─ ProdutoRefRepository.ts
+│  │        └─ StagingRepository.ts
 │  ├─ services/
 │  │  ├─ SharePointListService.ts
 │  │  └─ models.ts
@@ -69,6 +78,16 @@ spfx/
 | pedidos | Pedidos_Reservas |
 | fornecedores | iso_Fornecedores |
 | produtos | iso_produtos_ref |
+
+## Camadas da solução SPFx
+
+| Camada | Responsabilidade |
+|---|---|
+| `webparts` | Entrada das webparts SPFx |
+| `components` | Componentes React usados pelas webparts |
+| `services` | Fachada de compatibilidade usada pelos componentes atuais |
+| `domain` | Status, regras puras e decisões de negócio sem dependência de SharePoint |
+| `infrastructure/sharepoint` | Configurações e repositories de acesso às listas SharePoint |
 
 ## Fluxo de status padronizado
 
@@ -132,7 +151,7 @@ npm run version:sync
 - [x] Centralizar status de reserva.
 - [x] Centralizar status de disponibilidade.
 - [x] Remover strings soltas de status do fluxo principal de reserva no `SharePointListService`.
-- [ ] Separar repositories SharePoint por lista.
+- [x] Separar repositories SharePoint por lista.
 - [ ] Criar use cases por módulo: dashboard, allocation e approval.
 - [ ] Reduzir responsabilidades do `SharePointListService`.
 
@@ -156,3 +175,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Criada camada `domain` para status de reserva, disponibilidade e compatibilidade de isotanks. |
 | 2026-06-22 | Fluxo de alocação ajustado para gravar pedido como `Pré-Reservado` e isotank como `Reservado`. |
 | 2026-06-22 | Dashboard atualizado para separar pedidos abertos, pré-reservados e confirmados. |
+| 2026-06-22 | Criada camada `infrastructure/sharepoint/repositories` e `SharePointListService` foi reduzido para fachada. |
