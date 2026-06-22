@@ -13,6 +13,7 @@
     "ship": "heft test --clean --production && heft package-solution --production",
     "ci": "npm ci && npm run ship",
     "version:sync": "node scripts/sync-spfx-version.cjs",
+    "release:check": "npm run version:sync && npm run ship",
     "eject-webpack": "heft eject-webpack",
     "reset:local": "rm -rf node_modules && npm ci"
   },
