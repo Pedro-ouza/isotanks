@@ -34,11 +34,18 @@ const KPI_CARD_CONFIGS = [
     bgColor: '#fff4ce',
   },
   {
-    key: 'pedidosReservados' as keyof IMetricas,
-    label: 'Pedidos Reservados',
+    key: 'pedidosPreReservados' as keyof IMetricas,
+    label: 'Pré-Reservas',
     icon: '🔒',
     color: '#005a9e',
     bgColor: '#deecf9',
+  },
+  {
+    key: 'pedidosConfirmados' as keyof IMetricas,
+    label: 'Pedidos Confirmados',
+    icon: '✅',
+    color: '#107c10',
+    bgColor: '#dff6dd',
   },
   {
     key: 'itemsEmStaging' as keyof IMetricas,
