@@ -132,6 +132,12 @@ O script abaixo sincroniza `package-solution.json` com a versão do `package.jso
 npm run version:sync
 ```
 
+## Manutenção do stack SPFx
+
+O plano de manutenção do stack está documentado em [`docs/SPFX_STACK_MAINTENANCE.md`](./SPFX_STACK_MAINTENANCE.md).
+
+Esse plano controla atualizações de GitHub Actions, Dependabot, auditoria npm e futuras PRs canário para novas versões do SPFx.
+
 ## Checklist do projeto
 
 ### Estabilização SPFx
@@ -144,6 +150,8 @@ npm run version:sync
 - [x] Criar script de sincronização de versão SPFx.
 - [x] Adicionar workflow GitHub Actions para validar `spfx/**`.
 - [x] Sincronizar `spfx/package-lock.json`.
+- [x] Criar plano de manutenção do stack SPFx.
+- [x] Configurar Dependabot para npm e GitHub Actions.
 - [ ] Validar localmente `npm ci` e `npm run ship` após cada alteração estrutural.
 
 ### Modularização planejada
@@ -181,3 +189,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Corrigidos os gatilhos do workflow para também rodar quando `.github/workflows/spfx-ci.yaml` for alterado. |
 | 2026-06-22 | Workflow ajustado para usar `npm install` enquanto `spfx/package-lock.json` é sincronizado. |
 | 2026-06-22 | Lockfile SPFx sincronizado e workflow restaurado para validação com `npm ci`. |
+| 2026-06-22 | Criado plano de manutenção do stack SPFx, atualização de GitHub Actions e governança com Dependabot. |
