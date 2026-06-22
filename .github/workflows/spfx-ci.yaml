@@ -22,7 +22,7 @@ jobs:
           node-version-file: spfx/.nvmrc
           cache: npm
           cache-dependency-path: spfx/package-lock.json
-      - run: npm install
+      - run: npm ci
         working-directory: spfx
       - run: npm run ship
         working-directory: spfx
