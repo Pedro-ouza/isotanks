@@ -143,7 +143,7 @@ npm run version:sync
 - [x] Corrigir import de `IPropertyPaneConfiguration` no webpart de aprovação.
 - [x] Criar script de sincronização de versão SPFx.
 - [x] Adicionar workflow GitHub Actions para validar `spfx/**`.
-- [ ] Sincronizar `spfx/package-lock.json`.
+- [x] Sincronizar `spfx/package-lock.json`.
 - [ ] Validar localmente `npm ci` e `npm run ship` após cada alteração estrutural.
 
 ### Modularização planejada
@@ -180,3 +180,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Adicionado workflow GitHub Actions para validar alterações em `spfx/**` com `npm ci` e `npm run ship`. |
 | 2026-06-22 | Corrigidos os gatilhos do workflow para também rodar quando `.github/workflows/spfx-ci.yaml` for alterado. |
 | 2026-06-22 | Workflow ajustado para usar `npm install` enquanto `spfx/package-lock.json` é sincronizado. |
+| 2026-06-22 | Lockfile SPFx sincronizado e workflow restaurado para validação com `npm ci`. |
