@@ -24,5 +24,9 @@ jobs:
           cache-dependency-path: spfx/package-lock.json
       - run: npm install
         working-directory: spfx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spfx-package-lock
+          path: spfx/package-lock.json
       - run: npm run ship
         working-directory: spfx
