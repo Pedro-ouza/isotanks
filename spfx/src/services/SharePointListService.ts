@@ -1,22 +1,6 @@
-/**
- * SharePointListService.ts
- * Fachada de compatibilidade para as webparts SPFx.
- *
- * Acesso direto às listas SharePoint fica em infrastructure/sharepoint/repositories.
- */
-
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { sp } from '@pnp/sp';
-import '@pnp/sp/webs';
-import '@pnp/sp/lists';
-import '@pnp/sp/items';
 import { StatusDisponibilidade } from '../domain/isotanks/StatusDisponibilidade';
 import { StatusReserva } from '../domain/pedidos/StatusReserva';
-import { FornecedorRepository } from '../infrastructure/sharepoint/repositories/FornecedorRepository';
-import { IsotankRepository } from '../infrastructure/sharepoint/repositories/IsotankRepository';
-import { PedidoRepository } from '../infrastructure/sharepoint/repositories/PedidoRepository';
-import { ProdutoRefRepository } from '../infrastructure/sharepoint/repositories/ProdutoRefRepository';
-import { StagingRepository } from '../infrastructure/sharepoint/repositories/StagingRepository';
 import {
   IIsotank,
   IStagingIsotank,
@@ -25,43 +9,59 @@ import {
   IProdutoRef,
   IMetricas,
 } from './models';
+import { SharePointListClient } from './SharePointListClient';
 
+/**
+ * Fachada estática de compatibilidade para os componentes atuais.
+ *
+ * Novas webparts e novos módulos devem preferir SharePointListService.create(context)
+ * ou instanciar SharePointListClient diretamente, reduzindo dependência de singleton.
+ */
 export class SharePointListService {
-  private static _initialized = false;
+  private static _client: SharePointListClient | undefined;
 
-  /** Deve ser chamado uma vez no onInit() da web part */
+  /** Deve ser chamado uma vez no onInit() da web part enquanto a fachada estática existir. */
   public static initialize(context: WebPartContext): void {
-    if (!SharePointListService._initialized) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sp.setup({ spfxContext: context as any });
-      SharePointListService._initialized = true;
+    if (!SharePointListService._client) {
+      SharePointListService._client = new SharePointListClient(context);
     }
   }
 
-  // ─── ISOTANKS ────────────────────────────────────────────────────────────
+  /** Cria um cliente instanciável para novos fluxos e futuras webparts. */
+  public static create(context: WebPartContext): SharePointListClient {
+    return new SharePointListClient(context);
+  }
+
+  private static get client(): SharePointListClient {
+    if (!SharePointListService._client) {
+      throw new Error('SharePointListService.initialize(context) deve ser chamado antes de usar a fachada estática.');
+    }
+
+    return SharePointListService._client;
+  }
 
   public static async getIsotanks(filters?: {
     status?: StatusDisponibilidade;
     produto?: string;
   }): Promise<IIsotank[]> {
-    return IsotankRepository.getAll(filters);
+    return SharePointListService.client.getIsotanks(filters);
   }
 
   public static async getIsotanksCompativeis(produto: string): Promise<IIsotank[]> {
-    return IsotankRepository.getAvailableByProduct(produto);
+    return SharePointListService.client.getIsotanksCompativeis(produto);
   }
 
   public static async createIsotank(
     data: Omit<IIsotank, 'Id'>
   ): Promise<{ data: IIsotank }> {
-    return IsotankRepository.create(data);
+    return SharePointListService.client.createIsotank(data);
   }
 
   public static async updateIsotank(
     id: number,
     data: Partial<IIsotank>
   ): Promise<void> {
-    await IsotankRepository.update(id, data);
+    await SharePointListService.client.updateIsotank(id, data);
   }
 
   public static async reservarIsotank(
@@ -69,89 +69,57 @@ export class SharePointListService {
     pedidoId: number,
     reservadoPor: string
   ): Promise<void> {
-    await IsotankRepository.markAsReserved(isotankId, pedidoId, reservadoPor);
-
-    const pedido = await PedidoRepository.getById(pedidoId);
-    if (pedido) {
-      await PedidoRepository.markAsPreReserved(pedidoId, isotankId);
-    }
+    await SharePointListService.client.reservarIsotank(isotankId, pedidoId, reservadoPor);
   }
 
-  // ─── STAGING ─────────────────────────────────────────────────────────────
-
   public static async getStagingIsotanks(): Promise<IStagingIsotank[]> {
-    return StagingRepository.getAll();
+    return SharePointListService.client.getStagingIsotanks();
   }
 
   public static async aprovarStaging(
     stagingId: number,
     dados: Partial<IIsotank>
   ): Promise<void> {
-    await IsotankRepository.create({
-      ...dados,
-      StatusDisponibilidade: StatusDisponibilidade.Disponivel,
-    });
-    await StagingRepository.delete(stagingId);
+    await SharePointListService.client.aprovarStaging(stagingId, dados);
   }
 
   public static async deleteStagingIsotank(id: number): Promise<void> {
-    await StagingRepository.delete(id);
+    await SharePointListService.client.deleteStagingIsotank(id);
   }
 
   public static async updateStagingIsotank(
     id: number,
     data: Partial<IStagingIsotank>
   ): Promise<void> {
-    await StagingRepository.update(id, data);
+    await SharePointListService.client.updateStagingIsotank(id, data);
   }
 
-  // ─── PEDIDOS ─────────────────────────────────────────────────────────────
-
   public static async getPedidos(statusFiltro?: StatusReserva): Promise<IPedido[]> {
-    return PedidoRepository.getAll(statusFiltro);
+    return SharePointListService.client.getPedidos(statusFiltro);
   }
 
   public static async createPedido(
     data: Omit<IPedido, 'Id'>
   ): Promise<{ data: IPedido }> {
-    return PedidoRepository.create(data);
+    return SharePointListService.client.createPedido(data);
   }
 
   public static async updatePedido(
     id: number,
     data: Partial<IPedido>
   ): Promise<void> {
-    await PedidoRepository.update(id, data);
+    await SharePointListService.client.updatePedido(id, data);
   }
-
-  // ─── FORNECEDORES ────────────────────────────────────────────────────────
 
   public static async getFornecedores(): Promise<IFornecedor[]> {
-    return FornecedorRepository.getActive();
+    return SharePointListService.client.getFornecedores();
   }
-
-  // ─── PRODUTOS ────────────────────────────────────────────────────────────
 
   public static async getProdutosRef(): Promise<IProdutoRef[]> {
-    return ProdutoRefRepository.getActive();
+    return SharePointListService.client.getProdutosRef();
   }
 
-  // ─── MÉTRICAS (DASHBOARD) ─────────────────────────────────────────────────
-
   public static async getMetricas(): Promise<IMetricas> {
-    const [isotanks, pedidos, staging] = await Promise.all([
-      IsotankRepository.getMetricItems(),
-      PedidoRepository.getMetricItems(),
-      StagingRepository.getMetricItems(),
-    ]);
-
-    return {
-      isotanksTotais: isotanks.length,
-      isotanksDisponiveis: isotanks.filter((i) => i.StatusDisponibilidade === StatusDisponibilidade.Disponivel).length,
-      pedidosAbertos: pedidos.filter((p) => p.StatusReserva === StatusReserva.Solicitado).length,
-      pedidosPreReservados: pedidos.filter((p) => p.StatusReserva === StatusReserva.PreReservado).length,
-      pedidosConfirmados: pedidos.filter((p) => p.StatusReserva === StatusReserva.Confirmado).length,
-      itemsEmStaging: staging.length,
-    };
+    return SharePointListService.client.getMetricas();
   }
 }

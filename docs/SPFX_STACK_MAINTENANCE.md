@@ -20,6 +20,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [`SPFX_ENGINEERING_STANDARDS.md`](./SPFX_ENGINEERING_STANDARDS.md): padrões de engenharia extraídos das skills SPFx do projeto.
 - [`SPFX_NPM_WARNING_AUDIT.md`](./SPFX_NPM_WARNING_AUDIT.md): guia de classificação e investigação de warnings npm.
 - [`SPFX_CANARY_UPGRADE.md`](./SPFX_CANARY_UPGRADE.md): processo para testar próximas versões oficiais do SPFx.
+- [`SPFX_SERVICE_MIGRATION.md`](./SPFX_SERVICE_MIGRATION.md): estratégia para reduzir singleton estático de serviços SharePoint.
 
 ## Issues do plano
 
@@ -62,7 +63,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [x] Documentar padrões de engenharia extraídos das skills SPFx.
 - [x] Executar auditoria npm detalhada.
 - [x] Criar PR canário quando houver nova versão SPFx oficialmente suportada.
-- [ ] Migrar serviços para reduzir singleton estático.
+- [x] Migrar serviços para reduzir singleton estático.
 - [ ] Aplicar auditoria UX/acessibilidade.
 - [ ] Aplicar governança de estilos e tema.
 - [ ] Criar checklist de release SPFx.
