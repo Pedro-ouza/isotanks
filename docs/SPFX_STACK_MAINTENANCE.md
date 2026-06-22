@@ -23,6 +23,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [`SPFX_SERVICE_MIGRATION.md`](./SPFX_SERVICE_MIGRATION.md): estratégia para reduzir singleton estático de serviços SharePoint.
 - [`SPFX_UX_ACCESSIBILITY_AUDIT.md`](./SPFX_UX_ACCESSIBILITY_AUDIT.md): auditoria de UX, acessibilidade e microcopy dos webparts.
 - [`SPFX_STYLE_THEME_GOVERNANCE.md`](./SPFX_STYLE_THEME_GOVERNANCE.md): governança de estilos, SCSS modules e tokens de tema.
+- [`SPFX_RELEASE_CHECKLIST.md`](./SPFX_RELEASE_CHECKLIST.md): checklist de release, App Catalog, smoke test e rollback.
 
 ## Issues do plano
 
@@ -68,4 +69,4 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [x] Migrar serviços para reduzir singleton estático.
 - [x] Aplicar auditoria UX/acessibilidade.
 - [x] Aplicar governança de estilos e tema.
-- [ ] Criar checklist de release SPFx.
+- [x] Criar checklist de release SPFx.
