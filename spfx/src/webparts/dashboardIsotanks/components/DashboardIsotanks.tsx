@@ -79,7 +79,10 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[DashboardIsotanks] Erro ao carregar métricas:', msg);
-      this.setState({ error: `Erro ao carregar dados: ${msg}`, loading: false });
+      this.setState({
+        error: `Não foi possível carregar os indicadores do dashboard. Verifique permissões nas listas SharePoint e tente atualizar. Detalhe técnico: ${msg}`,
+        loading: false,
+      });
     }
   }
 
@@ -91,8 +94,8 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
     bgColor: string
   ): JSX.Element {
     return (
-      <div className={styles.kpiCard} style={{ borderTopColor: color, backgroundColor: bgColor }}>
-        <div className={styles.kpiIcon}>{icon}</div>
+      <div className={styles.kpiCard} style={{ borderTopColor: color, backgroundColor: bgColor }} aria-label={`${label}: ${value}`}>
+        <div className={styles.kpiIcon} aria-hidden="true">{icon}</div>
         <div className={styles.kpiValue} style={{ color }}>{value}</div>
         <div className={styles.kpiLabel}>{label}</div>
       </div>
@@ -106,8 +109,8 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
     color: string
   ): JSX.Element {
     return (
-      <div className={styles.quickCard}>
-        <div className={styles.quickIcon} style={{ color }}>{icon}</div>
+      <div className={styles.quickCard} aria-label={`${title}. ${description}`}>
+        <div className={styles.quickIcon} style={{ color }} aria-hidden="true">{icon}</div>
         <div>
           <div className={styles.quickTitle}>{title}</div>
           <div className={styles.quickDesc}>{description}</div>
@@ -120,40 +123,44 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
     const { loading, error, metricas } = this.state;
 
     return (
-      <div className={styles.dashboard}>
+      <div className={styles.dashboard} aria-label="Dashboard de isotanks">
         <div className={styles.header}>
           <div className={styles.headerTitle}>
-            <span className={styles.headerIcon}>🚢</span>
+            <span className={styles.headerIcon} aria-hidden="true">🚢</span>
             <span>Dashboard de Isotanks</span>
           </div>
           <button
             className={styles.refreshButton}
             onClick={() => this._loadMetricas()}
             title="Atualizar dados"
+            aria-label="Atualizar indicadores do dashboard"
+            disabled={loading}
           >
-            🔄 Atualizar
+            Atualizar
           </button>
         </div>
 
         {loading && (
-          <div className={styles.spinnerContainer}>
-            <Spinner size={SpinnerSize.large} label="Carregando métricas..." />
+          <div className={styles.spinnerContainer} aria-live="polite">
+            <Spinner size={SpinnerSize.large} label="Carregando indicadores do dashboard..." ariaLive="polite" />
           </div>
         )}
 
         {error && !loading && (
-          <MessageBar messageBarType={MessageBarType.error} isMultiline>
-            {error}
-            <br />
-            <small>Verifique as permissões nas listas SharePoint e se as listas existem.</small>
-          </MessageBar>
+          <div aria-live="assertive">
+            <MessageBar messageBarType={MessageBarType.error} isMultiline>
+              {error}
+              <br />
+              <small>Próxima ação: confirme se as listas existem e se o usuário atual tem permissão de leitura.</small>
+            </MessageBar>
+          </div>
         )}
 
         {!loading && !error && metricas && (
           <>
-            <section>
-              <h2 className={styles.sectionTitle}>📊 Indicadores Gerais</h2>
-              <div className={styles.kpiGrid}>
+            <section aria-label="Indicadores gerais de isotanks">
+              <h2 className={styles.sectionTitle}>Indicadores Gerais</h2>
+              <div className={styles.kpiGrid} aria-live="polite">
                 {KPI_CARD_CONFIGS.map((cfg) =>
                   this._renderKpiCard(
                     cfg.label,
@@ -166,8 +173,8 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
               </div>
             </section>
 
-            <section>
-              <h2 className={styles.sectionTitle}>⚡ Acesso Rápido</h2>
+            <section aria-label="Acesso rápido">
+              <h2 className={styles.sectionTitle}>Acesso Rápido</h2>
               <div className={styles.quickGrid}>
                 {this._renderQuickAccessCard(
                   'Reservar Isotank',
@@ -190,20 +197,20 @@ export class DashboardIsotanks extends React.Component<IDashboardIsotanksProps, 
               </div>
             </section>
 
-            <section className={styles.alertSection}>
+            <section className={styles.alertSection} aria-label="Pendências operacionais" aria-live="polite">
               {metricas.pedidosAbertos > 0 && (
                 <MessageBar messageBarType={MessageBarType.warning}>
-                  ⚠️ <strong>{metricas.pedidosAbertos}</strong> pedido(s) aguardando alocação de isotank.
+                  <strong>{metricas.pedidosAbertos}</strong> pedido(s) aguardando alocação de isotank.
                 </MessageBar>
               )}
               {metricas.itemsEmStaging > 0 && (
                 <MessageBar messageBarType={MessageBarType.info}>
-                  ℹ️ <strong>{metricas.itemsEmStaging}</strong> isotank(s) em staging aguardando aprovação.
+                  <strong>{metricas.itemsEmStaging}</strong> isotank(s) em staging aguardando aprovação.
                 </MessageBar>
               )}
               {metricas.pedidosAbertos === 0 && metricas.itemsEmStaging === 0 && (
                 <MessageBar messageBarType={MessageBarType.success}>
-                  ✅ Nenhuma pendência. Sistema em dia!
+                  Nenhuma pendência operacional no momento.
                 </MessageBar>
               )}
             </section>
