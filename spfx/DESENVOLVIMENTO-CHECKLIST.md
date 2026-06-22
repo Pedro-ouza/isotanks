@@ -66,37 +66,37 @@
 ### 2.1 Criar Listas no SharePoint
 Seguir: `SETUP-GUIDE.md` - Seção "Criar Listas"
 
-- [ ] **Lista: Isotanks**
-  - **Status**: ⏳ Pendente
+- [x] **Lista: Isotanks**
+  - **Status**: ✅ Concluído (Confirmado pelo usuário)
   - **Campos Requeridos**: 16 campos (ver SETUP-GUIDE.md)
   - **Checagem**: Abrir lista e confirmar todos campos
   - **Tempo Estimado**: 10 min
 
-- [ ] **Lista: Pedidos**
-  - **Status**: ⏳ Pendente
+- [x] **Lista: Pedidos**
+  - **Status**: ✅ Concluído (Confirmado pelo usuário)
   - **Campos Requeridos**: 13 campos (ver SETUP-GUIDE.md)
   - **Checagem**: Abrir lista e confirmar todos campos
   - **Tempo Estimado**: 10 min
 
-- [ ] **Lista: StagingIsotanks**
-  - **Status**: ⏳ Pendente
+- [x] **Lista: StagingIsotanks**
+  - **Status**: ✅ Concluído (Confirmado pelo usuário)
   - **Campos Requeridos**: 10 campos (ver SETUP-GUIDE.md)
   - **Checagem**: Abrir lista e confirmar todos campos
   - **Tempo Estimado**: 10 min
 
 ### 2.2 Validar Listas
-- [ ] **Testar acesso com usuário padrão**
-  - **Status**: ⏳ Pendente
+- [x] **Testar acesso com usuário padrão**
+  - **Status**: ✅ Concluído (Acesso verificado)
   - **Procedimento**: Ir até lista no SharePoint
   - **Resultado Esperado**: Poder criar/editar itens
 
-- [ ] **Confirmar permissões**
-  - **Status**: ⏳ Pendente
+- [x] **Confirmar permissões**
+  - **Status**: ✅ Concluído (Permissões de edição confirmadas)
   - **Verificar**: Seu usuário tem permissão "Editar"
   - **Ação se negado**: Solicitar ao admin do site
 
-- [ ] **Adicionar dados de teste**
-  - **Status**: ⏳ Pendente
+- [x] **Adicionar dados de teste**
+  - **Status**: ✅ Concluído (Dados de teste inseridos)
   - **Ação**: Criar 2-3 itens de teste em cada lista
   - **Objetivo**: Ter dados para testar no desenvolvimento
 
@@ -380,14 +380,14 @@ Seguir: `SETUP-GUIDE.md` - Seção "Criar Listas"
 | Fase | Tarefas | Completas | % | Status |
 |------|---------|-----------|---|--------|
 | Setup Inicial | 7 | 4 | 57% | 🟡 Em Suspenso local / Codespace ok |
-| Setup SharePoint | 8 | 0 | 0% | ⏳ Pendente |
+| Setup SharePoint | 6 | 6 | 100% | ✅ Concluído |
 | Dev Local | 9 | 0 | 0% | 🟡 Em Suspenso (Requer Codespace) |
 | Validação Dados | 6 | 0 | 0% | ⏳ Pendente |
 | Impl. Avançada | 6 | 2 | 33% | 🟢 Código Pronto |
 | Otimização | 6 | 0 | 0% | ⏳ Pendente |
 | Deployment | 7 | 0 | 0% | ⏳ Pendente |
 | Prod Testing | 6 | 0 | 0% | ⏳ Pendente |
-| **TOTAL** | **55** | **6** | **11%** | **🟡 EM ANDAMENTO** |
+| **TOTAL** | **53** | **12** | **22%** | **🟡 EM ANDAMENTO** |
 
 ---
 
@@ -455,10 +455,11 @@ Seguir: `SETUP-GUIDE.md` - Seção "Criar Listas"
 |------|------|------|-------------|
 | 2026-06-19 | Inicial | Checklist criado | Sistema |
 | 2026-06-22 | Setup & Avançada | Atualização do status local (Node.js bloqueado corporativamente), conclusão das Web Parts Allocation e Approval e criação de typings. | Antigravity |
+| 2026-06-22 | SharePoint Setup | Marcar Fase 2 como concluída (criação e validação das listas no SharePoint Online). | Antigravity |
 
 ---
 
 **Última Atualização**: 2026-06-22  
 **Próxima Revisão Sugerida**: 2026-06-23  
-**Status Geral**: 🟡 CÓDIGO PRONTO / AGUARDANDO BUILD E LISTAS SP
+**Status Geral**: 🟡 CÓDIGO PRONTO / AGUARDANDO BUILD NO CODESPACE
 
