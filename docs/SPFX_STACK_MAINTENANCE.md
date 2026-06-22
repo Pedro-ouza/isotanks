@@ -18,6 +18,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 ## Documentos relacionados
 
 - [`SPFX_ENGINEERING_STANDARDS.md`](./SPFX_ENGINEERING_STANDARDS.md): padrões de engenharia extraídos das skills SPFx do projeto.
+- [`SPFX_NPM_WARNING_AUDIT.md`](./SPFX_NPM_WARNING_AUDIT.md): guia de classificação e investigação de warnings npm.
 
 ## Issues do plano
 
@@ -58,7 +59,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [x] Atualizar GitHub Actions para versões atuais.
 - [x] Criar Dependabot para `github-actions` e `npm` em `/spfx`.
 - [x] Documentar padrões de engenharia extraídos das skills SPFx.
-- [ ] Executar auditoria npm detalhada.
+- [x] Executar auditoria npm detalhada.
 - [ ] Criar PR canário quando houver nova versão SPFx oficialmente suportada.
 - [ ] Migrar serviços para reduzir singleton estático.
 - [ ] Aplicar auditoria UX/acessibilidade.
