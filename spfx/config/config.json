@@ -2,17 +2,35 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "hello-world-web-part": {
+    "dashboard-isotanks-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/helloWorld/HelloWorldWebPart.js",
-          "manifest": "./src/webparts/helloWorld/HelloWorldWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/dashboardIsotanks/DashboardIsotanksWebPart.js",
+          "manifest": "./src/webparts/dashboardIsotanks/DashboardIsotanksWebPart.manifest.json"
+        }
+      ]
+    },
+    "allocation-isotanks-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/allocationIsotanks/AllocationIsotanksWebPart.js",
+          "manifest": "./src/webparts/allocationIsotanks/AllocationIsotanksWebPart.manifest.json"
+        }
+      ]
+    },
+    "approval-isotanks-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/approvalIsotanks/ApprovalIsotanksWebPart.js",
+          "manifest": "./src/webparts/approvalIsotanks/ApprovalIsotanksWebPart.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "HelloWorldWebPartStrings": "lib/webparts/helloWorld/loc/{locale}.js"
+    "DashboardIsotanksWebPartStrings": "lib/webparts/dashboardIsotanks/loc/{locale}.js",
+    "AllocationIsotanksWebPartStrings": "lib/webparts/allocationIsotanks/loc/{locale}.js",
+    "ApprovalIsotanksWebPartStrings": "lib/webparts/approvalIsotanks/loc/{locale}.js"
   }
 }

@@ -1,0 +1,44 @@
+{
+  "name": "isotanks-spfx",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=16.0.0 <17.0.0"
+  },
+  "scripts": {
+    "build": "gulp bundle",
+    "clean": "gulp clean",
+    "test": "gulp test",
+    "serve": "gulp serve",
+    "ship": "gulp bundle --ship && gulp package-solution --ship"
+  },
+  "dependencies": {
+    "@microsoft/sp-core-library": "1.11.0",
+    "@microsoft/sp-lodash-subset": "1.11.0",
+    "@microsoft/sp-office-ui-fabric-core": "1.11.0",
+    "@microsoft/sp-property-pane": "1.11.0",
+    "@microsoft/sp-webpart-base": "1.11.0",
+    "@pnp/common": "2.15.0",
+    "@pnp/logging": "2.15.0",
+    "@pnp/odata": "2.15.0",
+    "@pnp/sp": "2.15.0",
+    "office-ui-fabric-react": "7.59.0",
+    "react": "16.8.5",
+    "react-dom": "16.8.5",
+    "tslib": "1.10.0"
+  },
+  "devDependencies": {
+    "@microsoft/rush-stack-compiler-3.7": "0.2.3",
+    "@microsoft/sp-build-web": "1.11.0",
+    "@microsoft/sp-module-interfaces": "1.11.0",
+    "@microsoft/sp-tslint-rules": "1.11.0",
+    "@microsoft/sp-webpart-workbench": "1.11.0",
+    "@types/react": "16.8.8",
+    "@types/react-dom": "16.8.3",
+    "ajv": "5.2.3",
+    "gulp": "3.9.1",
+    "minimatch": "3.0.4",
+    "typescript": "3.7.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "a1b2c3d4-0001-0000-0000-000000000001",
+  "alias": "DashboardIsotanksWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsFullTab"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Isotanks" },
+      "title": { "default": "Dashboard de Isotanks" },
+      "description": { "default": "Painel de controle com KPIs e acesso rápido ao sistema de Isotanks" },
+      "officeFabricIconFontName": "BarChart4",
+      "properties": {
+        "siteUrl": ""
+      }
+    }
+  ]
+}
