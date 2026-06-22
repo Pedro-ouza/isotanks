@@ -20,6 +20,7 @@ import {
   Stack,
 } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import panelStyles from './IsotankPanels.module.scss';
 
 interface IAllocationPaneProps {
   context: WebPartContext;
@@ -138,7 +139,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           ariaLabel={`Selecionar pedido ${item.Title}`}
           iconProps={{ iconName: 'CheckMark' }}
           onClick={() => this._onSelectPedido(item)}
-          styles={{ root: { height: 28, fontSize: 12 } }}
+          className={panelStyles.actionButtonCompact}
         />
       ),
     },
@@ -160,7 +161,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           ariaLabel={`Pré-reservar isotank ${item.Title}`}
           iconProps={{ iconName: 'Lock' }}
           onClick={() => this.setState({ selectedIsotank: item, confirmDialogOpen: true })}
-          styles={{ root: { height: 28, fontSize: 12 } }}
+          className={panelStyles.actionButtonCompact}
         />
       ),
     },
@@ -173,9 +174,9 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
     } = this.state;
 
     return (
-      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }} aria-label="Alocação de isotanks">
-        <Stack horizontal horizontalAlign="space-between" verticalAlign="center" style={{ marginBottom: 16 }}>
-          <Text variant="xLarge" style={{ fontWeight: 600 }}>Alocação de Isotanks</Text>
+      <div className={panelStyles.pane} aria-label="Alocação de isotanks">
+        <Stack horizontal horizontalAlign="space-between" verticalAlign="center" className={panelStyles.header}>
+          <Text variant="xLarge" className={panelStyles.title}>Alocação de Isotanks</Text>
           <DefaultButton
             text="Atualizar"
             ariaLabel="Atualizar pedidos aguardando alocação"
@@ -185,14 +186,14 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           />
         </Stack>
 
-        <div aria-live="polite">
+        <div aria-live="polite" className={panelStyles.statusRegion}>
           {successMsg && (
-            <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
+            <MessageBar messageBarType={MessageBarType.success}>
               {successMsg}
             </MessageBar>
           )}
         </div>
-        <div aria-live="assertive">
+        <div aria-live="assertive" className={panelStyles.statusRegion}>
           {error && (
             <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
               {error}
@@ -204,7 +205,7 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
           <Spinner size={SpinnerSize.large} label="Carregando pedidos aguardando alocação..." ariaLive="polite" />
         ) : (
           <>
-            <Text variant="mediumPlus" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
+            <Text variant="mediumPlus" className={panelStyles.sectionTitle}>
               Pedidos aguardando alocação ({pedidos.length})
             </Text>
             {pedidos.length === 0 ? (
@@ -223,8 +224,8 @@ export class IsotankAllocationPane extends React.Component<IAllocationPaneProps,
             )}
 
             {selectedPedido && (
-              <div style={{ marginTop: 24, padding: 16, background: '#deecf9', borderRadius: 8 }} aria-live="polite">
-                <Text variant="mediumPlus" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
+              <div className={panelStyles.selectedSection} aria-live="polite">
+                <Text variant="mediumPlus" className={panelStyles.sectionTitle}>
                   Isotanks compatíveis com "{selectedPedido.ProdutoSolicitado}" para o pedido "{selectedPedido.Title}"
                 </Text>
                 {isotanksCompativeis.length === 0 ? (
