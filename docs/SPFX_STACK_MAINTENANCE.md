@@ -15,6 +15,10 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 | React DOM | 17.0.1 | Manter exato conforme matriz SPFx |
 | CI | GitHub Actions | Atualizar actions sem alterar runtime SPFx |
 
+## Documentos relacionados
+
+- [`SPFX_ENGINEERING_STANDARDS.md`](./SPFX_ENGINEERING_STANDARDS.md): padrões de engenharia extraídos das skills SPFx do projeto.
+
 ## Issues do plano
 
 | Issue | Fase | Resultado esperado |
@@ -23,6 +27,11 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 | #10 | Atualizar GitHub Actions | Remover warnings de runtime das actions |
 | #11 | Auditoria npm | Reduzir warnings e justificar dependências diretas |
 | #12 | Governança Dependabot | Manter updates pequenos e revisáveis |
+| #14 | Validação de próxima versão oficial | Atualização SPFx apenas via teste isolado |
+| #15 | Serviços e singletons | Reduzir acoplamento do `SharePointListService` |
+| #16 | UX e acessibilidade | Melhorar estados, foco e microcopy |
+| #17 | Estilos e tema | Reduzir inline styles e usar SCSS modules/tokens |
+| #18 | Release quality | Criar checklist de pacote e App Catalog |
 
 ## Estratégia
 
@@ -31,6 +40,7 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 3. Validar toda mudança com `npm run ship`.
 4. Não atualizar React, TypeScript ou pacotes SPFx fora da matriz oficial.
 5. Criar PR canário isolada quando surgir nova versão SPFx suportada.
+6. Aplicar as skills SPFx por PRs pequenas, uma dimensão por vez: arquitetura, UX, estilos, release.
 
 ## Regras de PR
 
@@ -38,6 +48,8 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - Toda PR que altera `spfx/**` deve passar no workflow `SPFx CI`.
 - Toda alteração em dependências deve atualizar `spfx/package-lock.json`.
 - Warnings novos devem ser classificados antes do merge.
+- Mudanças de UI devem revisar acessibilidade, microcopy e estados vazios/de erro.
+- Mudanças de estilo devem preferir SCSS modules e tokens semânticos.
 
 ## Checklist inicial
 
@@ -45,5 +57,10 @@ Reduzir warnings, manter o CI determinístico e preparar o projeto para atualiza
 - [x] Restaurar `npm ci` no CI.
 - [x] Atualizar GitHub Actions para versões atuais.
 - [x] Criar Dependabot para `github-actions` e `npm` em `/spfx`.
+- [x] Documentar padrões de engenharia extraídos das skills SPFx.
 - [ ] Executar auditoria npm detalhada.
 - [ ] Criar PR canário quando houver nova versão SPFx oficialmente suportada.
+- [ ] Migrar serviços para reduzir singleton estático.
+- [ ] Aplicar auditoria UX/acessibilidade.
+- [ ] Aplicar governança de estilos e tema.
+- [ ] Criar checklist de release SPFx.
