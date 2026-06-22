@@ -4,7 +4,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 16px;
   max-width: 1200px;
-  background-color: #f8f9fa;
+  background-color: $ms-color-neutralLighterAlt;
   min-height: 200px;
 }
 
@@ -14,9 +14,9 @@
   align-items: center;
   margin-bottom: 24px;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+  background: linear-gradient(135deg, $ms-color-themePrimary 0%, $ms-color-themeDarkAlt 100%);
   border-radius: 8px;
-  color: #fff;
+  color: $ms-color-white;
 }
 
 .headerTitle {
@@ -34,25 +34,30 @@
 .refreshButton {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
+  color: $ms-color-white;
   padding: 6px 14px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
   transition: background 0.2s;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.35);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 }
 
 .sectionTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #323130;
+  color: $ms-color-neutralPrimary;
   margin: 20px 0 12px;
   padding-bottom: 6px;
-  border-bottom: 2px solid #edebe9;
+  border-bottom: 2px solid $ms-color-neutralLight;
 }
 
 /* ─── KPI Cards ──────────────────────────────────────────────────── */
@@ -65,10 +70,10 @@
 }
 
 .kpiCard {
-  background: #fff;
+  background: $ms-color-white;
   border-radius: 8px;
   padding: 20px 16px;
-  border-top: 4px solid #0078d4;
+  border-top: 4px solid $ms-color-themePrimary;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -93,7 +98,7 @@
 
 .kpiLabel {
   font-size: 12px;
-  color: #605e5c;
+  color: $ms-color-neutralSecondary;
   font-weight: 500;
 }
 
@@ -110,7 +115,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #fff;
+  background: $ms-color-white;
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
@@ -131,13 +136,13 @@
 .quickTitle {
   font-size: 14px;
   font-weight: 600;
-  color: #323130;
+  color: $ms-color-neutralPrimary;
   margin-bottom: 2px;
 }
 
 .quickDesc {
   font-size: 12px;
-  color: #605e5c;
+  color: $ms-color-neutralSecondary;
 }
 
 /* ─── Alerts ─────────────────────────────────────────────────────── */
@@ -162,8 +167,8 @@
 .footer {
   margin-top: 24px;
   padding-top: 12px;
-  border-top: 1px solid #edebe9;
+  border-top: 1px solid $ms-color-neutralLight;
   font-size: 11px;
-  color: #a19f9d;
+  color: $ms-color-neutralTertiary;
   text-align: center;
 }

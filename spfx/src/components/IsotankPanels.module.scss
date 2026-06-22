@@ -1,0 +1,62 @@
+@import 'pkg:@fluentui/react/dist/sass/References.scss';
+
+.pane {
+  padding: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.statusRegion {
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.selectedSection {
+  margin-top: 24px;
+  padding: 16px;
+  background: $ms-color-themeLighterAlt;
+  border: 1px solid $ms-color-themeLight;
+  border-radius: 8px;
+}
+
+.panelContent {
+  padding: 16px 0;
+}
+
+.actionButtonCompact {
+  height: 28px;
+  font-size: 12px;
+}
+
+.approveButton {
+  background: $ms-color-green;
+  border-color: $ms-color-green;
+
+  &:hover {
+    background: $ms-color-greenDark;
+    border-color: $ms-color-greenDark;
+  }
+}
+
+.rejectButton {
+  color: $ms-color-redDark;
+  border-color: $ms-color-redDark;
+}
+
+.secondaryText {
+  display: block;
+  margin-bottom: 12px;
+  color: $ms-color-neutralSecondary;
+}

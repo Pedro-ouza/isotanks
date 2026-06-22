@@ -21,6 +21,7 @@ import {
   Label,
 } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import panelStyles from './IsotankPanels.module.scss';
 
 interface IApprovalPaneProps {
   context: WebPartContext;
@@ -161,7 +162,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
           ariaLabel={`Analisar isotank ${item.Title}`}
           iconProps={{ iconName: 'Search' }}
           onClick={() => this._openPanel(item)}
-          styles={{ root: { height: 28, fontSize: 12 } }}
+          className={panelStyles.actionButtonCompact}
         />
       ),
     },
@@ -174,9 +175,9 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
     } = this.state;
 
     return (
-      <div style={{ padding: 16, fontFamily: 'Segoe UI, sans-serif' }} aria-label="Aprovação de isotanks em staging">
-        <Stack horizontal horizontalAlign="space-between" verticalAlign="center" style={{ marginBottom: 16 }}>
-          <Text variant="xLarge" style={{ fontWeight: 600 }}>Aprovação de Staging</Text>
+      <div className={panelStyles.pane} aria-label="Aprovação de isotanks em staging">
+        <Stack horizontal horizontalAlign="space-between" verticalAlign="center" className={panelStyles.header}>
+          <Text variant="xLarge" className={panelStyles.title}>Aprovação de Staging</Text>
           <DefaultButton
             text="Atualizar"
             ariaLabel="Atualizar itens de staging aguardando aprovação"
@@ -186,14 +187,14 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
           />
         </Stack>
 
-        <div aria-live="polite">
+        <div aria-live="polite" className={panelStyles.statusRegion}>
           {successMsg && (
-            <MessageBar messageBarType={MessageBarType.success} style={{ marginBottom: 12 }}>
+            <MessageBar messageBarType={MessageBarType.success}>
               {successMsg}
             </MessageBar>
           )}
         </div>
-        <div aria-live="assertive">
+        <div aria-live="assertive" className={panelStyles.statusRegion}>
           {error && (
             <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>
               {error}
@@ -209,7 +210,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
           </MessageBar>
         ) : (
           <>
-            <Text variant="medium" style={{ display: 'block', marginBottom: 12, color: '#605e5c' }}>
+            <Text variant="medium" className={panelStyles.secondaryText}>
               {stagingItems.length} item(s) aguardando análise.
             </Text>
             <DetailsList
@@ -237,14 +238,14 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
                 ariaLabel="Aprovar isotank selecionado"
                 onClick={() => this._aprovarItem()}
                 disabled={saving}
-                styles={{ root: { background: '#107c10', border: 'none' } }}
+                className={panelStyles.approveButton}
               />
               <DefaultButton
                 text={saving ? 'Salvando...' : 'Rejeitar'}
                 ariaLabel="Rejeitar isotank selecionado"
                 onClick={() => this._rejeitarItem()}
                 disabled={saving}
-                styles={{ root: { color: '#a4262c', borderColor: '#a4262c' } }}
+                className={panelStyles.rejectButton}
               />
               <DefaultButton
                 text="Cancelar"
@@ -256,7 +257,7 @@ export class ApprovalPane extends React.Component<IApprovalPaneProps, IApprovalP
           )}
         >
           {selectedItem && (
-            <Stack gap={12} style={{ padding: '16px 0' }}>
+            <Stack gap={12} className={panelStyles.panelContent}>
               <Stack horizontal gap={20}>
                 <div>
                   <Label>Isotank ID</Label>
