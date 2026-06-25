@@ -19,6 +19,8 @@ A solução apoia o processo de gestão de isotanks, incluindo:
 - acompanhamento de indicadores no dashboard;
 - consulta de fornecedores e produtos de referência.
 
+A documentação funcional completa da solução está em [`docs/ISOTANKS_PRODUCT_DOCUMENTATION.md`](./ISOTANKS_PRODUCT_DOCUMENTATION.md).
+
 ## Estrutura atual relevante
 
 ```text
@@ -190,3 +192,4 @@ Toda alteração estrutural, mudança de fluxo, novo módulo, nova lista SharePo
 | 2026-06-22 | Workflow ajustado para usar `npm install` enquanto `spfx/package-lock.json` é sincronizado. |
 | 2026-06-22 | Lockfile SPFx sincronizado e workflow restaurado para validação com `npm ci`. |
 | 2026-06-22 | Criado plano de manutenção do stack SPFx, atualização de GitHub Actions e governança com Dependabot. |
+| 2026-06-22 | Criada documentação funcional de produto da solução Isotanks. |
